@@ -7,7 +7,7 @@ Revisión: 4 de octubre de 2026. Los MIDI fueron generados para el juego a parti
 | Archivo MIDI | Fuente consultada | Adaptación incluida |
 | --- | --- | --- |
 | clavelitos.mid | [EKE: Clavelito](https://www.eke.eus/es/cultura-vasca/musica-y-cancion-vascas/fondo-de-partituras/fondos-de-partituras-vascas-de-joseph-maris/clavelito) | MIDI público de EKE, usado como secuencia multicanal |
-| cielito-lindo.mid | [Tablatunas: Cielito Lindo](https://tablatunas.com/cancion/cielito-lindo/), PDF local `cielito_lindo_baritono_y_bandurria.pdf` | Fragmento, transposición, timbres y tempo de juego |
+| cielito-lindo.mid | [EKE: Cielito Lindo](https://www.eke.eus/fr/culture-basque/chant-et-musique-basques/chant-choral/fonds-de-partitions-basques-joseph-maris/cielito-lindo) | MIDI público de EKE, usado como secuencia multicanal |
 | adelita.mid | [EKE: Adelita pot-pourri](https://www.eke.eus/es/cultura-vasca/musica-y-cancion-vascas/fondo-de-partituras/fondos-de-partituras-vascas-de-joseph-maris/adelita_pot_pourri_cd) | MIDI público; el juego ignora los primeros 18 segundos |
 | el-rey.mid | [Partiturak: El Rey](https://partiturak.eus/ver/El%20rey), José Alfredo Jiménez; partitura con arreglo de J. Vidorreta Zubeldia | Transcripción breve de una voz, sin reproducir el arreglo polifónico ni el PDF |
 | estudiantina-madrilena.mid | [Tablatunas: Estudiantina Madrileña](https://tablatunas.com/cancion/estudiantina-madrilena/), PDF local `estudiantina_madrilena_baritono_y_bandurria.pdf` | Fragmento, transposición y acompañamiento |

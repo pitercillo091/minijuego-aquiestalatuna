@@ -8,7 +8,7 @@ from pathlib import Path
 import json, struct, base64
 
 ROOT = Path(__file__).resolve().parents[2]
-EXTERNAL_IDS = {'clavelitos','adelita','cartagenera'}
+EXTERNAL_IDS = {'clavelitos','cielito-lindo','adelita','cartagenera'}
 TUNING = [81, 76, 71, 66, 61, 56]
 SONGS = [
  ('clavelitos','Clavelitos',92,3,'Am',
