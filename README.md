@@ -71,6 +71,7 @@ JUEGO/
   src/midi.js                  Lector SMF, tempos y carga segura
   src/audio.js                 Reproducción, mezcla, rotación y efectos
   assets/audio/midi/           Diez archivos MIDI reutilizados en veinte etapas SMF-1 reutilizados en veinte etapas
+  midi/                        Copias originales descargadas de las fuentes públicas accesibles
   assets/audio/partituras.json  Frases editables y tempos
   assets/audio/generar-midi.py  Exportador MIDI, Python sin dependencias
   assets/audio/FUENTES.md      Procedencia, atribución y alcance musical
