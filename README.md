@@ -57,7 +57,7 @@ Se conserva la clave `rondalla-una-ronda-mas-v1` de localStorage. La migración 
 
 ## Tecnología y estructura
 
-HTML, CSS y JavaScript sin dependencias de producción. Canvas 2D para el juego, SVG con las imágenes originales y atlas PNG para los personajes y Web Audio para reproducir eventos MIDI mediante síntesis ligera. No se depende del soporte MIDI nativo del navegador ni de bancos de sonido remotos.
+HTML, CSS y JavaScript sin dependencias de producción. Canvas 2D para el juego, SVG con las imágenes originales y atlas PNG para los personajes. Web Audio reproduce los eventos MIDI con perfiles General MIDI ligeros: cada nota conserva programa, velocidad, volumen, expresión, panoramización, pitch bend y tempo. No se depende del soporte MIDI nativo del navegador ni de bancos de sonido remotos.
 
 ```text
 JUEGO/
@@ -92,7 +92,7 @@ Las fuentes, cambios y atribuciones están en `assets/audio/FUENTES.md` y en cr�
 
 En menú y recogida se usa una bolsa aleatoria: los diez temas únicos se barajan antes de comenzar otro ciclo y se evita repetir el tema que acaba de sonar. «Otra canción» cambia el tema del menú. En la actuación se elige exactamente el MIDI del nivel. Cada objetivo jugable coincide con un ataque de la pista principal; la segunda ronda selecciona muchos más ataques. Música y objetivos comparten el reloj, con tres segundos iniciales de preparación y un límite fijo de 40 segundos. Las notas cubren también los segundos 35–40. Pausar detiene las voces; reanudar ancla el MIDI en la misma posición de la actuación. En la recogida, la música ambiental se reinicia al reanudar.
 
-El lector admite SMF 0/1, PPQN, cambios de tempo y running status. Si falta un archivo, es inválido o tarda demasiado, usa los mismos bytes integrados en `songs.js`. Con `file://` se usa directamente esa copia. El juego sigue funcionando sin Web Audio. Imágenes secundarias ausentes tienen alternativas.
+El lector admite SMF 0/1, PPQN, cambios de tempo, running status, Program Change, bancos, controladores de volumen, expresión, panoramización y pitch bend. Si falta un archivo, es inválido o tarda demasiado, usa los mismos bytes integrados en `songs.js`. Con `file://` se usa directamente esa copia. El juego sigue funcionando sin Web Audio. Imágenes secundarias ausentes tienen alternativas.
 
 Para editar una canción:
 
