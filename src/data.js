@@ -6,7 +6,7 @@
     {id:'guitarra',name:'La guitarra',role:'Que nadie olvide el estuche.',instrument:'guitarra',reference:'reparto.webp',detail:'Segundo: cabeza despejada, cabello en las sienes, cara sin barba, beca roja y guitarra grande de madera.'},
     {id:'bandurria',name:'La bandurria',role:'Una púa y toda la plaza.',instrument:'bandurria',reference:'reparto.webp',detail:'Tercero: cabello corto oscuro con canas, bigote y barba corta, rostro alargado, beca roja y bandurria dorada.'},
     {id:'guitarra-gafas',name:'La guitarra clara',role:'El compás se ve venir.',instrument:'guitarra',reference:'reparto.webp',detail:'Cuarto: gafas rectangulares, cabello corto gris oscuro, sin barba, guitarra clara y beca roja colgando al costado.'},
-    {id:'laud',name:'El laúd',role:'La última nunca es la última.',instrument:'laud',reference:'reparto.webp',detail:'Quinto: cabello castaño corto, sonrisa, barba muy corta, beca roja y pequeño instrumento de cuerda. La identificación del instrumento es una interpretación visual.'}
+    {id:'laud',name:'El maestro bandurria',role:'La última nunca es la última.',instrument:'laud',reference:'reparto.webp',detail:'Quinto: cabello castaño corto, sonrisa, barba muy corta, beca roja y pequeño instrumento de cuerda. La identificación del instrumento es una interpretación visual.'}
   ];
   const settings=[
     ['Lopera · El ensayo','rehearsal','ensayo',105,0,['guitarra','bandurria','pandereta'],'Recoge los tres instrumentos y prepara Clavelitos.','Hay quien trae la voz. Tú trae también los instrumentos.','La primera ya suena. El ensayo empieza a parecer una actuación.'],
@@ -18,10 +18,13 @@
     ['Baños de la Encina · La isa','garden','banos',90,3,['bandurria','laud','guitarra','guitarra-gafas'],'Reúne los instrumentos de púa y las guitarras.','El viaje a Canarias lo ponemos en la música.','La isa ha puesto a bailar hasta al que guardaba los estuches.'],
     ['Arjona · Noche de copla','plaza','arjona',90,3,['flor','flor','partitura','guitarra-gafas'],'Prepara las flores y la guitarra para la copla.','La copla pide sentimiento. El jurado pide que no corramos.','La copla se ha quedado en la plaza. Vosotros vais a por otra.'],
     ['Lopera · El certamen','castle','caras',85,3,['partitura','bandurria','guitarra','laud','pandereta'],'Encuentra la partitura y reúne al equipo.','El jurado toma notas. Procura que las tuyas lleguen a tiempo.','El jurado también pide otra, aunque no lo diga.'],
-    ['Lopera · La gran actuación','finale','grupo',85,4,['pandereta','guitarra','bandurria','guitarra-gafas','laud'],'Reúne a los cinco músicos para el gran final.','Última canción. Lo de irnos después lo hablamos después.','Diez canciones. Cinco músicos. Y el público sigue pidiendo otra.']
+    ['Lopera · La gran actuación','finale','grupo',85,4,['pandereta','guitarra','bandurria','guitarra-gafas','laud'],'Reúne a los cinco músicos para el gran final.','Última canción. Lo de irnos después lo hablamos después.','Veinte etapas. Cinco músicos. Y el público sigue pidiendo otra.']
   ];
-  const counts=[2,2,3,3,4,4,5,5,6,6],targets=[18,24,30,36,42,48,54,60,66,72];
-  const levels=songs.map((s,i)=>{const [place,theme,photo,time,hazards,items,goal,intro,after]=settings[i];return {id:i,song:s.id,title:s.title,short:s.title,place,theme,photo,time,hazards,items,goal,intro,after,bpm:s.bpm,notes:targets[i],laneCount:counts[i],minGap:.76-i*.052,scrollSpeed:140+i*7,threshold:.5+Math.floor(i/2)*.025};});
-  const data={characters,levels,lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:2};
+  const counts=[2,2,3,3,4,4,5,5,6,6],targets=[18,24,30,36,42,47,54,60,66,71],gaps=[.76,.708,.656,.42,.552,.5,.448,.2,.23,.39];
+  const firstRound=songs.map((s,i)=>{const [place,theme,photo,time,hazards,items,goal,intro,after]=settings[i];return {id:i,round:1,song:s.id,title:s.title,short:s.title,place,theme,photo,time,hazards,items,goal,intro,after,bpm:s.bpm,notes:targets[i],laneCount:counts[i],minGap:gaps[i],scrollSpeed:140+i*7,threshold:.5+Math.floor(i/2)*.025};});
+  const secondTargets=[42,48,54,48,66,71,78,78,90,96];
+  const secondRound=firstRound.map((level,i)=>({...level,id:i+10,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:secondTargets[i],laneCount:Math.min(6,level.laneCount+1),minGap:.2,scrollSpeed:level.scrollSpeed+24,threshold:Math.min(.9,level.threshold+.045)}));
+  const levels=[...firstRound,...secondRound];
+  const data={characters,levels,lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:3};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);

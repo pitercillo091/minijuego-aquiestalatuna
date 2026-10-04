@@ -5,6 +5,7 @@
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const positions = [[230,390],[465,245],[680,420],[330,480],[710,210]];
+  const PERFORMANCE_DURATION = 40;
   const obstacles = [{x:355,y:315,w:100,h:55},{x:580,y:320,w:80,h:50}];
   function blocked(x,y) { return x<35 || x>925 || y<205 || y>505 || obstacles.some(o=>x>o.x-16&&x<o.x+o.w+16&&y>o.y-13&&y<o.y+o.h+13); }
   // Small grid A*: touch navigation obeys the same collision map as keyboard movement.
@@ -61,9 +62,15 @@
       const song=Music.get(this.config.song);this.beat=60/this.config.bpm;this.musicOffset=3;this.laneCount=this.config.laneCount;
       // Every target is a real melody onset in the MIDI, never a synthetic grid.
       const chosen=[];let last=-10;
-      for(const n of song.melody){if(n.at-last+1e-6<this.config.minGap)continue;chosen.push(n);last=n.at;if(chosen.length>=this.config.notes)break;}
+      for(const n of song.melody){
+        // Leave the final half-second clear so every level ends on the same
+        // 40-second boundary, regardless of the source MIDI length.
+        if(n.at+this.musicOffset>=PERFORMANCE_DURATION-.5)continue;
+        if(n.at-last+1e-6<this.config.minGap)continue;
+        chosen.push(n);last=n.at;if(chosen.length>=this.config.notes)break;
+      }
       this.notes=chosen.map((n,i)=>({id:i,lane:i<this.laneCount?i:(n.pitch+Math.floor(i/this.laneCount)+this.level)%this.laneCount,at:this.musicOffset+n.at,pitch:n.pitch,duration:n.duration,judged:false,sounded:false}));
-      this.duration=this.notes[this.notes.length-1].at+Math.max(2,this.notes[this.notes.length-1].duration);this.emit('rhythm');
+      this.duration=PERFORMANCE_DURATION;this.emit('rhythm');
     }
     hit(lane) {
       if(this.phase!=='playing'||this.mode!=='rhythm'||!Number.isInteger(lane)||lane<0||lane>=this.laneCount||this.clock-this.lastHit<.065)return;

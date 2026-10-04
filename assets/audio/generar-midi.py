@@ -47,12 +47,13 @@ SONGS = [
   '12:.5 23:.5 10:.5 12:.5 17:1.5 23:.5 10:.5 23:.5 22:.5 20:.5 24:.5 10:.5 12:.5 13:.5 10:1 13:1 12:1 23:1 10:2 '
   '23:.5 10:.5 12:.667 10:.667 23:.666 10:.667 22:.667 23:.666 10:2 R:1 22:.5 23:.5 10:1 23:.5 22:.5 23:.667 20:.667 22:.666 23:2'),
  ('cartagenera','Cartagenera',132,4,'Am',
-  # Original instrumental cumbia voicing of the published harmonic progression.
-  # No third-party commercial MIDI or recording is distributed.
-  'A4:.75 C5:.25 E5:.5 C5:.5 B4:.75 G#4:.25 E4:1 A4:.75 C5:.25 E5:.5 D5:.5 C5:.75 B4:.25 A4:1 '
-  'G4:.5 B4:.5 D5:.75 B4:.25 F4:.5 A4:.5 C5:.75 A4:.25 E4:.5 G#4:.5 B4:.75 G#4:.25 A4:2 '
-  'E5:.5 E5:.5 D5:.75 B4:.25 G#4:.5 B4:.5 E5:1 E5:.5 D5:.5 C5:.75 B4:.25 A4:.5 C5:.5 E5:1 '
-  'G5:.5 F5:.5 E5:.75 D5:.25 C5:.5 B4:.5 A4:1 F5:.5 E5:.5 D5:.75 C5:.25 B4:.5 G#4:.5 A4:2'),
+  # A new melody-led arrangement based on the Tuna de Botín reference.
+  # It does not ship the recording or copy its audio; only the musical idea
+  # is represented as an original MIDI arrangement.
+  'A4:.5 B4:.5 C5:.5 D5:.5 E5:1 D5:.5 C5:.5 B4:1 A4:.5 C5:.5 E5:.5 G5:.5 A5:1 G5:.5 E5:.5 D5:1 '
+  'C5:.5 B4:.5 A4:1 R:1 A4:.5 C5:.5 D5:.5 E5:.5 F5:1 E5:.5 D5:.5 C5:1 B4:.5 A4:.5 G#4:1 A4:2 '
+  'E5:.5 F5:.5 G5:.5 A5:.5 G5:1 E5:.5 D5:.5 C5:1 B4:.5 C5:.5 D5:1 E5:2 R:1 '
+  'A4:.5 B4:.5 C5:.5 D5:.5 E5:1 D5:.5 C5:.5 B4:1 A4:2'),
 ]
 
 def vlq(n):
@@ -105,7 +106,7 @@ def build():
             if b%meter==0:back.extend([(b*480,bytes([0x92,chord[0]-12,60])),(b*480+320,bytes([0x82,chord[0]-12,0]))])
         binary=b'MThd'+struct.pack('>IHHH',6,1,3,480)+track(meta)+track(lead)+track(back)
         (outdir/(ident+'.mid')).write_bytes(binary)
-        bank.append(dict(id=ident,title=title,bpm=bpm,meter=meter,file='assets/audio/midi/'+ident+'.mid',bytes=base64.b64encode(binary).decode(),arrangement='acompañamiento de cumbia' if ident=='cartagenera' else 'fragmento melódico instrumental'))
+        bank.append(dict(id=ident,title=title,bpm=bpm,meter=meter,file='assets/audio/midi/'+ident+'.mid',bytes=base64.b64encode(binary).decode(),arrangement='melodía de pasodoble inspirada en Tuna de Botín' if ident=='cartagenera' else 'fragmento melódico instrumental'))
     (ROOT/'src/songs.js').write_text('(function(r){const songs='+json.dumps(bank,ensure_ascii=False,separators=(',',':'))+';if(typeof module!=="undefined"&&module.exports)module.exports=songs;else r.TunaSongs=songs;})(globalThis);\n',encoding='utf-8')
     (ROOT/'assets/audio/partituras.json').write_text(json.dumps(editable,ensure_ascii=False,indent=2),encoding='utf-8')
     print('10 MIDI SMF-1 generados; copia binaria integrada para funcionamiento sin conexión.')

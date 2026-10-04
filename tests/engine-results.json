@@ -4,7 +4,7 @@
   "total": 20,
   "outcomes": [
     {
-      "name": "Ten songs and five canonical characters exist",
+      "name": "Twenty stages and five canonical characters exist",
       "status": "PASS"
     },
     {
@@ -60,7 +60,7 @@
       "status": "PASS"
     },
     {
-      "name": "All ten songs are completed in order in BOTH difficulties",
+      "name": "All twenty songs are completed in order in BOTH difficulties",
       "status": "PASS"
     },
     {

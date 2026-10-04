@@ -87,6 +87,33 @@ def frame_image(source,mask):
     return cut,base,crop,fit,offset
 
 
+def black_cape(image):
+    """Change only the lower cape panels of the canonical bandurria sprite.
+
+    The scarlet beca and shoulder panels remain untouched.  The same canonical
+    image is then reused for every animation row, so the costume cannot drift
+    between idle, walking or performance frames.
+    """
+    if image.mode != 'RGBA':
+        image=image.convert('RGBA')
+    out=image.copy();pixels=out.load();w,h=out.size
+    for y in range(h):
+        for x in range(w):
+            r,g,b,a=pixels[x,y]
+            if not a or not (r>g*1.45 and r>b*1.25):
+                continue
+            # Cape panels start below the waist/arms.  Keep the red shoulder
+            # bib and the small red beca above this boundary.
+            lower=y>=round(h*.44)
+            side=x<=round(w*.39) or x>=round(w*.61)
+            centre=y>=round(h*.50) and round(w*.39)<x<round(w*.61)
+            if lower and (side or centre):
+                luminance=max(0,min(1,(r+g+b)/765))
+                shade=round(18+luminance*22)
+                pixels[x,y]=(shade,shade+2,shade+8,a)
+    return out
+
+
 def legs(source_size,crop,fit,offset,rectangles,base):
     result=[]
     for rect in rectangles:
@@ -136,6 +163,8 @@ def build():
         original=ROOT/'referencias'/f'image-{number}.png';source=Image.open(original).convert('RGBA')
         mask=selection(ident,source);mask.save(ROOT/'mascaras'/(ident+'.png'))
         cut,base,crop,fit,offset=frame_image(source,mask)
+        if ident=='bandurria':
+            base=black_cape(base)
         cut.save(ROOT/'recortes'/(ident+'.png'),optimize=True)
         encoded=base64.b64encode(png_bytes(base)).decode('ascii')
         svg=f'<svg xmlns="http://www.w3.org/2000/svg" width="192" height="320" viewBox="0 0 192 320" preserveAspectRatio="xMidYMax meet"><image width="192" height="320" href="data:image/png;base64,{encoded}"/></svg>'

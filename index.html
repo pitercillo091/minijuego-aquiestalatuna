@@ -4,7 +4,7 @@
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#201b29"><meta name="description" content="Una ronda más: la aventura musical de la Rondalla de Lopera. Prepara al grupo, recorre la plaza y toca a compás.">
   <title>Una ronda más · Rondalla de Lopera</title>
-  <link rel="icon" href="assets/ui/escudo.webp"><link rel="stylesheet" href="css/game.css?v=2">
+  <link rel="icon" href="assets/ui/escudo.webp"><link rel="stylesheet" href="css/game.css?v=3">
 </head>
 <body>
   <div class="page">
@@ -24,7 +24,7 @@
 
         <div class="music-strip"><button id="music-now" class="text-button" aria-label="Activar y ver la música actual">♫ Activa la música</button><button id="next-song" class="text-button" aria-label="Cambiar canción del menú">Otra canción ↻</button><span>REPERTORIO DE TUNA · MIDI</span></div><div class="below-hero"><p><span class="gold">♪</span> Una capa, una beca roja y una noche por delante.</p><button id="how-open" class="text-button">Cómo se juega <span>↗</span></button></div>
         <section class="cast-section"><div class="section-heading"><div><p class="eyebrow">LA CUADRILLA</p><h2>Elige quién lleva el compás</h2></div><span class="muted">Todos comparten la misma aventura.</span></div><div id="characters" class="characters"></div></section>
-        <section class="route-section"><div class="section-heading"><div><p class="eyebrow">DE ENSAYO EN ENSAYO, DE PLAZA EN PLAZA</p><h2>Diez canciones para una gran ronda</h2></div><label class="difficulty"><input id="easy" type="checkbox" checked> Ritmo tranquilo</label></div><div id="levels" class="levels"></div></section>
+        <section class="route-section"><div class="section-heading"><div><p class="eyebrow">DE ENSAYO EN ENSAYO, DE PLAZA EN PLAZA</p><h2>Veinte etapas para una gran ronda</h2></div><label class="difficulty"><input id="easy" type="checkbox" checked> Ritmo tranquilo</label></div><div id="levels" class="levels"></div></section>
         <div class="photo-footer"><img src="assets/referencias/grupo.webp" alt="Fotografía original de los músicos de la Tuna"><div><p class="eyebrow">INSPIRADO EN LOS NUESTROS</p><p>Los mismos colores.<br>Una nueva forma de salir de ronda.</p><button id="credits-open" class="text-button">Personajes, fotos y créditos ↗</button></div></div>
       </section>
 
@@ -43,6 +43,6 @@
   <dialog id="settings"><div class="dialog-head"><p class="eyebrow">A TU GUSTO</p><button class="close" data-close="settings" aria-label="Cerrar ajustes">×</button></div><h2>El sonido de la ronda</h2><p class="muted">La música se activa al empezar. Puedes tocar también en silencio.</p><label class="setting-row">Repertorio MIDI <input id="music" type="checkbox" checked></label><label class="setting-row">Efectos de juego <input id="effects" type="checkbox" checked></label><label class="volume-row">Volumen <input id="volume" type="range" min="0" max="100" value="45"><output id="volume-value">45%</output></label><button class="button primary full" id="test-sound">Probar sonido ♪</button><p id="audio-status" class="small muted"></p><p id="storage-status" class="small muted"></p></dialog>
   <div id="live-status" class="sr-only" role="status" aria-live="polite"></div>
   <noscript><div class="noscript">Activa JavaScript en tu navegador para jugar a Una ronda más.</div></noscript>
-  <script src="src/songs.js?v=2"></script><script src="src/midi.js?v=2"></script><script src="src/data.js?v=2"></script><script src="src/engine.js?v=2"></script><script src="src/audio.js?v=2"></script><script src="src/art.js?v=2"></script><script src="src/game.js?v=2"></script>
+  <script src="src/songs.js?v=3"></script><script src="src/midi.js?v=3"></script><script src="src/data.js?v=3"></script><script src="src/engine.js?v=3"></script><script src="src/audio.js?v=3"></script><script src="src/art.js?v=3"></script><script src="src/game.js?v=3"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
   const D=root.TunaData;
   class Art {
     constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.images={};this.backgrounds={};this.particles=[];this.time=0;
-      D.characters.forEach(c=>{this.load(c.id,`assets/personajes/${c.id}.svg?v=2`);this.load(c.id+'-atlas',`assets/personajes/${c.id}-atlas.png?v=2`);});this.load('escudo','assets/ui/escudo.webp');
+      D.characters.forEach(c=>{this.load(c.id,`assets/personajes/${c.id}.svg?v=3`);this.load(c.id+'-atlas',`assets/personajes/${c.id}-atlas.png?v=3`);});this.load('escudo','assets/ui/escudo.webp');
     }
     load(id,src){const im=new Image();im.onload=()=>{this.images[id]=im;if(id==='escudo')this.backgrounds={};};im.onerror=()=>{this.images[id]=null;};im.src=src;}
     resize(){const dpr=Math.min(2,root.devicePixelRatio||1);if(this.canvas.width!==960*dpr){this.canvas.width=960*dpr;this.canvas.height=540*dpr;}this.ctx.setTransform(dpr,0,0,dpr,0,0);}
