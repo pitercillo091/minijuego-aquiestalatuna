@@ -21,7 +21,7 @@
     ['Lopera · La gran actuación','finale','grupo',85,4,['pandereta','guitarra','bandurria','guitarra-gafas','laud'],'Reúne a los cinco músicos para el gran final.','Última canción. Lo de irnos después lo hablamos después.','Veinte etapas. Cinco músicos. Y el público sigue pidiendo otra.']
   ];
   const counts=[2,2,3,3,4,4,5,5,6,6],targets=[18,24,30,36,42,47,54,60,66,71],gaps=[.76,.708,.656,.42,.552,.5,.448,.2,.23,.39];
-  const firstRound=songs.map((s,i)=>{const [place,theme,photo,time,hazards,items,goal,intro,after]=settings[i];return {id:i,round:1,song:s.id,title:s.title,short:s.title,place,theme,photo,time,hazards,items,goal,intro,after,bpm:s.bpm,notes:targets[i],laneCount:counts[i],minGap:gaps[i],scrollSpeed:140+i*7,threshold:.5+Math.floor(i/2)*.025};});
+  const firstRound=songs.map((s,i)=>{const [place,theme,photo,_time,hazards,items,goal,intro,after]=settings[i];const time=30;return {id:i,round:1,song:s.id,title:s.title,short:s.title,place,theme,photo,time,hazards,items,goal,intro,after,bpm:s.bpm,notes:targets[i],laneCount:counts[i],minGap:gaps[i],scrollSpeed:140+i*7,threshold:.5+Math.floor(i/2)*.025};});
   const secondTargets=[42,48,54,48,66,71,78,78,90,96];
   const secondRound=firstRound.map((level,i)=>({...level,id:i+10,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:secondTargets[i],laneCount:Math.min(6,level.laneCount+1),minGap:.2,scrollSpeed:level.scrollSpeed+24,threshold:Math.min(.9,level.threshold+.045)}));
   const levels=[...firstRound,...secondRound];

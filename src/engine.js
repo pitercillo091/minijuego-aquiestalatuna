@@ -60,16 +60,39 @@
     startRhythm() {
       this.mode='rhythm';this.clock=0;this.combo=0;this.lastHit=-10;this.health=Math.max(this.health,75);this.path=[];
       const song=Music.get(this.config.song);this.beat=60/this.config.bpm;this.musicOffset=3;this.laneCount=this.config.laneCount;
-      // Every target is a real melody onset in the MIDI, never a synthetic grid.
-      const chosen=[];let last=-10;
-      for(const n of song.melody){
-        // Leave the final half-second clear so every level ends on the same
-        // 40-second boundary, regardless of the source MIDI length.
-        if(n.at+this.musicOffset>=PERFORMANCE_DURATION-.5)continue;
-        if(n.at-last+1e-6<this.config.minGap)continue;
-        chosen.push(n);last=n.at;if(chosen.length>=this.config.notes)break;
+      // Build a repeating phrase from the real MIDI melody. Some source files
+      // end before the fixed 40-second performance, so the phrase is repeated
+      // at its musical span instead of leaving an empty final section.
+      const trimBefore=song.trimBefore||0;const source=song.melody.filter(n=>n.at>=trimBefore).map(n=>({...n,at:n.at-trimBefore})).sort((a,b)=>a.at-b.at), firstAt=source[0]?.at||0;
+      const lastAt=source[source.length-1]?.at||firstAt, span=Math.max(this.beat*4,lastAt-firstAt);
+      const candidates=[];
+      for(let cycle=0;cycle<32;cycle++){
+        for(const n of source){
+          const rel=n.at-firstAt+cycle*span, at=this.musicOffset+rel;
+          if(at>=PERFORMANCE_DURATION-.45)continue;
+          if(at>=this.musicOffset-.01)candidates.push({...n,rel,at});
+        }
+        if(this.musicOffset+cycle*span>=PERFORMANCE_DURATION)break;
       }
-      this.notes=chosen.map((n,i)=>({id:i,lane:i<this.laneCount?i:(n.pitch+Math.floor(i/this.laneCount)+this.level)%this.laneCount,at:this.musicOffset+n.at,pitch:n.pitch,duration:n.duration,judged:false,sounded:false}));
+      // Keep each phrase's rhythm while applying the level's density rule.
+      const filtered=[];let last=-Infinity;
+      for(const n of candidates){if(n.at-last+1e-6<this.config.minGap)continue;filtered.push(n);last=n.at;}
+      const chosen=[];
+      if(filtered.length>=this.config.notes){
+        for(let i=0;i<this.config.notes;i++){const index=Math.min(filtered.length-1,Math.round(i*(filtered.length-1)/Math.max(1,this.config.notes-1)));chosen.push(filtered[index]);}
+      }else{
+        // Dense arrangements can still have too few distinct onsets after the
+        // level gap is applied. Spread the requested notes over the full
+        // window and inherit pitch/duration from the nearest real phrase onset.
+        const pool=candidates.length?candidates:source;const spanEnd=PERFORMANCE_DURATION-.55;
+        for(let i=0;i<this.config.notes;i++){
+          const at=this.musicOffset+(spanEnd-this.musicOffset)*i/Math.max(1,this.config.notes-1);
+          const base=pool.reduce((best,n)=>Math.abs((n.at??(this.musicOffset+n.rel))-at)<Math.abs((best.at??(this.musicOffset+best.rel))-at)?n:best,pool[0]);
+          chosen.push({...base,at});
+        }
+      }
+      chosen.sort((a,b)=>a.at-b.at);
+      this.notes=chosen.map((n,i)=>({id:i,lane:i<this.laneCount?i:(n.pitch+Math.floor(i/this.laneCount)+this.level)%this.laneCount,at:n.at??(this.musicOffset+n.rel),pitch:n.pitch,duration:n.duration,judged:false,sounded:false}));
       this.duration=PERFORMANCE_DURATION;this.emit('rhythm');
     }
     hit(lane) {

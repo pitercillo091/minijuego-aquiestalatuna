@@ -59,6 +59,9 @@
       this.ellipse(839,298,93,15,'#85adff18');this.ellipse(132,278,100,14,'#ffd49113');
     }
     background(theme){if(!this.backgrounds[theme]){const back=document.createElement('canvas');back.width=960;back.height=540;const original=this.ctx;this.ctx=back.getContext('2d');this.scene(theme);this.ctx=original;this.backgrounds[theme]=back;}this.ctx.drawImage(this.backgrounds[theme],0,0);}
+    carIcon(x,y){
+      const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));c.fillStyle='#e8bd7e';c.strokeStyle='#342333';c.lineWidth=2;c.beginPath();c.roundRect(-17,-8,34,13,4);c.fill();c.stroke();c.beginPath();c.moveTo(-10,-8);c.lineTo(-5,-16);c.lineTo(9,-16);c.lineTo(14,-8);c.closePath();c.fill();c.stroke();c.fillStyle='#a7c8dc';c.fillRect(-3,-13,9,5);c.fillStyle='#342333';c.beginPath();c.arc(-10,6,4,0,Math.PI*2);c.arc(10,6,4,0,Math.PI*2);c.fill();c.restore();
+    }
     character(id,x,y,scale=1,mode='idle',face=1){
       const c=this.ctx,bob=mode==='walk'?Math.round(Math.sin(this.time*14))*2:mode==='victory'?Math.round(Math.abs(Math.sin(this.time*5))*-12):0;
       this.ellipse(x,y+2,23*scale,7*scale,'#14182955');c.save();c.translate(Math.round(x),Math.round(y+bob));c.scale(scale,scale);c.imageSmoothingEnabled=false;
@@ -85,10 +88,10 @@
         game.hazards.forEach(h=>{this.ellipse(h.x,h.y,27,13,'#223849bb');this.ellipse(h.x-3,h.y-3,18,6,'#76a4b266');this.line([[h.x-12,h.y],[h.x+4,h.y-3]],'#acceda88',1);});
         const ready=game.items.every(i=>i.collected);this.ellipse(game.stage.x,game.stage.y+43,54,13,ready?'#f3c06d55':'#281e3222');this.text(ready?'♪ ¡A TOCAR!':'EL ESCENARIO',game.stage.x,190,12,ready?'#ffdb8f':'#e9c7a0');
         if(game.path.length){c.setLineDash([3,8]);this.line([[game.player.x,game.player.y],...game.path.map(p=>[p.x,p.y])],'#f6da9588',2);c.setLineDash([]);}
-        if(!(game.invulnerable>0&&Math.floor(this.time*12)%2===0))this.character(game.character,game.player.x,game.player.y,.62,game.player.moving?'walk':'idle',game.player.face);
+        if(!(game.invulnerable>0&&Math.floor(this.time*12)%2===0))this.character(game.collectorCharacter||game.character,game.player.x,game.player.y,.62,game.player.moving?'walk':'idle',game.player.face);this.carIcon(game.player.x,game.player.y-94);
         if(game.level===0&&game.items.every(i=>!i.collected)){this.text('Recoge los instrumentos iluminados',480,529,14,'#ffdfaa');}
       }else{
-        c.fillStyle='#14182580';c.fillRect(0,0,960,540);D.characters.forEach((ch,i)=>this.character(ch.id,92+i*60,237,.7,'playing'));
+        c.fillStyle='#14182580';c.fillRect(0,0,960,540);D.characters.forEach((ch,i)=>this.character(ch.id,82+i*66,266,.9,'playing'));
         this.rect(57,257,316,110,'#201c2bbf',12);this.text(game.config.place.split(' · ')[0].toUpperCase(),215,283,12,'#dcaf77');this.text('¡Que siga la ronda!',215,316,22,'#f0dfc4');this.text(`${game.hits} notas a compás · combo ${game.combo}`,215,344,14,'#baadbc');
         const left=427,width=456,lane=width/game.laneCount,top=38,hitY=443,speed=game.config.scrollSpeed;
         this.rect(left-13,top-12,width+26,472,'#171926e8',15);

@@ -21,7 +21,7 @@
       this.lastRandom=this.bag.splice(index,1)[0];this.settings.lastSong=this.lastRandom;return this.lastRandom;
     }
     select(id,{loop=false,offset=0,context='performance',end=null}={}){
-      this.stop();this.track=root.TunaMusic.get(id);this.loop=loop;this.offset=offset;this.context=context;this.end=end;this.sequence++;this.cursor=0;this.cycle=0;this.anchor=null;this.title=this.track.title;this.lastRandom=id;this.settings.lastSong=id;
+      this.stop();this.track=root.TunaMusic.get(id);this.loop=loop;this.offset=offset;this.trim=this.track.trimBefore||0;this.context=context;this.end=end;this.sequence++;this.cursor=0;this.cycle=0;this.anchor=null;this.title=this.track.title;this.lastRandom=id;this.settings.lastSong=id;
     }
     ambient(context){this.select(this.random(),{loop:true,context});}
     update(game){
@@ -32,15 +32,15 @@
       if(clock!==null&&clock<-.08){this.anchor=null;return;}
       // Recover after a delayed frame: re-anchor to the same game position.
       if(clock!==null&&this.anchor!==null&&Math.abs(this.ctx.currentTime-this.anchor-clock)>.12)this.stop();
-      if(this.anchor===null){const pos=Math.max(0,clock||0);this.anchor=this.ctx.currentTime-pos;this.cursor=this.track.notes.findIndex(n=>n.at>=pos-.04);if(this.cursor<0)this.cursor=this.track.notes.length;}
+      if(this.anchor===null){const pos=Math.max(0,clock||0);this.anchor=this.ctx.currentTime-pos;this.cursor=this.track.notes.findIndex(n=>n.at>=this.trim+pos-.04);if(this.cursor<0)this.cursor=this.track.notes.length;}
       const current=this.ctx.currentTime-this.anchor,horizon=current+.1;
-      const duration=this.track.duration+.35;
-      while(this.cursor<this.track.notes.length){const n=this.track.notes[this.cursor],at=n.at+this.cycle*duration;if(at>horizon)break;this.cursor++;if(at<current-.08||this.end!==null&&at>this.end)continue;
-        const lead=n.channel===0,bass=n.channel===2;const gain=(lead?.48:bass?.17:.075)*(n.velocity/100);
+      const duration=Math.max(.35,this.track.duration-this.trim+.35);
+      while(this.cursor<this.track.notes.length){const n=this.track.notes[this.cursor],at=n.at-this.trim+this.cycle*duration;if(at>horizon)break;this.cursor++;if(at<current-.08||this.end!==null&&at>this.end)continue;
+        const lead=n.channel===(this.track.melodyChannel??0),bass=n.channel===2;const gain=(lead?.48:bass?.17:.075)*(n.velocity/100);
         this.tone(440*2**((n.pitch-69)/12),Math.min(n.duration,lead?1.1:.45),at-current,lead?'triangle':bass?'sine':'triangle',gain);
       }
-      if(this.loop&&current>duration*(this.cycle+1)){this.cycle++;this.cursor=0;}
-      if(this.loop&&this.cycle>=1){const context=this.context;this.ambient(context);}
+      if(this.loop&&current>duration*(this.cycle+1)){this.cycle++;this.cursor=this.track.notes.findIndex(n=>n.at>=this.trim-.04);if(this.cursor<0)this.cursor=this.track.notes.length;}
+      if(this.loop&&this.cycle>=1&&this.context!=='performance'){const context=this.context;this.ambient(context);}
     }
     stop(){this.nodes.forEach(o=>{try{o.stop();}catch{}});this.nodes.clear();this.anchor=null;}
   }

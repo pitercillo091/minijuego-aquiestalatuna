@@ -8,7 +8,7 @@ Diez etapas completadas hasta la victoria final. Se conservan las funciones ante
 | --- | --- |
 | Motor | 20/20; campaña de veinte etapas en ambas dificultades; `tests/engine-results.json` |
 | MIDI, audio y migración | 21 comprobaciones; diez SMF válidos, copias integradas idénticas, ataques sincronizados, bolsa de diez canciones, 1000 transiciones sin repetición inmediata, vuelta de actuación, pausa y preferencias; `tests/audio.test.cjs` |
-| Integración real en navegador | 101 comprobaciones correctas, 0 fallos; `tests/browser-results.txt` |
+| Integración real en navegador | 181 comprobaciones correctas, 0 fallos; `tests/browser-results.txt` |
 | Música real | AudioContext activo y señal RMS medida para las diez canciones: 13/13; `tests/music-browser-results.txt` |
 | Ausencia de todos los MIDI | Se simula un fallo de carga sin retirar los archivos originales; las diez copias integradas producen audio: 13/13; `tests/midi-fallback-results.txt` |
 | Personajes | Cinco identidades distintas y rostros idénticos en los 80 fotogramas; PNG con dimensiones y CRC válidos; `tests/personajes.test.py` |
@@ -25,7 +25,7 @@ Diez etapas completadas hasta la victoria final. Se conservan las funciones ante
 
 La integración carga el juego real en un iframe con guardado en memoria. Acciona sus botones, envía teclas y eventos de los botones musicales, comprueba rutas y colisiones y recorre las veinte etapas con pasos pequeños del reloj. Usa el controlador, HUD, diálogos y renderer de producción. Se silencian las actuaciones durante la simulación acelerada, después de verificar la activación del audio; el sonido se comprueba por separado en tiempo real.
 
-Resultado: victoria con 100% de aciertos en las diez etapas, combo final 72 y 89.324 puntos de ronda. Se cargaron los cinco atlas PNG en el renderer. Esta ejecución determinista comprueba la integración y la lógica; no sustituye la valoración de la curva por jugadores reales.
+Resultado: victoria con 100% de aciertos en las veinte etapas, combo final 96 y 203.708 puntos de ronda. Se cargaron los cinco atlas PNG en el renderer. Esta ejecución determinista comprueba la integración y la lógica; no sustituye la valoración de la curva por jugadores reales.
 
 Como comprobación complementaria, en la partida normal se cambió la canción del menú, se recogieron los tres instrumentos de Clavelitos por rutas reales, se entró al escenario, se dejó terminar la actuación sin aciertos para provocar derrota, se reinició y se verificaron pausa y reanudación. El progreso anterior sigue visible tras recargar. No se ha afirmado que se jugasen manualmente las veinte etapas con 100% de aciertos.
 

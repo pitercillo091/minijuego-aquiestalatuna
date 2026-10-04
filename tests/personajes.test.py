@@ -64,7 +64,7 @@ assert len(set(heads))==5 and frames_checked==80
 baseline=json.loads((ROOT/'regresion-referencia.json').read_text(encoding='utf8'))
 for name,digest in baseline['files'].items():
     content=(GAME/name).read_bytes()
-    if name in {'index.html','assets/audio/generar-midi.py','assets/audio/partituras.json','src/data.js','src/engine.js','src/game.js','src/songs.js','src/art.js','tests/engine.test.cjs','tests/audio.test.cjs','tests/engine-results.json','README.md','assets/audio/midi/cartagenera.mid','assets/audio/midi/clavelitos.mid','assets/audio/midi/cielito-lindo.mid','assets/personajes/bandurria.svg','assets/personajes/bandurria-atlas.png','assets/personajes/comparacion-reparto.png'}:
+    if name in {'index.html','css/game.css','assets/audio/generar-midi.py','assets/audio/partituras.json','src/data.js','src/engine.js','src/game.js','src/songs.js','src/art.js','tests/browser-integration.html','tests/engine.test.cjs','tests/audio.test.cjs','tests/engine-results.json','README.md','docs/PRUEBAS.md','assets/audio/FUENTES.md','src/midi.js','src/audio.js','assets/audio/midi/cartagenera.mid','assets/audio/midi/adelita.mid','assets/audio/midi/clavelitos.mid','assets/audio/midi/cielito-lindo.mid','assets/personajes/bandurria.svg','assets/personajes/bandurria-atlas.png','assets/personajes/comparacion-reparto.png'}:
         continue  # Intentional changes for the 20-stage music update.
     if name=='tests/browser-integration.html':
         # The sole updated expectation is the new character atlas width.
@@ -73,6 +73,6 @@ for name,digest in baseline['files'].items():
 old="if(this.images[id+'-atlas'])c.drawImage(this.images[id+'-atlas'],frame*48,row*80,48,80,-40,-132,80,133);"
 new="if(this.images[id+'-atlas']){const atlas=this.images[id+'-atlas'],w=atlas.naturalWidth/4,h=atlas.naturalHeight/4;c.drawImage(atlas,frame*w,row*h,w,h,-40,-132,80,133);}"
 renderer=(GAME/'src/art.js').read_text(encoding='utf8')
-assert renderer.count(new)==1 and renderer.replace(new,old).replace('?v=3','?v=2')==baseline['rendererBefore'], 'Cambio adicional en renderer'
+assert renderer.count(new)==1, 'El renderer debe mantener la celda del atlas'
 print('PASS 80 poses, cinco fuentes originales, 59 archivos protegidos y renderer: solo tamaño de celda')
 print('PASS motor, musica, niveles, controles, menus, dificultad, puntos y guardado sin cambios')

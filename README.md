@@ -30,6 +30,7 @@ Pulsa cuando la nota llegue a la línea dorada. Los aciertos iluminan el botón 
 ## Las veinte etapas musicales
 
 Las etapas 1–10 usan el repertorio base. Las etapas 11–20 repiten las mismas canciones en una segunda ronda: conservan el tempo musical, añaden teclas cuando corresponde y aumentan la densidad de notas. La actuación de cada etapa termina exactamente a los 40 segundos.
+La preparación para recoger el equipo dura 30 segundos. El músico encargado rota entre los cinco diseños y lleva un pequeño icono de coche sobre la cabeza.
 
 | Etapa | Canción | Lugar y preparación | Teclas | Notas | BPM | Aciertos mínimos |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -44,7 +45,7 @@ Las etapas 1–10 usan el repertorio base. Las etapas 11–20 repiten las mismas
 | 9 | María la Portuguesa | Lopera: partitura y equipo | A S W D J K | 66 | 128 | 60% |
 | 10 | Cartagenera | Lopera: los cinco músicos | A S W D J K | 72 | 132 | 60% |
 
-El porcentaje mostrado redondea los umbrales internos de 52,5% y 57,5%. Completar una etapa desbloquea la siguiente. Cada nueva tecla se presenta en las instrucciones y aparece entre las primeras notas. La segunda ronda aumenta la densidad y la velocidad visual sin acelerar artificialmente las canciones; disminuye la separación mínima entre ataques elegibles. Se introducen notas a contratiempo y patrones derivados de las alturas del MIDI. Los charcos crecen de cero a cuatro y la preparación pasa de 105 a 85 segundos.
+El porcentaje mostrado redondea los umbrales internos de 52,5% y 57,5%. Completar una etapa desbloquea la siguiente. Cada nueva tecla se presenta en las instrucciones y aparece entre las primeras notas. La segunda ronda aumenta la densidad y la velocidad visual sin acelerar artificialmente las canciones; disminuye la separación mínima entre ataques elegibles. Se introducen notas a contratiempo y patrones derivados de las alturas del MIDI. Los charcos crecen de cero a cuatro y la preparación dura 30 segundos en todas las etapas.
 
 «Ritmo tranquilo» da un margen de ±230 ms, perfecto ±110 ms, daño de charco −12 y nota perdida −3,5. Normal: ±160 ms, perfecto ±75 ms, charco −18 y nota perdida −5. Al empezar la actuación se recupera el ánimo hasta un mínimo de 75. Espacio permite disfrutar del ritmo sin memorizar seis teclas.
 
@@ -85,11 +86,11 @@ Los fondos se dibujan una vez y se guardan en caché. El grupo, los ojos, instru
 
 ## Música: organización y edición
 
-Cada MIDI tiene tres pistas: metadatos de tempo/compás, voz principal y acompañamiento de guitarra/bajo. Son arreglos instrumentales propios, no grabaciones. Clavelitos está a 108 BPM y Cielito Lindo a 112 BPM, ajustados a una interpretación de tuna fluida. Cartagenera se ha sustituido por una melodía original de carácter pasodoble inspirada en la referencia de Tuna de Botín; no se distribuye su grabación. La isa toma un fragmento del popurrí de isas canarias, pues existen variantes tradicionales.
+El lector acepta MIDI formato 0 y 1 y elige automáticamente el canal melódico principal; no exige que todos los archivos tengan tres pistas. Clavelitos y Cartagenera usan ahora los archivos públicos indicados en EKE y BitMidi; Adelita usa el MIDI de EKE ignorando sus primeros 18 segundos. Las actuaciones repiten la frase melódica cuando el archivo termina antes de 40 segundos y distribuyen las notas faltantes sin agruparlas.
 
 Las fuentes, cambios y atribuciones están en `assets/audio/FUENTES.md` y en créditos. La licencia de los arreglos de Tablatunas no concede por sí misma derechos sobre las composiciones. La publicación de los temas protegidos requiere comprobar los permisos que cubren el repertorio del grupo; esta revisión no acredita tales permisos. No se distribuyen PDFs ajenos ni grabaciones comerciales.
 
-En menú y recogida se usa una bolsa aleatoria: los diez temas únicos se barajan antes de comenzar otro ciclo y se evita repetir el tema que acaba de sonar. «Otra canción» cambia el tema del menú. En la actuación se elige exactamente el MIDI del nivel. Cada objetivo jugable coincide con un ataque de la pista principal; la segunda ronda selecciona muchos más ataques. Música y objetivos comparten el reloj, con tres segundos iniciales de preparación y un límite fijo de 40 segundos. Pausar detiene las voces; reanudar ancla el MIDI en la misma posición de la actuación. En la recogida, la música ambiental se reinicia al reanudar.
+En menú y recogida se usa una bolsa aleatoria: los diez temas únicos se barajan antes de comenzar otro ciclo y se evita repetir el tema que acaba de sonar. «Otra canción» cambia el tema del menú. En la actuación se elige exactamente el MIDI del nivel. Cada objetivo jugable coincide con un ataque de la pista principal; la segunda ronda selecciona muchos más ataques. Música y objetivos comparten el reloj, con tres segundos iniciales de preparación y un límite fijo de 40 segundos. Las notas cubren también los segundos 35–40. Pausar detiene las voces; reanudar ancla el MIDI en la misma posición de la actuación. En la recogida, la música ambiental se reinicia al reanudar.
 
 El lector admite SMF 0/1, PPQN, cambios de tempo y running status. Si falta un archivo, es inválido o tarda demasiado, usa los mismos bytes integrados en `songs.js`. Con `file://` se usa directamente esa copia. El juego sigue funcionando sin Web Audio. Imágenes secundarias ausentes tienen alternativas.
 
@@ -98,7 +99,7 @@ Para editar una canción:
 1. Cambia su entrada en `assets/audio/partituras.json`. `phrase` contiene notas `G4:1` (una negra), `G#4:.5` (corchea), `R:1` (silencio) o TAB `20:.5` (segunda cuerda, traste 0). La afinación de referencia está en el generador.
 2. Ejecuta `python assets/audio/generar-midi.py` desde JUEGO. Regenera los `.mid` y su copia integrada, sin instalar librerías.
 3. Ajusta las pistas de acompañamiento en el generador si necesitas otra armonía. Cambia los timbres, envolventes y efectos en `src/audio.js`.
-4. Comprueba los ataques, cantidad de objetivos, duración y permisos. Para importar otro MIDI, exporta los bytes en el catálogo y usa canal 0 para la voz que genera objetivos. No basta con sustituir el `.mid`: actualiza también su respaldo.
+4. Comprueba los ataques, cantidad de objetivos, duración y permisos. Para importar otro MIDI, exporta los bytes en el catálogo y deja que el lector detecte el canal melódico principal; `trimBefore` permite empezar un MIDI desde un punto concreto. No basta con sustituir el `.mid`: actualiza también su respaldo.
 
 ## Personajes y escenarios
 

@@ -8,6 +8,7 @@ from pathlib import Path
 import json, struct, base64
 
 ROOT = Path(__file__).resolve().parents[2]
+EXTERNAL_IDS = {'clavelitos','adelita','cartagenera'}
 TUNING = [81, 76, 71, 66, 61, 56]
 SONGS = [
  ('clavelitos','Clavelitos',92,3,'Am',
@@ -81,6 +82,11 @@ def build():
     editable=json.loads(editable_path.read_text(encoding='utf-8-sig')) if editable_path.exists() else [dict(zip(['id','title','bpm','meter','key','phrase'],s)) for s in SONGS]
     for entry in editable:
         ident,title,bpm,meter,key,phrase=[entry[k] for k in ['id','title','bpm','meter','key','phrase']]
+        external=outdir/(ident+'.mid')
+        if ident in EXTERNAL_IDS and external.exists():
+            binary=external.read_bytes()
+            bank.append(dict(id=ident,title=title,bpm=bpm,meter=meter,file='assets/audio/midi/'+ident+'.mid',bytes=base64.b64encode(binary).decode(),trimBefore=entry.get('trimBefore',0),source=entry.get('source','MIDI de referencia externa'),arrangement='MIDI de referencia externa'))
+            continue
         raw=[];beat=0
         for token in phrase.split():
             n,d=token.split(':');d=float(d);p=pitch(n)

@@ -31,7 +31,12 @@
     for(const list of active.values())for(const start of list)notes.push({...start,at:seconds(start.tick),duration:.2});
     notes.sort((a,b)=>a.at-b.at||a.channel-b.channel);
     if(!notes.length)throw Error('MIDI sin notas');
-    return {notes,melody:notes.filter(n=>n.channel===0),duration:Math.max(seconds(endTick),...notes.map(n=>n.at+n.duration)),division,format,tracks};
+    // External MIDI files often put the lead on channel 1+ (or use format 0),
+    // so channel 0 cannot be the only melody convention. Choose the densest
+    // melodic channel and keep it in the parsed result for Web Audio as well.
+    const byChannel=new Map();for(const n of notes){if(n.channel===9)continue;const list=byChannel.get(n.channel)||[];list.push(n);byChannel.set(n.channel,list);}
+    const melodyChannel=[...byChannel.entries()].sort((a,b)=>b[1].length-a[1].length)[0]?.[0]??0;
+    return {notes,melody:notes.filter(n=>n.channel===melodyChannel),melodyChannel,duration:Math.max(seconds(endTick),...notes.map(n=>n.at+n.duration)),division,format,tracks};
   }
   function decode(s){if(typeof Buffer!=='undefined')return new Uint8Array(Buffer.from(s,'base64'));return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
   const songs=typeof module!=='undefined'&&module.exports?require('./songs.js'):root.TunaSongs;
