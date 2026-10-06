@@ -22,7 +22,7 @@ class Context {
 (async()=>{
  const scope={AudioContext:Context,TunaMusic:Music,TunaSongs:Songs};vm.createContext(scope);vm.runInContext(fs.readFileSync(path.join(__dirname,'../src/audio.js'),'utf8'),scope);
  const settings={music:true,effects:true,volume:.5},bus=new scope.TunaAudio(settings);await bus.unlock();assert.equal(bus.ctx.state,'running');
- test('Cadena de mezcla única con buses y protección de nivel',()=>{assert.ok(bus.musicGain&&bus.effectsGain&&bus.uiGain);assert.ok(bus.compressor&&bus.limiter);assert.ok(bus.calibratedMaster()>.28&&bus.calibratedMaster()<.85);});
+ test('Cadena de mezcla única con buses y protección de nivel',()=>{assert.ok(bus.musicGain&&bus.effectsGain&&bus.uiGain);assert.ok(bus.compressor&&bus.limiter);assert.ok(bus.calibratedMaster()>.28&&bus.calibratedMaster()<.85);settings.volume=0;assert.equal(bus.calibratedMaster(),0);settings.volume=.5;});
  test('Rotación cubre diez canciones y evita repetición inmediata en 1000 cambios',()=>{let last=null;for(let i=0;i<100;i++){const cycle=[];for(let j=0;j<10;j++){const id=bus.random();assert.notEqual(id,last);last=id;cycle.push(id);}assert.equal(new Set(cycle).size,10);}});
  test('Menú y recogida escogen temas diferentes y mantienen las preferencias',()=>{bus.ambient('menu');const first=bus.track.id;bus.ambient('explore');assert.notEqual(bus.track.id,first);assert.equal(settings.lastSong,bus.track.id);});
  test('Volver de la actuación evita repetición incluso al acabar la bolsa',()=>{bus.bag=['clavelitos'];bus.select('clavelitos');bus.ambient('menu');assert.notEqual(bus.track.id,'clavelitos');});

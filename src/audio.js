@@ -18,7 +18,7 @@
   const ramp=(p,m,v,t)=>{if(p&&typeof p[m]==='function')p[m](v,t);else if(p)p.value=v};
   class AudioBus{
     constructor(settings){this.settings=settings;this.ctx=null;this.available=true;this.nodes=new Set;this.bag=[];this.lastRandom=settings.lastSong||null;this.track=null;this.sequence=0;this.cursor=0;this.cycle=0;this.chainReady=false}
-    calibratedMaster(){return .84*Math.pow(clamp(this.settings.volume,.45),.72)}
+    calibratedMaster(){const value=clamp(this.settings.volume);return value===0?0:.84*Math.pow(value,.72)}
     makeChain(){
       if(this.chainReady)return;
       this.master=this.ctx.createGain();this.musicGain=this.ctx.createGain();this.effectsGain=this.ctx.createGain();this.uiGain=this.ctx.createGain();
