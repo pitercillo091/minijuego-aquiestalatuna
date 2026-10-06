@@ -7,7 +7,7 @@ for(const song of Songs)test('MIDI válido y copia integrada idéntica: '+song.t
  const a=Music.parse(binary);assert.ok(a.format===0||a.format===1);assert.ok(a.tracks>=1);assert.ok(a.melody.length>=60);assert.ok(a.notes.every(n=>Number.isFinite(n.at)&&n.duration>0&&n.pitch>=0&&n.pitch<=127));assert.ok(a.duration>25);
 });
 test('Parser rechaza recursos incompletos y cabeceras inválidas',()=>{assert.throws(()=>Music.parse(new Uint8Array()));for(const s of Songs){assert.throws(()=>Music.parse(Music.decode(s.bytes).slice(0,35)));}});
-test('Todos los objetivos musicales coinciden con ataques del MIDI',()=>{for(const l of D.levels){const g=new E.Game();g.start(l.id);g.begin();g.startRhythm();assert.equal(g.notes.length,l.notes);const melody=Music.get(l.song).melody;assert.ok(g.notes.every(n=>melody.some(m=>m.pitch===n.pitch)));assert.ok(g.notes.at(-1).at>=37,'Las notas deben cubrir los �ltimos segundos');assert.equal(g.duration,40);assert.equal(new Set(g.notes.map(n=>n.lane)).size,l.laneCount);}});
+test('Todos los objetivos musicales coinciden con ataques del MIDI',()=>{for(const l of D.levels){const g=new E.Game();g.start(l.id);g.begin();g.startRhythm();assert.equal(g.notes.length,l.notes);const melody=Music.get(l.song).melody;assert.ok(g.notes.every(n=>melody.some(m=>m.pitch===n.pitch)));assert.ok(g.notes.at(-1).at>=37,'Las notas deben cubrir los últimos segundos');assert.equal(g.duration,40);assert.equal(new Set(g.notes.map(n=>n.lane)).size,l.laneCount);}});
 test('Dificultad progresa y la segunda ronda densifica patrones',()=>{for(let i=1;i<10;i++){const a=D.levels[i-1],b=D.levels[i];assert.ok(b.notes>a.notes&&b.laneCount>=a.laneCount&&b.scrollSpeed>a.scrollSpeed&&b.threshold>=a.threshold);}for(let i=0;i<10;i++){const a=D.levels[i],b=D.levels[i+10];assert.equal(b.song,a.song);assert.ok(b.notes>a.notes&&b.laneCount>=a.laneCount&&b.scrollSpeed>a.scrollSpeed&&b.threshold>=a.threshold);}});
 
 test('Guardar antiguo conserva resultados y abre sexta canción',()=>{const old={unlocked:4,best:[100,200,300,400,500],stars:[3,2,1,2,3],character:'laud',music:false,volume:.24};const save=E.readSave({getItem:()=>JSON.stringify(old)});assert.equal(save.unlocked,5);assert.deepEqual(save.best.slice(0,5),old.best);assert.deepEqual(save.stars.slice(0,5),old.stars);assert.equal(save.character,'laud');assert.equal(save.music,false);assert.equal(save.volume,.24);assert.equal(save.best.length,20);});
@@ -16,11 +16,13 @@ class Context {
  constructor(){this.state='suspended';this.currentTime=0;this.destination={};}
  async resume(){this.state='running';}
  createGain(){return {gain:{value:0,setValueAtTime(){},linearRampToValueAtTime(){},exponentialRampToValueAtTime(){},setTargetAtTime(){}},connect(){},disconnect(){}};}
+ createDynamicsCompressor(){return {threshold:{value:0},knee:{value:0},ratio:{value:0},attack:{value:0},release:{value:0},connect(){},disconnect(){}};}
  createOscillator(){created++;return {frequency:{value:0},connect(){},disconnect(){},start(){},stop(){stopped++;}};}
 }
 (async()=>{
  const scope={AudioContext:Context,TunaMusic:Music,TunaSongs:Songs};vm.createContext(scope);vm.runInContext(fs.readFileSync(path.join(__dirname,'../src/audio.js'),'utf8'),scope);
  const settings={music:true,effects:true,volume:.5},bus=new scope.TunaAudio(settings);await bus.unlock();assert.equal(bus.ctx.state,'running');
+ test('Cadena de mezcla única con buses y protección de nivel',()=>{assert.ok(bus.musicGain&&bus.effectsGain&&bus.uiGain);assert.ok(bus.compressor&&bus.limiter);assert.ok(bus.calibratedMaster()>.28&&bus.calibratedMaster()<.85);});
  test('Rotación cubre diez canciones y evita repetición inmediata en 1000 cambios',()=>{let last=null;for(let i=0;i<100;i++){const cycle=[];for(let j=0;j<10;j++){const id=bus.random();assert.notEqual(id,last);last=id;cycle.push(id);}assert.equal(new Set(cycle).size,10);}});
  test('Menú y recogida escogen temas diferentes y mantienen las preferencias',()=>{bus.ambient('menu');const first=bus.track.id;bus.ambient('explore');assert.notEqual(bus.track.id,first);assert.equal(settings.lastSong,bus.track.id);});
  test('Volver de la actuación evita repetición incluso al acabar la bolsa',()=>{bus.bag=['clavelitos'];bus.select('clavelitos');bus.ambient('menu');assert.notEqual(bus.track.id,'clavelitos');});
@@ -30,3 +32,4 @@ class Context {
  const noAudio={TunaMusic:Music,TunaSongs:Songs};vm.createContext(noAudio);vm.runInContext(fs.readFileSync(path.join(__dirname,'../src/audio.js'),'utf8'),noAudio);const silent=new noAudio.TunaAudio(settings);await silent.unlock();assert.equal(silent.available,false);silent.ambient('menu');silent.update({phase:'menu'});passed++;console.log('PASS Navegador sin AudioContext sigue funcionando');
  console.log(passed+' comprobaciones de MIDI, audio, rotación, sincronía y migración correctas');
 })().catch(e=>{console.error(e);process.exitCode=1;});
+

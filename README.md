@@ -59,6 +59,10 @@ Se conserva la clave `rondalla-una-ronda-mas-v1` de localStorage. La migración 
 
 HTML, CSS y JavaScript sin dependencias de producción. Canvas 2D para el juego, SVG con las imágenes originales y atlas PNG para los personajes. Web Audio reproduce los eventos MIDI con perfiles General MIDI ligeros: cada nota conserva programa, velocidad, volumen, expresión, panoramización, pitch bend y tempo. No se depende del soporte MIDI nativo del navegador ni de bancos de sonido remotos.
 
+La salida de sonido usa un único `AudioContext` por partida. Las voces MIDI pasan por un bus de música; los efectos y los sonidos de interfaz pasan por buses separados. Los tres buses convergen en una ganancia maestra calibrada para el control de volumen, un compresor suave y un limitador final antes de la salida. Esto recupera nivel útil en móviles sin cambiar notas, tempo ni sincronización y evita picos al sonar varios instrumentos a la vez.
+
+El contexto se crea y se reanuda únicamente después de una pulsación, toque o botón de sonido, respetando las políticas de autoplay de Chrome, Firefox, Edge y Safari/iOS. Al pausar o cambiar de pantalla se detienen las voces activas; al volver a jugar se reutiliza el mismo contexto, evitando acumulación de contextos o nodos. Si el navegador no ofrece Web Audio, el juego continúa en modo silencioso.
+
 ```text
 JUEGO/
   index.html                   Menús, controles, HUD y diálogos
