@@ -95,6 +95,8 @@ Los fondos se dibujan una vez y se guardan en caché. El grupo, los ojos, instru
 
 Cada etapa carga un encargo compuesto por una localidad, un tipo de evento y la canción del nivel. `src/data.js` contiene los catálogos `locations` y `events`, además de `createPerformance`, que mezcla ambos datos y evita repetir inmediatamente la misma combinación. La pantalla previa a la recogida presenta el contrato de la actuación; la recogida conserva sus 30 segundos y el cierre muestra el lugar, el evento y un texto de misión cumplida.
 
+La actuación se crea una sola vez al iniciar una etapa y se conserva en `game.performance` durante la introducción, la recogida, la fase musical y el resultado. Un reintento reutiliza el mismo encargo; la siguiente etapa genera la nueva combinación.
+
 La actuación generada también incluye `allowedCharacters`, `recommendedCharacters`, `requiredCharacters` y `unavailableCharacters`. Permanecen vacíos por ahora, pero dejan preparada la futura selección de cinco músicos y sus condiciones por encargo sin alterar el motor actual.
 
 El lector acepta MIDI formato 0 y 1 y elige automáticamente el canal melódico principal; no exige que todos los archivos tengan tres pistas. Clavelitos y Cartagenera usan ahora los archivos públicos indicados en EKE y BitMidi; Adelita usa el MIDI de EKE ignorando sus primeros 18 segundos. Las actuaciones repiten la frase melódica cuando el archivo termina antes de 40 segundos y distribuyen las notas faltantes sin agruparlas.

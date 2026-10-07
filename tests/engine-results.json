@@ -1,7 +1,7 @@
 {
   "date": "2026-10-03",
-  "passed": 21,
-  "total": 21,
+  "passed": 22,
+  "total": 22,
   "outcomes": [
     {
       "name": "Twenty stages and five canonical characters exist",
@@ -9,6 +9,10 @@
     },
     {
       "name": "Actuaciones narrativas combinan localidad, evento y canción sin repetir encargo inmediato",
+      "status": "PASS"
+    },
+    {
+      "name": "La actuación conserva localidad, evento y canción durante todo su ciclo",
       "status": "PASS"
     },
     {
