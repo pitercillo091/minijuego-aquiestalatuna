@@ -39,7 +39,7 @@
     drain() { return this.events.splice(0); }
     start(level=0) { this.total=0;this.load(level); }
     load(level) {
-      this.level=clamp(level,0,D.levels.length-1); this.config=D.levels[this.level];this.phase='brief'; this.mode='explore';this.clock=0;this.health=100;this.remaining=this.config.time;
+      const previousKey=this.performance?.key;this.level=clamp(level,0,D.levels.length-1); this.config=D.levels[this.level];this.performance=D.createPerformance(this.config,previousKey);this.phase='brief'; this.mode='explore';this.clock=0;this.health=100;this.remaining=this.config.time;
       this.score=0;this.combo=0;this.bestCombo=0;this.hits=0;this.perfects=0;this.misses=0;this.lastHit=-10;this.invulnerable=0;this.flash=null;this.path=[];this.target=null;
       this.player={x:105,y:440,face:1,moving:false};this.items=this.config.items.map((type,i)=>({id:i,type,x:positions[i][0],y:positions[i][1],collected:false}));
       this.stage={x:835,y:245};this.hazards=Array.from({length:this.config.hazards},(_,i)=>({x:0,y:0,index:i,r:22}));this.notes=[];this.emit('load');

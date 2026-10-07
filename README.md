@@ -91,6 +91,12 @@ Los fondos se dibujan una vez y se guardan en caché. El grupo, los ojos, instru
 
 ## Música: organización y edición
 
+## Gira y encargos narrativos
+
+Cada etapa carga un encargo compuesto por una localidad, un tipo de evento y la canción del nivel. `src/data.js` contiene los catálogos `locations` y `events`, además de `createPerformance`, que mezcla ambos datos y evita repetir inmediatamente la misma combinación. La pantalla previa a la recogida presenta el contrato de la actuación; la recogida conserva sus 30 segundos y el cierre muestra el lugar, el evento y un texto de misión cumplida.
+
+La actuación generada también incluye `allowedCharacters`, `recommendedCharacters`, `requiredCharacters` y `unavailableCharacters`. Permanecen vacíos por ahora, pero dejan preparada la futura selección de cinco músicos y sus condiciones por encargo sin alterar el motor actual.
+
 El lector acepta MIDI formato 0 y 1 y elige automáticamente el canal melódico principal; no exige que todos los archivos tengan tres pistas. Clavelitos y Cartagenera usan ahora los archivos públicos indicados en EKE y BitMidi; Adelita usa el MIDI de EKE ignorando sus primeros 18 segundos. Las actuaciones repiten la frase melódica cuando el archivo termina antes de 40 segundos y distribuyen las notas faltantes sin agruparlas.
 
 Las fuentes, cambios y atribuciones están en `assets/audio/FUENTES.md` y en créditos. La licencia de los arreglos de Tablatunas no concede por sí misma derechos sobre las composiciones. La publicación de los temas protegidos requiere comprobar los permisos que cubren el repertorio del grupo; esta revisión no acredita tales permisos. No se distribuyen PDFs ajenos ni grabaciones comerciales.

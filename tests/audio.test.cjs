@@ -32,4 +32,3 @@ class Context {
  const noAudio={TunaMusic:Music,TunaSongs:Songs};vm.createContext(noAudio);vm.runInContext(fs.readFileSync(path.join(__dirname,'../src/audio.js'),'utf8'),noAudio);const silent=new noAudio.TunaAudio(settings);await silent.unlock();assert.equal(silent.available,false);silent.ambient('menu');silent.update({phase:'menu'});passed++;console.log('PASS Navegador sin AudioContext sigue funcionando');
  console.log(passed+' comprobaciones de MIDI, audio, rotación, sincronía y migración correctas');
 })().catch(e=>{console.error(e);process.exitCode=1;});
-
