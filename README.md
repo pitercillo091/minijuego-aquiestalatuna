@@ -97,6 +97,12 @@ Cada etapa carga un encargo compuesto por una localidad, un tipo de evento y la 
 
 La actuación se crea una sola vez al iniciar una etapa y se conserva en `game.performance` durante la introducción, la recogida, la fase musical y el resultado. Un reintento reutiliza el mismo encargo; la siguiente etapa genera la nueva combinación.
 
+### Selección de grupo
+
+El catálogo incluye siete músicos. Andrés y Coki tienen instrumento `pandereta` y sus fuentes visuales están en `assets/personajes/referencias/andres.png` y `assets/personajes/referencias/coki.png`; sus atlas y SVG siguen el mismo formato de cuatro filas que los cinco personajes originales. Antes de preparar una actuación, el jugador elige exactamente cinco en el panel `ELIGE EL GRUPO`. La selección se guarda en `performance.selectedCharacters` y se reutiliza en recogida, actuación y resultado.
+
+Las reglas futuras viven en los campos de restricciones del evento. Ahora `evento-benefico` declara `guitarra` como personaje prohibido y muestra `Pone una escusa para no actuar` para Pacheco´s. El motor valida de nuevo el grupo al comenzar, aunque se manipule el estado desde fuera de la interfaz.
+
 La actuación generada también incluye `allowedCharacters`, `recommendedCharacters`, `requiredCharacters` y `unavailableCharacters`. Permanecen vacíos por ahora, pero dejan preparada la futura selección de cinco músicos y sus condiciones por encargo sin alterar el motor actual.
 
 El lector acepta MIDI formato 0 y 1 y elige automáticamente el canal melódico principal; no exige que todos los archivos tengan tres pistas. Clavelitos y Cartagenera usan ahora los archivos públicos indicados en EKE y BitMidi; Adelita usa el MIDI de EKE ignorando sus primeros 18 segundos. Las actuaciones repiten la frase melódica cuando el archivo termina antes de 40 segundos y distribuyen las notas faltantes sin agruparlas.

@@ -6,7 +6,9 @@
     {id:'guitarra',name:'Pacheco´s',role:'Que nadie olvide el estuche.',instrument:'guitarra',reference:'reparto.webp',detail:'Segundo: cabeza despejada, cabello en las sienes, cara sin barba, beca roja y guitarra grande de madera.'},
     {id:'bandurria',name:'C15',role:'Una púa y toda la plaza.',instrument:'bandurria',reference:'reparto.webp',detail:'Tercero: cabello corto oscuro con canas, bigote y barba corta, rostro alargado, beca roja y bandurria dorada.'},
     {id:'guitarra-gafas',name:'Piter',role:'El compás se ve venir.',instrument:'guitarra',reference:'reparto.webp',detail:'Cuarto: gafas rectangulares, cabello corto gris oscuro, sin barba, guitarra clara y beca roja colgando al costado.'},
-    {id:'laud',name:'Pesetas',role:'La última nunca es la última.',instrument:'laud',reference:'reparto.webp',detail:'Quinto: cabello castaño corto, sonrisa, barba muy corta, beca roja y pequeño instrumento de cuerda. La identificación del instrumento es una interpretación visual.'}
+    {id:'laud',name:'Pesetas',role:'La última nunca es la última.',instrument:'laud',reference:'reparto.webp',detail:'Quinto: cabello castaño corto, sonrisa, barba muy corta, beca roja y pequeño instrumento de cuerda. La identificación del instrumento es una interpretación visual.'},
+    {id:'andres',name:'Andrés',role:'La pandereta marca el camino.',instrument:'pandereta',reference:'andres.png',detail:'Sexto: barba, cabello oscuro y traje negro; toca la pandereta.'},
+    {id:'coki',name:'Coki',role:'Pandereta con gafas de sol.',instrument:'pandereta',reference:'coki.png',detail:'Séptimo: gafas de sol, beca roja y pandereta.'}
   ];
   // Catalogue for the touring layer. New places and events can be added here
   // without changing the level engine or the screen templates.
@@ -24,7 +26,8 @@
     {id:'cumpleanos',name:'Cumpleaños',icon:'🎂',description:'Tarta, invitados y una Tuna dispuesta a montar el espectáculo.',narrative:'Hay tarta, invitados y una Tuna dispuesta a montar el espectáculo. Procurad que el cumpleaños recuerde la canción y no los fallos.'},
     {id:'jubilacion',name:'Jubilación',icon:'🎉',description:'Una despedida con más alegría que prisa y muchas historias que celebrar.',narrative:'Nos piden una despedida a la altura de toda una vida de trabajo. Traed alegría, capas y una canción que dure más que el discurso.'},
     {id:'bodas-plata',name:'Bodas de plata',icon:'🥈',description:'Veinticinco años juntos merecen una ronda con brillo propio.',narrative:'Veinticinco años juntos merecen una ronda con brillo propio. Hoy tocamos para una pareja que ya conoce todos los estribillos.'},
-    {id:'bodas-oro',name:'Bodas de oro',icon:'🏆',description:'Medio siglo de historias y una Tuna lista para celebrarlo.',narrative:'Cincuenta años de historias no se celebran en silencio. Nos toca levantar el ánimo, cuidar cada nota y hacer que la plaza pida otra.'}
+    {id:'bodas-oro',name:'Bodas de oro',icon:'🏆',description:'Medio siglo de historias y una Tuna lista para celebrarlo.',narrative:'Cincuenta años de historias no se celebran en silencio. Nos toca levantar el ánimo, cuidar cada nota y hacer que la plaza pida otra.'},
+    {id:'evento-benefico',name:'Evento benéfico',icon:'❤️',description:'Una ronda solidaria para echar una mano con música y buen humor.',narrative:'Hoy tocamos por una buena causa. Afinad, sonreíd y que cada nota ayude a llenar la hucha.',restrictions:{forbiddenCharacters:['guitarra'],reasons:{guitarra:'Pone una escusa para no actuar'}}}
   ];
   let lastPerformanceKey=null;
   function createPerformance(level,previousKey='') {
@@ -33,7 +36,9 @@
     const available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previous);
     const pair=(available.length?available:pairs)[Math.floor(Math.random()*(available.length?available.length:pairs.length))];
     const key=`${pair.location.id}:${pair.event.id}`;lastPerformanceKey=key;
-    return {id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},allowedCharacters:[],recommendedCharacters:[],requiredCharacters:[],unavailableCharacters:[],prepText:`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`,readyText:`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`,closingText:`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`};
+    const forbidden=pair.event.restrictions?.forbiddenCharacters||[];
+    const availableCharacters=characters.filter(character=>!forbidden.includes(character.id)).map(character=>character.id);
+    return {id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},allowedCharacters:availableCharacters,recommendedCharacters:[],requiredCharacters:[],unavailableCharacters:forbidden,selectedCharacters:availableCharacters.slice(0,5),restrictionReasons:pair.event.restrictions?.reasons||{},prepText:`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`,readyText:`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`,closingText:`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`};
   }
   const settings=[
     ['Lopera · El ensayo','rehearsal','ensayo',105,0,['guitarra','bandurria','pandereta'],'Recoge los tres instrumentos y prepara Clavelitos.','Hay quien trae la voz. Tú trae también los instrumentos.','La primera ya suena. El ensayo empieza a parecer una actuación.'],
@@ -52,6 +57,6 @@
   const secondTargets=[42,48,54,48,66,71,78,78,90,96];
   const secondRound=firstRound.map((level,i)=>({...level,id:i+10,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:secondTargets[i],laneCount:Math.min(6,level.laneCount+1),minGap:.2,scrollSpeed:level.scrollSpeed+24,threshold:Math.min(.9,level.threshold+.045)}));
   const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,createPerformance,levels,lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:4};
+  const data={characters,locations,events,createPerformance,levels,lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:5};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);

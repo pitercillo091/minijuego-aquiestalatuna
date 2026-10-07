@@ -5,7 +5,8 @@
   let storage;if(qaMode){const memory={};storage={getItem:k=>memory[k]||null,setItem:(k,v)=>{memory[k]=v;}};}else try{storage=window.localStorage;}catch{storage={getItem(){return null;},setItem(){throw new Error('storage unavailable');}};}
   const save=E.readSave(storage),audio=new TunaAudio(save),art=new TunaArt($('game')),homeArt=new TunaArt($('home-art'));
   let collectorTurn=0;try{collectorTurn=Number(storage.getItem('rondalla-collector-turn-v1'))||0;}catch{}
-  function nextCollector(){const id=D.characters[collectorTurn%D.characters.length].id;collectorTurn=(collectorTurn+1)%D.characters.length;try{storage.setItem('rondalla-collector-turn-v1',String(collectorTurn));}catch{}return id;}
+  const instrumentNames={pandereta:'Pandereta',guitarra:'Guitarra',bandurria:'Bandurria',laud:'Laúd'};
+  function nextCollector(ids=D.characters.map(c=>c.id)){const pool=ids.length?ids:D.characters.map(c=>c.id);const id=pool[collectorTurn%pool.length];collectorTurn=(collectorTurn+1)%pool.length;try{storage.setItem('rondalla-collector-turn-v1',String(collectorTurn));}catch{}return id;}
   const game=new E.Game({character:save.character,easy:save.easy});let last=performance.now(),uiPhase='',uiMode='',lastAnnouncement='',settingsPaused=false,held=new Set(),touch=new Set(),activePointers=new Map(),lastHud=0;
   const keyDirections={ArrowLeft:'left',KeyA:'left',ArrowDown:'down',KeyS:'down',ArrowUp:'up',KeyW:'up',ArrowRight:'right',KeyD:'right'};
   const lanes={left:0,down:1,up:2,right:3};
@@ -26,11 +27,12 @@
     $('easy').checked=save.easy;
   }
   function home(){audio.ambient('menu');persist();held.clear();touch.clear();game.phase='menu';closeModal();$('home').hidden=false;$('play-area').hidden=true;$('pause').hidden=true;uiPhase='menu';renderMenu();musicLabel();$('play').focus();}
-  function start(level){audio.unlock();game.character=save.character;game.collectorCharacter=nextCollector();game.easy=save.easy;game.start(level);held.clear();touch.clear();$('home').hidden=true;$('play-area').hidden=false;$('pause').hidden=false;uiPhase='';sync();window.scrollTo({top:0,behavior:'instant'});}
+  function start(level){audio.unlock();game.character=save.character;game.easy=save.easy;game.start(level);game.collectorCharacter=nextCollector(game.performance.selectedCharacters);held.clear();touch.clear();$('home').hidden=true;$('play-area').hidden=false;$('pause').hidden=false;uiPhase='';sync();window.scrollTo({top:0,behavior:'instant'});}
   function beacons(){
     $('beacons').innerHTML=game.items.map(i=>`<button class="beacon" data-target="${i.id}" style="left:${i.x/9.6}%;top:${(i.y-30)/5.4}%" aria-label="${game.level===1||game.level===4?'Reunir':'Recoger'} ${D.characters.find(c=>c.id===i.type)?.name||i.type} ${i.id+1}"></button>`).join('')+`<button class="beacon stage" data-target="stage" style="left:${game.stage.x/9.6}%;top:${game.stage.y/5.4}%" aria-label="Ir al escenario y tocar"></button>`;
   }
-  function brief(){const l=game.config,p=game.performance;showModal(title(`ENCARGO · ETAPA ${String(l.id+1).padStart(2,'0')}`,`${p.event.icon} ${p.event.name} · ${p.location.name}`)+`<div class="gig-card"><p class="eyebrow">📍 ${p.location.name}</p><h3>${p.event.icon} ${p.event.name}</h3><p>${p.event.description}</p><p class="dialog-quote">«${p.event.narrative}»</p><p class="small muted">🎶 ${l.title}</p></div><img class="dialog-photo" src="assets/referencias/${l.photo}.webp" alt="Fotografía original de la Tuna: ${p.location.name}"><p>${p.prepText}</p><p class="dialog-quote">«${l.intro}»</p><div class="dialog-controls"><div><b>1. Prepara la actuación</b>Muévete con WASD o flechas. Recoge con espacio, o toca el objeto.</div><div><b>2. Toca a compás</b>Pulsa ${D.keys.slice(0,l.laneCount).join(" · ")} cuando la nota cruce la línea dorada. ${l.id>0&&l.laneCount>D.levels[l.id-1].laneCount?"Nueva tecla: "+D.keys[l.laneCount-1]+".":""} Acierta al menos el ${Math.round(l.threshold*100)}%.</div></div>`+actions(button('begin','Preparar actuación →')+button('home','Volver','secondary')));}
+  function selectionCards(){const p=game.performance,selected=new Set(p.selectedCharacters||[]);return `<div class="party-picker"><div class="party-picker-head"><div><p class="eyebrow">ELIGE EL GRUPO</p><h3>La Tuna: ${selected.size}/5</h3></div><span class="small muted">Escoge cinco músicos</span></div><div class="party-grid">${D.characters.map(c=>{const blocked=p.unavailableCharacters.includes(c.id),picked=selected.has(c.id),reason=blocked?(p.restrictionReasons[c.id]||'No disponible para este evento'):(instrumentNames[c.instrument]||c.instrument);return `<button class="party-card${picked?' is-selected':''}${blocked?' is-unavailable':''}" data-character-pick="${c.id}" aria-pressed="${picked}" ${blocked?'disabled':''}><img src="assets/personajes/${c.id}.svg?v=5" alt=""><span><strong>${c.name}</strong><small>${reason}</small></span>${picked?'<b class="party-mark">✓</b>':''}</button>`;}).join('')}</div></div>`;}
+  function brief(){const l=game.config,p=game.performance,ready=game.selectionStatus().valid;showModal(title(`ENCARGO · ETAPA ${String(l.id+1).padStart(2,'0')}`,`${p.event.icon} ${p.event.name} · ${p.location.name}`)+`<div class="gig-card"><p class="eyebrow">📍 ${p.location.name}</p><h3>${p.event.icon} ${p.event.name}</h3><p>${p.event.description}</p><p class="dialog-quote">«${p.event.narrative}»</p><p class="small muted">🎶 ${l.title}</p></div><img class="dialog-photo" src="assets/referencias/${l.photo}.webp" alt="Fotografía original de la Tuna: ${p.location.name}"><p>${p.prepText}</p>${selectionCards()}<p class="dialog-quote">«${l.intro}»</p><div class="dialog-controls"><div><b>1. Prepara la actuación</b>Muévete con WASD o flechas. Recoge con espacio, o toca el objeto.</div><div><b>2. Toca a compás</b>Pulsa ${D.keys.slice(0,l.laneCount).join(" · ")} cuando la nota cruce la línea dorada. ${l.id>0&&l.laneCount>D.levels[l.id-1].laneCount?"Nueva tecla: "+D.keys[l.laneCount-1]+".":""} Acierta al menos el ${Math.round(l.threshold*100)}%.</div></div>`+actions(`<button class="button primary" data-action="begin" ${ready?'':'disabled'}>COMENZAR ACTUACIÓN <span>→</span></button>`+button('home','Volver','secondary')));}
   function pause(){game.pause();held.clear();touch.clear();audio.stop();sync();}
   function result(){
     const victory=game.phase==='victory',accuracy=game.hits/game.notes.length,stars=accuracy>=.9?3:accuracy>=.72?2:1;
@@ -65,16 +67,17 @@
     if(['hit','damage','wrong','miss','result','victory','defeat'].includes(e.type)){audio.effect(e.type);if(e.type==='hit'){const el=document.querySelector(`[data-lane="${e.lane}"]`);el?.classList.add('pressed');setTimeout(()=>el?.classList.remove('pressed'),120);art.burst(427+(e.lane+.5)*456/game.laneCount,443,D.laneColors[e.lane]);}if(e.type==='wrong'||e.type==='miss'){const el=document.querySelector(`[data-lane="${e.lane}"]`);el?.classList.add('missed');setTimeout(()=>el?.classList.remove('missed'),180);}}
   });}
   function onAction(action){
-    if(action==='begin'){game.begin();audio.unlock();}
+    if(action==='begin'){if(game.begin())audio.unlock();else{brief();announce(game.selectionStatus().reason);return;}}
     if(action==='home')home();
     if(action==='resume')game.resume();
-    if(action==='retry'){audio.stop();game.collectorCharacter=nextCollector();game.retry();}
-    if(action==='next'){audio.stop();game.collectorCharacter=nextCollector();game.next();}
+    if(action==='retry'){audio.stop();game.retry();game.collectorCharacter=nextCollector(game.performance.selectedCharacters);}
+    if(action==='next'){audio.stop();game.next();game.collectorCharacter=nextCollector(game.performance.selectedCharacters);}
     if(action==='restart')start(0);
     if(action==='close')closeModal();
     sync();
   }
   $('modal-content').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(b)onAction(b.dataset.action);});
+  $('modal-content').addEventListener('click',e=>{const b=e.target.closest('[data-character-pick]');if(!b||b.disabled)return;game.toggleCharacter(b.dataset.characterPick);brief();});
   $('play').addEventListener('click',()=>start(save.stars[D.levels.length-1]===0?save.unlocked:0));
   $('brand').addEventListener('click',e=>{e.preventDefault();home();});
   $('characters').addEventListener('click',e=>{const b=e.target.closest('[data-character]');if(!b)return;save.character=b.dataset.character;persist();renderMenu();});

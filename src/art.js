@@ -82,7 +82,7 @@
     burst(x,y,color='#f5c579'){for(let i=0;i<15;i++)this.particles.push({x,y,vx:Math.cos(i*2.4)*50*(1+i%3),vy:Math.sin(i*2.4)*60-50,life:1,color});}
     render(game,dt){
       this.time+=dt;this.resize();const c=this.ctx;this.background(game?.config?.theme||'castle');
-      if(!game||['menu'].includes(game.phase)){D.characters.forEach((ch,i)=>this.character(ch.id,510+i*83,452+(i%2)*12,1.05,'playing'));this.text('LA RONDALLA DE LOPERA',697,496,12,'#e7c898');return;}
+      if(!game||['menu'].includes(game.phase)){const spacing=Math.min(83,720/Math.max(1,D.characters.length-1)),start=680-(D.characters.length-1)*spacing/2;D.characters.forEach((ch,i)=>this.character(ch.id,start+i*spacing,452+(i%2)*12,1.05,'playing'));this.text('LA RONDALLA DE LOPERA',697,496,12,'#e7c898');return;}
       if(game.mode==='explore'){
         game.items.forEach(item=>{if(item.collected)return;const near=Math.hypot(item.x-game.player.x,item.y-game.player.y)<58;this.ellipse(item.x,item.y,27,13,near?'#f5c57955':'#e8bd7c18');if([1,4,8,9].includes(game.level)&&D.characters.some(ch=>ch.id===item.type)){this.character(item.type,item.x,item.y,.52,'idle');}else this.icon(item.type,item.x,item.y-23+Math.sin(this.time*3+item.id)*3,1);this.ellipse(item.x,item.y-63,3,3,'#f5cf80');});
         game.hazards.forEach(h=>{this.ellipse(h.x,h.y,27,13,'#223849bb');this.ellipse(h.x-3,h.y-3,18,6,'#76a4b266');this.line([[h.x-12,h.y],[h.x+4,h.y-3]],'#acceda88',1);});
@@ -91,7 +91,7 @@
         if(!(game.invulnerable>0&&Math.floor(this.time*12)%2===0))this.character(game.collectorCharacter||game.character,game.player.x,game.player.y,.62,game.player.moving?'walk':'idle',game.player.face);this.carIcon(game.player.x,game.player.y-94);
         if(game.level===0&&game.items.every(i=>!i.collected)){this.text('Recoge los instrumentos iluminados',480,529,14,'#ffdfaa');}
       }else{
-        c.fillStyle='#14182580';c.fillRect(0,0,960,540);D.characters.forEach((ch,i)=>this.character(ch.id,82+i*66,266,.9,'playing'));
+        c.fillStyle='#14182580';c.fillRect(0,0,960,540);const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);cast.forEach((ch,i)=>this.character(ch.id,82+i*66,266,.9,'playing'));
         this.rect(57,257,316,110,'#201c2bbf',12);this.text(game.config.place.split(' · ')[0].toUpperCase(),215,283,12,'#dcaf77');this.text('¡Que siga la ronda!',215,316,22,'#f0dfc4');this.text(`${game.hits} notas a compás · combo ${game.combo}`,215,344,14,'#baadbc');
         const left=427,width=456,lane=width/game.laneCount,top=38,hitY=443,speed=game.config.scrollSpeed;
         this.rect(left-13,top-12,width+26,472,'#171926e8',15);
@@ -105,7 +105,7 @@
       this.particles=this.particles.filter(p=>{p.life-=dt;if(p.life<=0)return false;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=130*dt;this.ellipse(p.x,p.y,3*p.life,3*p.life,p.color);return true;});
       if(game.flash&&game.mode==='explore'){this.rect(280,34,400,42,'#241c2be8',21);this.text(game.flash.text,480,61,16,game.flash.kind==='miss'?'#f4a3a5':'#f8d28c');}
       if(game.mode==='rhythm'){for(let i=0;i<10;i++){const x=55+i*33,y=528+(i%2)*5,cheer=game.combo>0?Math.round(Math.sin(this.time*5+i)*3):0;this.rect(x-6,y-13,12,15,['#60486e','#8d587b','#517f8a'][i%3],3);this.ellipse(x,y-18,5,6,['#c18c71','#e1b596','#b98772'][i%3]);this.line([[x-5,y-8],[x-10,y-14+cheer]],'#b68c72',3);this.line([[x+5,y-8],[x+10,y-14-cheer]],'#b68c72',3);}}
-      if(game.phase==='victory'){D.characters.forEach((ch,i)=>this.character(ch.id,180+i*145,454,1,'victory'));}
+      if(game.phase==='victory'){const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);cast.forEach((ch,i)=>this.character(ch.id,180+i*145,454,1,'victory'));}
     }
   }
   root.TunaArt=Art;

@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pruebas de integración · Una ronda más</title>
 <style>body{margin:0;background:#181720;color:#f1e5ce;font:14px system-ui}header{padding:18px 25px;background:#2a2331}h1{font-size:22px;margin:0 0 8px}#results{white-space:pre-wrap;font-size:12px;max-height:210px;overflow:auto;line-height:1.5}iframe{display:block;border:0;width:100%;height:860px}a{color:#e8bd7e}</style>
-<header><h1>Pruebas de integración</h1><p>Reloj controlado sobre el juego real, con controles, colisiones, sonido, guardado aislado y todas las pantallas.</p><button id="run" disabled>Ejecutar las pruebas completas</button><div id="results" role="status">Cargando…</div><a href="../index.html">Abrir el juego normal →</a></header><iframe id="app" src="../index.html?v=5#qa" title="Juego durante la prueba de integración" allow="autoplay"></iframe>
+<header><h1>Pruebas de integración</h1><p>Reloj controlado sobre el juego real, con controles, colisiones, sonido, guardado aislado y todas las pantallas.</p><button id="run" disabled>Ejecutar las pruebas completas</button><div id="results" role="status">Cargando…</div><a href="../index.html">Abrir el juego normal →</a></header><iframe id="app" src="../index.html?v=6#qa" title="Juego durante la prueba de integración" allow="autoplay"></iframe>
 <script>
 'use strict';
 const iframe=document.getElementById('app'),output=document.getElementById('results');let passed=0,failures=0,lines=[];
@@ -15,10 +15,10 @@ document.getElementById('run').addEventListener('click',async()=>{
   const key=(code,keyValue)=>{d.getElementById('game').focus();d.dispatchEvent(new w.KeyboardEvent('keydown',{code,key:keyValue||code,bubbles:true}));};
   const release=code=>d.dispatchEvent(new w.KeyboardEvent('keyup',{code,bubbles:true}));
   output.textContent='';
-  check('Carga inicial',!d.getElementById('home').hidden&&d.querySelectorAll('.character-card').length===5);
+  check('Carga inicial',!d.getElementById('home').hidden&&d.querySelectorAll('.character-card').length===7);
   click('[data-character="laud"]');check('Selección de personaje canónico',qa.save.character==='laud');
   const initialSong=qa.audio.track.id;click('#next-song');check('Menú cambia canción sin repetición',qa.audio.track.id!==initialSong);click('[data-level="0"]');check('Empezar partida abre instrucciones',g.phase==='brief'&&d.getElementById('modal').open);
-  click('[data-action="begin"]');check('Inicio de nivel',g.phase==='playing');
+ click('[data-action="begin"]');check('Inicio de nivel',g.phase==='playing');check('Grupo de cinco almacenado en la actuación',g.performance.selectedCharacters.length===5&&new Set(g.performance.selectedCharacters).size===5);
   const before=g.player.x;key('KeyD','d');qa.step(.1,{x:1,y:0});release('KeyD');check('Movimiento de teclado',g.player.x>before);
   g.player={x:330,y:338};step(2,{x:1,y:0});check('Colisión con banco',g.player.x<=339.1);
   click('#settings-open');check('Ajustes pausan sin superponer otro diálogo',g.phase==='paused'&&d.getElementById('settings').open&&!d.getElementById('modal').open);
@@ -44,7 +44,7 @@ document.getElementById('run').addEventListener('click',async()=>{
   }
   check('Victoria final visible',g.phase==='victory'&&d.getElementById('modal-content').textContent.includes('Una ronda para recordar'));
   const restored=w.TunaEngine.readSave(qa.storage);check('Guardado y desbloqueo de las veinte etapas',restored.unlocked===19&&restored.best.every(n=>n>0)&&restored.stars.every(n=>n===3));
-  check('Los diez archivos MIDI cargan en veinte etapas',w.TunaMusic.status.size===10&&Array.from(w.TunaMusic.status.values()).every(x=>x==='archivo'));check('Escudo y sprites cargados',Array.from(d.querySelectorAll('#characters img,.brand img')).every(im=>im.complete&&im.naturalWidth>0));check('Los cinco atlas PNG cargan y se usan en el renderer',w.TunaData.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===768));
+  check('Los diez archivos MIDI cargan en veinte etapas',w.TunaMusic.status.size===10&&Array.from(w.TunaMusic.status.values()).every(x=>x==='archivo'));check('Escudo y sprites cargados',Array.from(d.querySelectorAll('#characters img,.brand img')).every(im=>im.complete&&im.naturalWidth>0));check('Los siete atlas PNG cargan y se usan en el renderer',w.TunaData.characters.length===7&&w.TunaData.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===768));
   await new Promise(r=>setTimeout(r,300));qa.step(0);
   output.textContent=`${passed} comprobaciones correctas · ${failures} fallos\n`+lines.join('\n');document.body.dataset.passed=passed;document.body.dataset.failed=failures;
  }catch(error){failures++;output.textContent+='\nERROR: '+error.stack;document.body.dataset.failed=failures;console.error(error);}

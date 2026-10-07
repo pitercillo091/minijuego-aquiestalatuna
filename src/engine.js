@@ -44,7 +44,21 @@
       this.player={x:105,y:440,face:1,moving:false};this.items=this.config.items.map((type,i)=>({id:i,type,x:positions[i][0],y:positions[i][1],collected:false}));
       this.stage={x:835,y:245};this.hazards=Array.from({length:this.config.hazards},(_,i)=>({x:0,y:0,index:i,r:22}));this.notes=[];this.emit('load');
     }
-    begin() { if(this.phase==='brief'){this.phase='playing';this.emit('begin');} }
+    selectionStatus(ids=this.performance?.selectedCharacters||[]) {
+      const selected=Array.isArray(ids)?ids:[ ];
+      const unique=[...new Set(selected)];
+      const allowed=new Set(this.performance?.allowedCharacters||[]);
+      const valid=unique.length===5&&unique.every(id=>allowed.has(id))&&unique.length===selected.length;
+      return {valid,selected:unique,reason:unique.length!==5?'Elige exactamente cinco músicos.':unique.some(id=>!allowed.has(id))?'Hay un músico que no puede participar en este evento.':'El grupo contiene personajes repetidos.'};
+    }
+    toggleCharacter(id) {
+      if(this.phase!=='brief'||!this.performance?.allowedCharacters.includes(id))return false;
+      const selected=this.performance.selectedCharacters||[];const index=selected.indexOf(id);
+      if(index>=0)selected.splice(index,1);
+      else if(selected.length<5)selected.push(id);
+      this.performance.selectedCharacters=[...new Set(selected)];this.emit('selection',{selected:this.performance.selectedCharacters});return true;
+    }
+    begin() { if(this.phase!=='brief')return false;const status=this.selectionStatus();if(!status.valid){this.emit('selection-invalid',{reason:status.reason});return false;}this.performance.selectedCharacters=status.selected;this.phase='playing';this.emit('begin');return true; }
     pause() { if(this.phase==='playing'){this.phase='paused';this.path=[];this.emit('pause');} }
     resume() { if(this.phase==='paused'){this.phase='playing';this.emit('resume');} }
     navigate(x,y,target=null) { if(this.phase!=='playing'||this.mode!=='explore')return;this.path=pathfind(this.player,{x:clamp(x,40,920),y:clamp(y,210,500)});this.target=target; }

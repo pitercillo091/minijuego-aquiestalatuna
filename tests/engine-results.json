@@ -1,10 +1,10 @@
 {
   "date": "2026-10-03",
-  "passed": 22,
-  "total": 22,
+  "passed": 24,
+  "total": 24,
   "outcomes": [
     {
-      "name": "Twenty stages and five canonical characters exist",
+      "name": "Twenty stages and seven canonical characters exist",
       "status": "PASS"
     },
     {
@@ -13,6 +13,14 @@
     },
     {
       "name": "La actuación conserva localidad, evento y canción durante todo su ciclo",
+      "status": "PASS"
+    },
+    {
+      "name": "Selección de grupo valida cinco músicos y restringe el evento benéfico",
+      "status": "PASS"
+    },
+    {
+      "name": "El sexto personaje no se añade y el grupo elegido permanece en la actuación",
       "status": "PASS"
     },
     {
