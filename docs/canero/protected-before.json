@@ -1,0 +1,214 @@
+[
+  {
+    "path": "assets\\personajes\\andres-atlas.png",
+    "sha256": "91A9B04039C617E61BC4770CE1866BA975F6FDA652654091E588E88A8FE9B7C7"
+  },
+  {
+    "path": "assets\\personajes\\andres.svg",
+    "sha256": "F08AD7FE673BAB9BB9DBA188B926A895BCE240406FCA83E824CA029328FF8AFC"
+  },
+  {
+    "path": "assets\\personajes\\bandurria-atlas.png",
+    "sha256": "0311037D5D24DA1CEECD14021FADFB8015367EC192CD8031920BD206C5EE471B"
+  },
+  {
+    "path": "assets\\personajes\\bandurria.svg",
+    "sha256": "E98CD598044F773CAC391B255882D8B4641F602B3EA2B31CC605FA4DF7B35A63"
+  },
+  {
+    "path": "assets\\personajes\\coki-atlas.png",
+    "sha256": "4A5FC579BD299B5D72613B1C1697DF89E1388A5B972A970D562723DBDC0EC7BA"
+  },
+  {
+    "path": "assets\\personajes\\coki.svg",
+    "sha256": "EC9EF0FFBD93495CBAA803CB8C0E87F49869E530055F370F7FB06F3E5288086D"
+  },
+  {
+    "path": "assets\\personajes\\comparacion-reparto.png",
+    "sha256": "B480043B4A63A0826D13E53AA613E0C933B8E1FC58A9B37CC6A2A7041E88B88C"
+  },
+  {
+    "path": "assets\\personajes\\guitarra-atlas.png",
+    "sha256": "0379446FC8CD1E1B682513FFB7D0D91ABE4B9FB6A8BF5A223D00357D3FBA2240"
+  },
+  {
+    "path": "assets\\personajes\\guitarra-gafas-atlas.png",
+    "sha256": "847D8002ACCC76F3138D63E849628ECEF6E0E037741FA490F1E8FBEE6D6E7EBD"
+  },
+  {
+    "path": "assets\\personajes\\guitarra-gafas.svg",
+    "sha256": "E597E954EFE7A6867D445912E5401D61AFE477D8296E8AD7F02B3C7D38C8FFDB"
+  },
+  {
+    "path": "assets\\personajes\\guitarra.svg",
+    "sha256": "ECE5C1C384E2F78717879E9CA79B47690AD8AF6AC7C1F1B539F215267884F2EB"
+  },
+  {
+    "path": "assets\\personajes\\laud-atlas.png",
+    "sha256": "6C501AEB43F8408478449AEF9DEC1A53A5AFB34999EB71F69C85F1BE136B66B1"
+  },
+  {
+    "path": "assets\\personajes\\laud.svg",
+    "sha256": "476EB952A0B5BEF80D85B5E3E9131A2DBBC33A5C824D7C9CAC56E11B5AB5ED40"
+  },
+  {
+    "path": "assets\\personajes\\legia-atlas.png",
+    "sha256": "67B77FB3121E77B96223F153FF34932718C61CA176A3080FF975420D3EBF6103"
+  },
+  {
+    "path": "assets\\personajes\\legia.svg",
+    "sha256": "1D30758C0B30C90DFB4AA6429A0866CF76EDFFC44F4A99C4BE1C1AFC0E156946"
+  },
+  {
+    "path": "assets\\personajes\\pandereta-atlas.png",
+    "sha256": "C814F82BE1970B2407B159F56A6358917D2772CAC88327B80EFB7E41BC8690C4"
+  },
+  {
+    "path": "assets\\personajes\\pandereta.svg",
+    "sha256": "67835C8C3CC3506C0E97BFEF06BEE0813B01639A51D0755EABB1528BE7A37350"
+  },
+  {
+    "path": "assets\\personajes\\pedro-v-atlas.png",
+    "sha256": "BCA8711AFC5E6743977557E8D66B8A24ACEAAED9D310FBE3CEBA241C3BAE2189"
+  },
+  {
+    "path": "assets\\personajes\\pedro-v.svg",
+    "sha256": "62DDD0BD98DC380AFD97B1008706B034504E0BA5DD558D8C7B91154C78606EC5"
+  },
+  {
+    "path": "assets\\personajes\\pena-atlas.png",
+    "sha256": "4A6A5C2E766EED4A300A2828918AA0B58327D4D21D880D156C7650799D1C9BE1"
+  },
+  {
+    "path": "assets\\personajes\\pena.svg",
+    "sha256": "FD3E64134C6935505B84A94233333192856612B3FF1B1BFA989C176BD019DAED"
+  },
+  {
+    "path": "assets\\personajes\\ponder-atlas.png",
+    "sha256": "1AB16EDF33E2EBC104D9816225195EC818A93CDA1D01E8A3B02541F10956E778"
+  },
+  {
+    "path": "assets\\personajes\\ponder.svg",
+    "sha256": "BF7591A89DB48A74936326BE3AF42FEF587E6287DB33144CBAA2D5EAFAFF7BD0"
+  },
+  {
+    "path": "MP3\\01_Clavelitos_Tuna_de_Distrito_de_Murcia.mp3",
+    "sha256": "87AB886883BAADB702891B9D110AAB8142743A9152325A51CB7E9CFAFC8C9955"
+  },
+  {
+    "path": "MP3\\02_Cielito_Lindo_Tuna_de_Arquitectura_Tecnica_de_Madrid.mp3",
+    "sha256": "63AFCFD622D563562CE3C7AB19C2AEC2829765BB7175C93BE4320ADA3BD19FBA"
+  },
+  {
+    "path": "MP3\\05_Estudiantina_Madrilena_Tuna_de_Arquitectura_Tecnica_de_Madrid.mp3",
+    "sha256": "9762448CB19159D3CFD9CF2BF75384E4EA5687BBCD5484E9BE3F6578AAB4A330"
+  },
+  {
+    "path": "MP3\\06_Las_Cintas_de_mi_Capa_Tuna_de_Arquitectura_Tecnica_de_Madrid.mp3",
+    "sha256": "3E4B515C1E14B25177241BB365FC68355FD7E6B5AC092D9CE3C3B3D7FD9C88BF"
+  },
+  {
+    "path": "MP3\\07_La_Isa_Canaria_Tuna_Antiguos_Alumnos_Salesianos.mp3",
+    "sha256": "6F0501253CD5DAE058DB6C51516E58E835EFB9B282A6322E1AED5AEAC0CC7FE5"
+  },
+  {
+    "path": "MP3\\08_La_Morena_de_mi_Copla_Rondalla_de_Lopera.mp3",
+    "sha256": "456733CA093968F5A02AAC15F8989792A68B7C14F67B80183705526D14C12F49"
+  },
+  {
+    "path": "MP3\\09_Maria_la_Portuguesa_Rondalla_de_Lopera.mp3",
+    "sha256": "6DA8D185645DB83EF64C7621B2A868EE006373A053BDC162A3E76A0A2DEEA9AF"
+  },
+  {
+    "path": "MP3\\11_Soy_Cordobes_Tuna_de_Derecho_de_Cordoba.mp3",
+    "sha256": "8D665AA56093B2B4A9C3A99E5C5EC53BA86212546DE5CBB5CBDABAD050AE64C7"
+  },
+  {
+    "path": "MP3\\12_Guantanamera_Tuna_Antiguos_Alumnos_Salesianos.mp3",
+    "sha256": "BAC135B3D0D32D73B9610C0BC5C7DC446F927C4D0CE9BFA3AF7466BD933EA2B2"
+  },
+  {
+    "path": "MP3\\13_Y_Viva_Espana_Tuna_de_Distrito_de_Granada.mp3",
+    "sha256": "0F40F8FBA3605B94209F6C27332176DE6B0D971CC2E428F90ED3A96D84AA6738"
+  },
+  {
+    "path": "MP3\\14_Isa_de_Ronda_Tuna_de_Ingenieros_de_Telecomunicacion_de_Valencia.mp3",
+    "sha256": "B70ECE92D4577D7495096AF36B77F8561DAF3A5B6CD00D3673F7642F6424291D"
+  },
+  {
+    "path": "MP3\\15_Verbena_de_San_Cayetano_Tuna_de_Ingenieros_Aeronauticos_de_Madrid.mp3",
+    "sha256": "49C99B13A4FFF46CB68C731E85A06BA435950CA4E21E9989E5F9C5BF15E01E1B"
+  },
+  {
+    "path": "MP3\\16_Todos_los_Besos_desde_video.mp3",
+    "sha256": "4F68475ED6E59E5C1BE92BD59F1C1FEB1C17E6B32F8AD94A064061E36F09B3D5"
+  },
+  {
+    "path": "src\\charts\\cielito-lindo.js",
+    "sha256": "E3A8D19BC7A4FFA942B75ED6615280DBE6639C7D4381920F8E902A9272B1CBD7"
+  },
+  {
+    "path": "src\\charts\\cintas-capa.js",
+    "sha256": "14938B31070839A86E2E86E204ADBC14316DF24B81F28F8FE569A1EFEE83E7ED"
+  },
+  {
+    "path": "src\\charts\\clavelitos.js",
+    "sha256": "14694AC792521CC4083D646500200E1338090E2C8591B89819CC8BBD529D7A78"
+  },
+  {
+    "path": "src\\charts\\estudiantina-madrilena.js",
+    "sha256": "FA4B5AFEC752A9EED970C5C65BECE80D05C6A010FECBCFFB7D691144BDD9D4D5"
+  },
+  {
+    "path": "src\\charts\\guantanamera.js",
+    "sha256": "81DA8753C4C016A5E05C84555196DCC8A5B1C9F8DE34F464D9678614DCDD45BA"
+  },
+  {
+    "path": "src\\charts\\isa-canaria.js",
+    "sha256": "F4E2E3036EE66CA9CDF2FFDCD34B3DD43A3E96F5E3196CE751910B3A7E9898D0"
+  },
+  {
+    "path": "src\\charts\\isa-de-ronda.js",
+    "sha256": "A8415C7DD984E6123E1BBB0385470E8DCB1B5D824B83225E84CB1886095D353B"
+  },
+  {
+    "path": "src\\charts\\maria-portuguesa.js",
+    "sha256": "E9E97E621FFB94118767C753519C6B07D6D24CB189F47A5B5A7B94F38538CC76"
+  },
+  {
+    "path": "src\\charts\\morena-copla.js",
+    "sha256": "1B7337C713E9F87F744CD2CC7A731044FC197AF4D1378D45D5D1832E144DA270"
+  },
+  {
+    "path": "src\\charts\\san-cayetano.js",
+    "sha256": "0DDB544529A07824A4C846A5DE3C1E5965084637DFA80CDD60D9EAC5521EC652"
+  },
+  {
+    "path": "src\\charts\\soy-cordobes.js",
+    "sha256": "4A485019CD2CCB2B1515EDE040AFC3ADED35AC41A7C930F35986F58B6A1DE477"
+  },
+  {
+    "path": "src\\charts\\todos-los-besos.js",
+    "sha256": "10424719E2A42B6871053A4C7E04779556B818A82D25BFF11750F044D8B19FAE"
+  },
+  {
+    "path": "src\\charts\\viva-espana.js",
+    "sha256": "CC79633370AA22260566FA642CA260F6F181986AE5EFB527BD941E800AEE3EC2"
+  },
+  {
+    "path": "src\\audio.js",
+    "sha256": "2BA65E444C7E7E5BF499801CEC88447B9878DEF258CA70463EC45C3B1318718D"
+  },
+  {
+    "path": "src\\engine.js",
+    "sha256": "F40989E0E1A985D019683FB695911806FE2E7674FBB8173A86D77D93CB8DEA97"
+  },
+  {
+    "path": "src\\leaderboards.js",
+    "sha256": "D6044F4D8B9DDBE7DB0B0D9CB61B4D5157B18220D4916FC59DD8A3B2F585FC94"
+  },
+  {
+    "path": "src\\rankings-config.js",
+    "sha256": "9850C36ABB4F1B77FAD152C9133B806DBA56F98140869704E9ED7519F2FD2679"
+  }
+]

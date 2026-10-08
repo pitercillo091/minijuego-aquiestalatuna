@@ -1,0 +1,61 @@
+[
+  {
+    "test": "QA real controller and renderer",
+    "checks": [
+      "Twelve canonical atlas files",
+      "Locked without level 1 victory",
+      "Twelve selection cards",
+      "Defeat does not unlock",
+      "Thirty second pickup unchanged",
+      "Complete level one awards CAÑERO {\"stats\":{\"level\":0,\"phase\":\"result\",\"mode\":\"rhythm\",\"score\":8707,\"total\":8707,\"health\":100,\"time\":19.49999999999985,\"collected\":3,\"hits\":46,\"notes\":46,\"combo\":46},\"save\":[\"canero\"],\"modal\":\"✦♪✦♫🎉 ¡ENHORABUENA!🔓 ¡HAS DESBLOQUEADO A CAÑERO!🍺 ¡Una nueva incorporación llega a la Tuna... y viene con la Mahou en la mano!DISPONIBLE DESDE EL NIVEL 2CONTINUAR\"}",
+      "Exact reward copy",
+      "Acknowledgment persisted",
+      "Unlocked in level two",
+      "Four cannot begin",
+      "Sixth rejected",
+      "No personal instrument",
+      "Same group reaches result",
+      "No duplicate CAÑERO reward"
+    ],
+    "errors": []
+  },
+  {
+    "test": "desktop",
+    "layout": {
+      "cards": 12,
+      "body": false,
+      "modal": false,
+      "buttonHeight": 49
+    },
+    "pressed": 73,
+    "elapsedMs": 63105,
+    "cast": [
+      "CAÑERO",
+      "Miguel A.",
+      "C15",
+      "Piter",
+      "Pesetas"
+    ],
+    "errors": []
+  },
+  {
+    "test": "mobile",
+    "layout": {
+      "cards": 12,
+      "body": false,
+      "modal": false,
+      "buttonHeight": 49
+    },
+    "errors": []
+  },
+  {
+    "test": "mobile-small",
+    "layout": {
+      "cards": 12,
+      "body": false,
+      "modal": false,
+      "buttonHeight": 49
+    },
+    "errors": []
+  }
+]

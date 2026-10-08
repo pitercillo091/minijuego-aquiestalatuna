@@ -2,9 +2,9 @@
 const assert=require('node:assert/strict'),E=require('../src/engine.js'),D=require('../src/data.js');
 const storage=value=>({getItem:()=>JSON.stringify(value),setItem(){}});
 const fresh=()=>E.readSave(storage({}));
-const milestones=[[2,'pedro-v',3],[4,'andres',5],[5,'ponder',6],[7,'pena',8],[9,'legia',10]];
+const milestones=[[1,'canero',2],[2,'pedro-v',3],[4,'andres',5],[5,'ponder',6],[7,'pena',8],[9,'legia',10]];
 let passed=0;function test(name,fn){fn();passed++;console.log('PASS',name);}
-test('Five unlock thresholds, losses and persistent acknowledgments',()=>{
+test('Six unlock thresholds, losses and persistent acknowledgments',()=>{
  const save=fresh();for(let level=1;level<=10;level++){
   const g=new E.Game({progress:save});g.start(level-1);g.performance.selectedCharacters=g.performance.allowedCharacters.slice(0,5);assert.ok(g.begin());g.fail('prueba');assert.equal(save.unlocked,level-1);
   const before=[...save.characterUnlocks];assert.deepEqual(save.characterUnlocks,before);E.recordCompletion(save,level-1,level*1200,3);
@@ -13,10 +13,10 @@ test('Five unlock thresholds, losses and persistent acknowledgments',()=>{
  }
  assert.equal(E.ackCharacterReward(fresh(),'pena'),false);
 });
-test('Migration retains old results, settings and all five earned rewards',()=>{
+test('Migration retains old results, settings and all six earned rewards',()=>{
  const old={version:2,unlocked:12,best:Array(20).fill(4444),stars:Array.from({length:20},(_,i)=>i<12?2:0),volume:.28,music:false,effects:false,character:'legia',easy:false};
- const save=E.readSave(storage(old));assert.equal(save.unlocked,15);assert.ok(save.legacyCampaigns['midi-20-v3']);assert.equal(save.best.length,D.levels.length);for(let i=0;i<12;i++){const song=D.legacySongIds[i%10],round=i<10?1:2,index=D.levels.findIndex(level=>level.song===song&&level.round===round);if(index>=0)assert.equal(save.stars[index],2);}assert.equal(save.volume,.28);assert.equal(save.character,'legia');assert.equal(save.easy,false);assert.equal(save.music,false);assert.deepEqual(save.characterUnlocks,['pedro-v','andres','ponder','pena','legia']);assert.equal(E.pendingCharacterRewards(save).length,5);
- E.ackCharacterReward(save,'pedro-v');const reload=E.readSave(storage(save));assert.equal(E.pendingCharacterRewards(reload).length,4);
+ const save=E.readSave(storage(old));assert.equal(save.unlocked,15);assert.ok(save.legacyCampaigns['midi-20-v3']);assert.equal(save.best.length,D.levels.length);for(let i=0;i<12;i++){const song=D.legacySongIds[i%10],round=i<10?1:2,index=D.levels.findIndex(level=>level.song===song&&level.round===round);if(index>=0)assert.equal(save.stars[index],2);}assert.equal(save.volume,.28);assert.equal(save.character,'legia');assert.equal(save.easy,false);assert.equal(save.music,false);assert.deepEqual(save.characterUnlocks,['canero','pedro-v','andres','ponder','pena','legia']);assert.equal(E.pendingCharacterRewards(save).length,6);
+ E.ackCharacterReward(save,'pedro-v');const reload=E.readSave(storage(save));assert.equal(E.pendingCharacterRewards(reload).length,5);
  // Replaying earlier levels never locks a previously earned character.
  reload.unlocked=0;reload.stars=[];assert.ok(D.isCharacterUnlocked(D.characters.find(c=>c.id==='pena'),reload));
 });

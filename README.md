@@ -1,6 +1,6 @@
 # Una ronda más · campaña MP3
 
-Juego web de la Rondalla de Lopera. Cada nivel combina una preparación en la plaza y una actuación musical de 60 segundos. Conserva el motor, la selección de cinco, las dos dificultades y el guardado anterior; el reparto tiene once personajes pixel art.
+Juego web de la Rondalla de Lopera. Cada nivel combina una preparación en la plaza y una actuación musical de 60 segundos. Conserva el motor, la selección de cinco, las dos dificultades y el guardado anterior; el reparto tiene doce personajes pixel art.
 
 ## Jugar
 
@@ -83,7 +83,7 @@ JUEGO/
   assets/audio/partituras.json  Frases editables y tempos
   assets/audio/generar-midi.py  Exportador MIDI, Python sin dependencias
   assets/audio/FUENTES.md      Procedencia, atribución y alcance musical
-  assets/personajes/           Once diseños, once atlas y generadores
+  assets/personajes/           Doce diseños, doce atlas y generadores
   assets/referencias/          Fotografías optimizadas y referencia del reparto
   assets/ui/escudo.webp        Escudo original optimizado
   PERSONAJES/                  Imagen aportada por el usuario, preservada
@@ -103,7 +103,7 @@ La actuación se crea una sola vez al iniciar una etapa y se conserva en `game.p
 
 ### Selección de grupo
 
-El catálogo incluye once personajes. LEGÍA toca la guitarra, confirmado por el usuario; su referencia está en `assets/personajes/referencias/legia.png`. Andrés y Coki tocan la pandereta. Peña y Ponder tocan la bandurria. Pedro V. es bailarín y no tiene instrumento asignado. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
+El catálogo incluye doce personajes. LEGÍA toca la guitarra, confirmado por el usuario; su referencia está en `assets/personajes/referencias/legia.png`. Andrés y Coki tocan la pandereta. Peña y Ponder tocan la bandurria. Pedro V. es bailarín y no tiene instrumento asignado. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
 
 Las reglas futuras viven en los campos de restricciones del evento. Ahora `evento-benefico` declara `guitarra` como personaje prohibido y muestra `Pone una escusa para no actuar` para Pacheco´s. El motor valida de nuevo el grupo al comenzar, aunque se manipule el estado desde fuera de la interfaz.
 
@@ -150,12 +150,13 @@ Desde el servidor, abre `tests/browser-integration.html`: usa el controlador, di
 Una transcripción más detallada de la referencia de Cartagenera, calibración de latencia de audio y nombres confirmados de los músicos. La curva de dificultad puede ajustarse después de observar partidas de jugadores reales.
 
 
-## Once componentes y recompensas (8 de octubre de 2026)
+## Doce componentes y recompensas (8 de octubre de 2026)
 
-El catálogo único de `src/data.js` incluye a Miguel A., Pacheco´s, C15, Piter, Pesetas, Andrés, Coki, LEGÍA, PEDRO V., PONDER y PEÑA. El jugador elige exactamente cinco antes de preparar cada encargo. La localidad, el evento, la canción, el nivel y `selectedCharacters` permanecen en la misma actuación. Repetir conserva ese encargo; avanzar crea uno nuevo con la selección vacía.
+El catálogo único de `src/data.js` incluye a Miguel A., Pacheco´s, C15, Piter, Pesetas, Andrés, Coki, LEGÍA, PEDRO V., PONDER, PEÑA y CAÑERO. El jugador elige exactamente cinco antes de preparar cada encargo. La localidad, el evento, la canción, el nivel y `selectedCharacters` permanecen en la misma actuación. Repetir conserva ese encargo; avanzar crea uno nuevo con la selección vacía.
 
 | Personaje | Función | Disponible desde | Victoria necesaria |
 | --- | --- | --- | --- |
+| CAÑERO | Acompañante, sin instrumento | 2 | 1 |
 | PEDRO V. | Bailarín, sin instrumento | 3 | 2 |
 | Andrés | Pandereta | 5 | 4 |
 | PONDER | Bandurria | 6 | 5 |
@@ -176,6 +177,14 @@ Pruebas de esta ampliación: `node tests/progression.test.cjs`, `node tests/engi
 Clavelitos (niveles 1 y 14) usa el MP3 aprobado de 60 segundos y sus mapas normal/difícil versionados. Las otras doce canciones también usan MP3 con mapas por grabación; menú y recogida usan la biblioteca MP3 aleatoria. Los recursos de revisión no se copian al juego público.
 
 Documentación, resultados y limitaciones: [docs/clavelitos-mp3/INFORME.md](docs/clavelitos-mp3/INFORME.md). La herramienta local para revisar la onda y el audio no forma parte del despliegue público. Prueba de ambas dificultades con progreso aislado: `tests/clavelitos-browser.html`.
+
+## CAÑERO · acompañante disponible desde el nivel 2
+
+El catálogo contiene doce personajes. CAÑERO usa `kind:'companion'`, `instrument:null` y `unlockLevel:2`. Ganar el nivel 1 lo incorpora al mismo sistema de recompensas y guardado. Las partidas anteriores que ya lo hayan superado lo reciben automáticamente; confirmar su tarjeta se guarda en `characterRewardsSeen`. Entrar o perder un nivel no concede el desbloqueo.
+
+Su fotografía sentada sirve únicamente como referencia de identidad. `assets/personajes/ilustraciones/canero-base.png` es una ilustración de pie creada con ImageGen integrado y los sprites aprobados como referencia artística. `generar_canero.py` la empaqueta con el mismo procedimiento del elenco: celda 192 × 320, pies en y=315 y atlas de ocho columnas por cuatro filas (32 poses). La cerveza Mahou está dibujada dentro del sprite, unida a su mano; no es una imagen superpuesta. La actuación utiliza un gesto discreto de acompañamiento por pulso, sin instrumento, y la marcha reutiliza el sistema existente. Los once atlas anteriores permanecen intactos.
+
+Comprobaciones: `node tests/canero.test.cjs`, `python tests/canero-assets.test.py` y `node tests/run-canero.cjs` (Playwright solo para mantenimiento). El último revisa el controlador real, recompensas y recargas, doce personajes juntos, selección de cinco, vistas de 1440, 390 y 320 píxeles y una actuación de 60 segundos con reloj real. Acepta `GAME_URL` para repetir las pruebas sobre la versión publicada, sin enviar resultados a clasificaciones.
 
 ## Clasificaciones públicas
 

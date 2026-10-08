@@ -63,11 +63,11 @@
       const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));c.fillStyle='#e8bd7e';c.strokeStyle='#342333';c.lineWidth=2;c.beginPath();c.roundRect(-17,-8,34,13,4);c.fill();c.stroke();c.beginPath();c.moveTo(-10,-8);c.lineTo(-5,-16);c.lineTo(9,-16);c.lineTo(14,-8);c.closePath();c.fill();c.stroke();c.fillStyle='#a7c8dc';c.fillRect(-3,-13,9,5);c.fillStyle='#342333';c.beginPath();c.arc(-10,6,4,0,Math.PI*2);c.arc(10,6,4,0,Math.PI*2);c.fill();c.restore();
     }
     character(id,x,y,scale=1,mode='idle',face=1,beatPosition=null){
-      const c=this.ctx,bob=mode==='walk'?Math.round(Math.sin(this.time*14))*2:mode==='victory'?Math.round(Math.abs(Math.sin(this.time*5))*-12):0;
+      const character=D.characters.find(ch=>ch.id===id),c=this.ctx,bob=mode==='walk'?Math.round(Math.sin(this.time*14))*2:mode==='victory'?Math.round(Math.abs(Math.sin(this.time*5))*(character?.kind==='companion'?-3:-12)):0;
       this.ellipse(x,y+2,23*scale,7*scale,'#14182955');c.save();c.translate(Math.round(x),Math.round(y+bob));c.scale(scale,scale);c.imageSmoothingEnabled=false;
       // All animation frames reuse the same canonical face and costume.
-      const character=D.characters.find(ch=>ch.id===id),columns=character?.animationColumns||4;
-      const row={idle:0,walk:1,playing:2,victory:3}[mode]||0,frame=character?.kind==='dancer'&&mode==='playing'&&Number.isFinite(beatPosition)?Math.floor(Math.max(0,beatPosition)*2)%columns:Math.floor(this.time*(mode==='walk'?9:mode==='playing'?7:4))%columns;
+      const columns=character?.animationColumns||4;
+      const row={idle:0,walk:1,playing:2,victory:3}[mode]||0,beatFactor=character?.kind==='dancer'?2:character?.kind==='companion'?1:null,frame=beatFactor&&mode==='playing'&&Number.isFinite(beatPosition)?Math.floor(Math.max(0,beatPosition)*beatFactor)%columns:Math.floor(this.time*(mode==='walk'?9:mode==='playing'&&character?.kind==='companion'?2:mode==='playing'?7:4))%columns;
       if(this.images[id+'-atlas']){const atlas=this.images[id+'-atlas'],w=atlas.naturalWidth/columns,h=atlas.naturalHeight/4;c.drawImage(atlas,frame*w,row*h,w,h,-40,-132,80,133);}
       else if(this.images[id])c.drawImage(this.images[id],-40,-132,80,133);else{this.rect(-22,-76,44,66,'#292635');this.rect(-17,-121,34,40,'#d9a17c');this.line([[-19,-71],[0,-50],[19,-71]],'#ba2b42',8);}
       if(mode==='playing'){this.text('♪',37,-75,24,'#f1c774');this.text('♫',-37,-100,18,'#ead9b6');}

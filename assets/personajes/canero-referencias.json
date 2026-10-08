@@ -1,0 +1,58 @@
+{
+  "id": "canero",
+  "name": "CAÑERO",
+  "kind": "companion",
+  "instrument": null,
+  "prop": "botella Mahou dibujada; etiqueta roja y marca blanca simplificada",
+  "frame": [
+    192,
+    320
+  ],
+  "columns": 8,
+  "rows": [
+    "idle",
+    "walk",
+    "playing",
+    "victory"
+  ],
+  "ground": 315,
+  "immutableHead": [
+    48,
+    0,
+    115,
+    65
+  ],
+  "bottleAndGrip": [
+    25,
+    69,
+    51,
+    123
+  ],
+  "crop": [
+    178,
+    27,
+    919,
+    1509
+  ],
+  "fit": [
+    152,
+    304
+  ],
+  "offset": [
+    20,
+    12
+  ],
+  "reference": "referencias/canero.jpg",
+  "artwork": "ilustraciones/canero-base.png",
+  "referenceSha256": "06a0778af76363dc777caefdc160852c8cdf0e97fe4411afc6a132b8dd664565",
+  "artworkSha256": "031267c1298d75fc0a378e42b070ae11a7e8f9e0ecc754edb1c8e19aa8a96df5",
+  "method": "ImageGen integrado; dibujo de pie basado en identidad de foto sentada. Mismo empaquetado y marcha aprobados.",
+  "traits": [
+    "pelo castaño corto hacia un lado",
+    "rostro ancho sin barba",
+    "sonrisa",
+    "beca roja",
+    "traje negro",
+    "cerveza Mahou"
+  ]
+}
