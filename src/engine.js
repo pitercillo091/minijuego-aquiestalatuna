@@ -55,7 +55,7 @@
       if(this.phase!=='brief'||!this.performance?.allowedCharacters.includes(id))return false;
       const selected=this.performance.selectedCharacters||[];const index=selected.indexOf(id);
       if(index>=0)selected.splice(index,1);
-      else if(selected.length<5)selected.push(id);
+      else if(selected.length<5)selected.push(id);else return false;
       this.performance.selectedCharacters=[...new Set(selected)];this.emit('selection',{selected:this.performance.selectedCharacters});return true;
     }
     begin() { if(this.phase!=='brief')return false;const status=this.selectionStatus();if(!status.valid){this.emit('selection-invalid',{reason:status.reason});return false;}this.performance.selectedCharacters=status.selected;this.phase='playing';this.emit('begin');return true; }

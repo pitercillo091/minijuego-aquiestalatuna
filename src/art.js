@@ -3,7 +3,7 @@
   const D=root.TunaData;
   class Art {
     constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.images={};this.backgrounds={};this.particles=[];this.time=0;
-      D.characters.forEach(c=>{this.load(c.id,`assets/personajes/${c.id}.svg?v=4`);this.load(c.id+'-atlas',`assets/personajes/${c.id}-atlas.png?v=4`);});this.load('escudo','assets/ui/escudo.webp');
+      D.characters.forEach(c=>{const version=c.id==='andres'||c.id==='coki'?'20261008-art1':'6';this.load(c.id,`assets/personajes/${c.id}.svg?v=${version}`);this.load(c.id+'-atlas',`assets/personajes/${c.id}-atlas.png?v=${version}`);});this.load('escudo','assets/ui/escudo.webp');
     }
     load(id,src){const im=new Image();im.onload=()=>{this.images[id]=im;if(id==='escudo')this.backgrounds={};};im.onerror=()=>{this.images[id]=null;};im.src=src;}
     resize(){const dpr=Math.min(2,root.devicePixelRatio||1);if(this.canvas.width!==960*dpr){this.canvas.width=960*dpr;this.canvas.height=540*dpr;}this.ctx.setTransform(dpr,0,0,dpr,0,0);}
@@ -84,7 +84,9 @@
       this.time+=dt;this.resize();const c=this.ctx;this.background(game?.config?.theme||'castle');
       if(!game||['menu'].includes(game.phase)){const spacing=Math.min(83,720/Math.max(1,D.characters.length-1)),start=680-(D.characters.length-1)*spacing/2;D.characters.forEach((ch,i)=>this.character(ch.id,start+i*spacing,452+(i%2)*12,1.05,'playing'));this.text('LA RONDALLA DE LOPERA',697,496,12,'#e7c898');return;}
       if(game.mode==='explore'){
-        game.items.forEach(item=>{if(item.collected)return;const near=Math.hypot(item.x-game.player.x,item.y-game.player.y)<58;this.ellipse(item.x,item.y,27,13,near?'#f5c57955':'#e8bd7c18');if([1,4,8,9].includes(game.level)&&D.characters.some(ch=>ch.id===item.type)){this.character(item.type,item.x,item.y,.52,'idle');}else this.icon(item.type,item.x,item.y-23+Math.sin(this.time*3+item.id)*3,1);this.ellipse(item.x,item.y-63,3,3,'#f5cf80');});
+        const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);
+        if(cast.length===5){this.rect(18,14,248,78,'#201c2bbf',12);this.text('GRUPO EN RUTA',142,32,10,'#e8bd7e');cast.forEach((ch,i)=>this.character(ch.id,48+i*46,84,.36,'idle'));}
+        game.items.forEach(item=>{if(item.collected)return;const near=Math.hypot(item.x-game.player.x,item.y-game.player.y)<58;this.ellipse(item.x,item.y,27,13,near?'#f5c57955':'#e8bd7c18');this.icon(item.type,item.x,item.y-23+Math.sin(this.time*3+item.id)*3,1);this.ellipse(item.x,item.y-63,3,3,'#f5cf80');});
         game.hazards.forEach(h=>{this.ellipse(h.x,h.y,27,13,'#223849bb');this.ellipse(h.x-3,h.y-3,18,6,'#76a4b266');this.line([[h.x-12,h.y],[h.x+4,h.y-3]],'#acceda88',1);});
         const ready=game.items.every(i=>i.collected);this.ellipse(game.stage.x,game.stage.y+43,54,13,ready?'#f3c06d55':'#281e3222');this.text(ready?'♪ ¡A TOCAR!':'EL ESCENARIO',game.stage.x,190,12,ready?'#ffdb8f':'#e9c7a0');
         if(game.path.length){c.setLineDash([3,8]);this.line([[game.player.x,game.player.y],...game.path.map(p=>[p.x,p.y])],'#f6da9588',2);c.setLineDash([]);}

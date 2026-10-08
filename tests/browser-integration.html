@@ -12,13 +12,14 @@ document.getElementById('run').addEventListener('click',async()=>{
   const w=iframe.contentWindow,d=w.document,qa=w.TunaQA,g=qa.game;await qa.musicReady;
   const step=(n,input)=>{for(let t=0;t<n;t+=.01)qa.step(Math.min(.01,n-t),input);};
   const click=selector=>d.querySelector(selector).click();
+  const chooseGroup=()=>{let guard=0;while(g.performance.selectedCharacters.length<5&&guard++<8){const next=[...d.querySelectorAll('[data-character-pick]:not(:disabled)')].find(button=>button.getAttribute('aria-pressed')!=='true');if(!next)break;next.click();}return g.performance.selectedCharacters.length===5;};
   const key=(code,keyValue)=>{d.getElementById('game').focus();d.dispatchEvent(new w.KeyboardEvent('keydown',{code,key:keyValue||code,bubbles:true}));};
   const release=code=>d.dispatchEvent(new w.KeyboardEvent('keyup',{code,bubbles:true}));
   output.textContent='';
   check('Carga inicial',!d.getElementById('home').hidden&&d.querySelectorAll('.character-card').length===7);
   click('[data-character="laud"]');check('Selección de personaje canónico',qa.save.character==='laud');
   const initialSong=qa.audio.track.id;click('#next-song');check('Menú cambia canción sin repetición',qa.audio.track.id!==initialSong);click('[data-level="0"]');check('Empezar partida abre instrucciones',g.phase==='brief'&&d.getElementById('modal').open);
- click('[data-action="begin"]');check('Inicio de nivel',g.phase==='playing');check('Grupo de cinco almacenado en la actuación',g.performance.selectedCharacters.length===5&&new Set(g.performance.selectedCharacters).size===5);
+ click('[data-action="choose-group"]');check('La introducción pasa a selección de grupo',d.querySelector('.party-picker h3')?.textContent==='TUNA: 0/5'&&d.querySelector('[data-action="begin"]').disabled);check('Selecciona cinco músicos',chooseGroup()&&d.querySelector('.party-picker h3')?.textContent==='TUNA: 5/5');const chosen=[...g.performance.selectedCharacters];click('[data-action="begin"]');check('Inicio de nivel y grupo seleccionado',g.phase==='playing'&&JSON.stringify(g.performance.selectedCharacters)===JSON.stringify(chosen)&&chosen.includes(g.collectorCharacter));
   const before=g.player.x;key('KeyD','d');qa.step(.1,{x:1,y:0});release('KeyD');check('Movimiento de teclado',g.player.x>before);
   g.player={x:330,y:338};step(2,{x:1,y:0});check('Colisión con banco',g.player.x<=339.1);
   click('#settings-open');check('Ajustes pausan sin superponer otro diálogo',g.phase==='paused'&&d.getElementById('settings').open&&!d.getElementById('modal').open);
@@ -27,13 +28,15 @@ document.getElementById('run').addEventListener('click',async()=>{
   click('[data-close="settings"]');await new Promise(r=>setTimeout(r,60));check('Ajustes reanudan la partida',g.phase==='playing');
   key('Escape');check('Escape pausa',g.phase==='paused');const time=g.clock;step(3);check('El tiempo no avanza en pausa',g.clock===time);click('[data-action="resume"]');
   g.health=0;qa.step(.01);check('Derrota y pantalla de reintento',g.phase==='defeat'&&d.querySelector('[data-action="retry"]'));
-  click('[data-action="retry"]');check('Reinicio limpia puntuación y objetos',g.phase==='brief'&&g.score===0&&!g.items.some(i=>i.collected));
+  click('[data-action="retry"]');check('Reinicio limpia puntuación y objetos',g.phase==='brief'&&g.score===0&&!g.items.some(i=>i.collected));click('[data-action="choose-group"]');check('El grupo se conserva al repetir la actuación',JSON.stringify(g.performance.selectedCharacters)===JSON.stringify(chosen));
   await qa.audio.unlock();check('Audio real inicializado o alternativa silenciosa',qa.audio.ctx?.state==='running'||qa.audio.available===false);
   // Simulated seconds run faster than audible time: mute after checking audio.
   qa.save.music=false;qa.save.effects=false;qa.audio.stop();
   let scoreTotal=0;
   for(let level=0;level<20;level++){
-   click('[data-action="begin"]');
+   if(!d.querySelector('[data-action="begin"]'))click('[data-action="choose-group"]');
+   check(`Etapa ${level+1}: se eligen cinco antes de salir`,chooseGroup()&&d.querySelector('[data-action="begin"]').disabled===false);
+   const actCast=[...g.performance.selectedCharacters];click('[data-action="begin"]');check(`Etapa ${level+1}: preparación usa personaje del grupo`,actCast.includes(g.collectorCharacter));const pickupLabels=[...d.querySelectorAll('#beacons .beacon:not(.stage)')].map(button=>button.getAttribute('aria-label')||'');check(`Etapa ${level+1}: recogida muestra equipo, no personajes ajenos`,pickupLabels.every(label=>!w.TunaData.characters.some(character=>label.includes(character.name))));
    for(const item of g.items){click(`[data-target="${item.id}"]`);let watchdog=0;while(g.target!==null&&g.phase==='playing'&&watchdog++<3000)qa.step(.01);check(`Etapa ${level+1}: objetivo ${item.id+1} alcanzado`,item.collected);}
    click('[data-target="stage"]');let watchdog=0;while(g.mode!=='rhythm'&&g.phase==='playing'&&watchdog++<3000)qa.step(.01);check(`Etapa ${level+1}: transición musical`,g.mode==='rhythm');check(`Etapa ${level+1}: MIDI correspondiente y teclas progresivas`,qa.audio.track.id===g.config.song&&d.querySelectorAll('[data-lane]').length===g.config.laneCount);
    for(const note of g.notes){step(Math.max(0,note.at-g.clock));const code=w.TunaData.codes[note.lane];if(level===2)key('Space',' ');else if(level===3){const b=d.querySelector(`[data-lane="${note.lane}"]`);b.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,pointerId:1}));}else key(code,code);release(code);qa.step(0);}
@@ -45,6 +48,22 @@ document.getElementById('run').addEventListener('click',async()=>{
   check('Victoria final visible',g.phase==='victory'&&d.getElementById('modal-content').textContent.includes('Una ronda para recordar'));
   const restored=w.TunaEngine.readSave(qa.storage);check('Guardado y desbloqueo de las veinte etapas',restored.unlocked===19&&restored.best.every(n=>n>0)&&restored.stars.every(n=>n===3));
   check('Los diez archivos MIDI cargan en veinte etapas',w.TunaMusic.status.size===10&&Array.from(w.TunaMusic.status.values()).every(x=>x==='archivo'));check('Escudo y sprites cargados',Array.from(d.querySelectorAll('#characters img,.brand img')).every(im=>im.complete&&im.naturalWidth>0));check('Los siete atlas PNG cargan y se usan en el renderer',w.TunaData.characters.length===7&&w.TunaData.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===768));
+  // Force a valid random draw for the restricted event and exercise its real UI.
+  const D=w.TunaData,previousKey=g.performance.key,pairs=D.locations.flatMap(location=>D.events.map(event=>({location,event}))),available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previousKey),benefitIndex=available.findIndex(pair=>pair.event.id==='evento-benefico'),originalRandom=w.Math.random;
+  w.Math.random=()=>((benefitIndex+.25)/available.length);qa.start(0);w.Math.random=originalRandom;
+  check('Generación aleatoria conserva el evento benéfico',g.performance.eventId==='evento-benefico'&&g.performance.event.name==='Evento benéfico');
+  click('[data-action="choose-group"]');const blocked=d.querySelector('[data-character-pick="guitarra"]'),andres=d.querySelector('[data-character-pick="andres"]'),coki=d.querySelector('[data-character-pick="coki"]');
+  check('Pacheco aparece bloqueado con el mensaje solicitado',blocked?.disabled&&blocked.textContent.includes('Pone una escusa para no actuar'));
+  check('Andrés y Coki siguen disponibles en el evento benéfico',andres&&!andres.disabled&&coki&&!coki.disabled);
+  check('Un evento benéfico no permite empezar con menos de cinco',g.performance.selectedCharacters.length===0&&d.querySelector('[data-action="begin"]').disabled);
+  check('Se completa el grupo benéfico con cinco personajes permitidos',chooseGroup()&&g.selectionStatus().valid&&g.performance.selectedCharacters.length===5);
+  d.querySelector('[data-character-pick="laud"]').click();d.querySelector('[data-character-pick="coki"]').click();check('Andrés y Coki pueden formar parte del grupo',g.performance.selectedCharacters.length===5&&g.performance.selectedCharacters.includes('andres')&&g.performance.selectedCharacters.includes('coki'));
+  const benefitCast=[...g.performance.selectedCharacters],sixth=[...d.querySelectorAll('[data-character-pick]:not(:disabled)')].find(button=>button.getAttribute('aria-pressed')!=='true');sixth?.click();
+  check('El sexto personaje no entra en el grupo',g.performance.selectedCharacters.length===5&&benefitCast.every(id=>g.performance.selectedCharacters.includes(id)));
+  const bypass=['guitarra',...g.performance.allowedCharacters.filter(id=>id!=='guitarra').slice(0,4)];g.performance.selectedCharacters=bypass;
+  check('El inicio rechaza Pacheco también si se fuerza en el estado',g.begin()===false&&g.selectionStatus().valid===false);
+  g.performance.selectedCharacters=benefitCast;click('[data-action="begin"]');
+  check('La actuación benéfica conserva el grupo permitido',g.phase==='playing'&&JSON.stringify(g.performance.selectedCharacters)===JSON.stringify(benefitCast)&&benefitCast.length===5&&!benefitCast.includes('guitarra')&&benefitCast.every(id=>g.performance.allowedCharacters.includes(id)));
   await new Promise(r=>setTimeout(r,300));qa.step(0);
   output.textContent=`${passed} comprobaciones correctas · ${failures} fallos\n`+lines.join('\n');document.body.dataset.passed=passed;document.body.dataset.failed=failures;
  }catch(error){failures++;output.textContent+='\nERROR: '+error.stack;document.body.dataset.failed=failures;console.error(error);}

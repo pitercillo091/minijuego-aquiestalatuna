@@ -79,7 +79,7 @@ JUEGO/
   assets/audio/partituras.json  Frases editables y tempos
   assets/audio/generar-midi.py  Exportador MIDI, Python sin dependencias
   assets/audio/FUENTES.md      Procedencia, atribución y alcance musical
-  assets/personajes/           Cinco diseños, cinco atlas y generador
+  assets/personajes/           Siete diseños, siete atlas y generadores
   assets/referencias/          Fotografías optimizadas y referencia del reparto
   assets/ui/escudo.webp        Escudo original optimizado
   PERSONAJES/                  Imagen aportada por el usuario, preservada
@@ -99,7 +99,7 @@ La actuación se crea una sola vez al iniciar una etapa y se conserva en `game.p
 
 ### Selección de grupo
 
-El catálogo incluye siete músicos. Andrés y Coki tienen instrumento `pandereta` y sus fuentes visuales están en `assets/personajes/referencias/andres.png` y `assets/personajes/referencias/coki.png`; sus atlas y SVG siguen el mismo formato de cuatro filas que los cinco personajes originales. Antes de preparar una actuación, el jugador elige exactamente cinco en el panel `ELIGE EL GRUPO`. La selección se guarda en `performance.selectedCharacters` y se reutiliza en recogida, actuación y resultado.
+El catálogo incluye siete músicos. Andrés y Coki tocan la pandereta. Sus referencias originales están en `assets/personajes/referencias/andres.png` y `assets/personajes/referencias/coki.png`; los sprites y las cuatro filas de animación se generan con `assets/personajes/generar_nuevos.py`. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
 
 Las reglas futuras viven en los campos de restricciones del evento. Ahora `evento-benefico` declara `guitarra` como personaje prohibido y muestra `Pone una escusa para no actuar` para Pacheco´s. El motor valida de nuevo el grupo al comenzar, aunque se manipule el estado desde fuera de la interfaz.
 
@@ -122,11 +122,11 @@ Para editar una canción:
 
 ## Personajes y escenarios
 
-Los cinco personajes utilizan las cinco imágenes oficiales adjuntas en la fase de sustitución de personajes: dos guitarristas, el músico de capa negra, el músico de pelo gris largo y el panderetista con gafas. Sus píxeles originales se recortan del fondo, sin redibujar caras, ropa, colores o instrumentos. Las copias originales, máscaras, recortes y huellas están en `assets/personajes/`. Los identificadores del reparto y los menús se conservan.
+Los cinco personajes originales mantienen sus bases y atlas. Andrés y Coki utilizan ilustraciones pixel art creadas con la herramienta ImageGen integrada de ChatGPT, guiada por las fotografías de identidad y el elenco original. Las ilustraciones maestras están en `assets/personajes/ilustraciones/`; las fotografías originales no se convierten ni se cargan como sprites. Los dos llevan traje oscuro y pandereta: Andrés conserva barba y pelo oscuro; Coki conserva gafas de sol, sonrisa y beca roja.
 
 Cada personaje tiene una base SVG con imagen de 192 × 320 y un atlas PNG de 768 × 1280: cuatro columnas por cuatro filas (reposo, caminar, tocar, victoria). Las 16 poses comparten exactamente el rostro y reutilizan los píxeles de la base. Los movimientos de torso y piernas son pequeños; se conservan el salto de victoria y la orientación del dibujado anterior. Se reemplazaron bases y atlas completos. Las fichas y correspondencias con las imágenes están en `docs/PERSONAJES.md`.
 
-Para regenerar, ejecuta `python assets/personajes/generar.py` con Pillow disponible. El generador y `tests/personajes.test.py` requieren Pillow; el juego sigue sin dependencias de producción. Ajusta las máscaras para corregir un recorte y regenera base y atlas juntos. No cambies los identificadores existentes. `tests/personajes-browser.html` muestra todas las animaciones con el renderer real y comprueba el respaldo SVG. La capa negra se genera desde la misma base canónica y se aplica a las 16 poses del atlas, sin cambiar cara, ropa ni proporciones.
+Para volver a empaquetar Andrés y Coki, ejecuta `python assets/personajes/generar_nuevos.py`. Usa las ilustraciones maestras ya generadas y conserva el formato y las funciones de animación de los originales; no genera caras ni aplica filtros a fotografías. Requiere Pillow para mantenimiento, pero jugar no necesita dependencias. `tests/personajes-browser.html` muestra el elenco completo y `tests/sprites-integration.html` comprueba selección, ambos conductores, actuación y resultado. Las referencias, especificación visual, prompts, copia de seguridad y capturas están en `docs/sprites-andres-coki/`.
 
 Las plazas incorporan fachadas claras, macetas, banderines, luces, escenario, micrófonos, altavoces y público animado. Universidad, jardín y fiesta tienen detalles propios. La decoración conserva las rutas y colisiones originales. Para sustituir fotografías cambia `photo`/`reference` en `data.js`; usa imágenes optimizadas y conserva el escudo original.
 

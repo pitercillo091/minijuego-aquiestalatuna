@@ -1,0 +1,36 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Andrés y Coki · recorrido visual</title><style>body{background:#201d2a;color:#f0dfc7;font:14px system-ui;margin:0}header{padding:16px}iframe{border:0;width:100%;height:850px}button{padding:12px}#results{white-space:pre-wrap}#captures img{width:min(960px,100%);display:block;margin:16px auto}#captures p{margin:12px}</style><header><h1>Andrés y Coki · recorrido visual</h1><button id="run" disabled>Probar selección, ambos conductores y actuación</button><div id="results">Cargando juego…</div></header><iframe id="app" src="../index.html?v=20261008-art1#qa" title="Juego real con nuevos sprites"></iframe><section id="captures"></section><script>
+const frame=document.getElementById('app'),run=document.getElementById('run'),results=document.getElementById('results');
+frame.onload=()=>{run.disabled=false;results.textContent='Listo para probar.';};
+run.onclick=async()=>{
+  run.disabled=true;let passed=0;const lines=[];
+  const check=(label,test)=>{if(!test)throw Error(label);passed++;lines.push('PASS '+label);};
+  const capture=(label,d,qa)=>{qa.step(0);const p=document.createElement('p'),im=document.createElement('img');p.textContent=label;im.alt=label;im.src=d.getElementById('game').toDataURL('image/png');document.getElementById('captures').append(p,im);};
+  try{
+    const w=frame.contentWindow,d=w.document,qa=w.TunaQA,g=qa.game;await qa.musicReady;
+    qa.save.music=false;qa.save.effects=false;qa.audio.stop();
+    const click=s=>d.querySelector(s).click();
+    const cast=['andres','coki','pandereta','bandurria','laud'];
+    const step=t=>{for(let dt=0;dt<t;dt+=.01)qa.step(Math.min(.01,t-dt));};
+    for(const driver of ['andres','coki']){
+      qa.start(0);const identity=[g.performance.locationId,g.performance.eventId,g.config.song];
+      click('[data-action="choose-group"]');
+      cast.forEach(id=>click(`[data-character-pick="${id}"]`));
+      check(driver+': selección de cinco, incluidos los dos nuevos',g.selectionStatus().valid&&g.performance.selectedCharacters.join()===cast.join());
+      check(driver+': fichas cargan el arte nuevo',cast.slice(0,2).every(id=>d.querySelector(`[data-character-pick="${id}"] img`).src.includes('20261008-art1')));
+      click('[data-action="begin"]');
+      check(driver+': conductor por rotación',g.collectorCharacter===driver);
+      capture(driver+' · recogida',d,qa);
+      for(const item of g.items){click(`[data-target="${item.id}"]`);let guard=0;while(g.target!==null&&g.phase==='playing'&&guard++<3000)qa.step(.01);check(driver+': instrumento '+item.id,item.collected);}
+      click('[data-target="stage"]');let guard=0;while(g.mode!=='rhythm'&&g.phase==='playing'&&guard++<3000)qa.step(.01);
+      check(driver+': actuación con ambos sprites nuevos',g.mode==='rhythm'&&g.performance.selectedCharacters.join()===cast.join());
+      capture(driver+' · actuación',d,qa);
+      for(const note of g.notes){step(Math.max(0,note.at-g.clock));const code=w.TunaData.codes[note.lane];d.dispatchEvent(new w.KeyboardEvent('keydown',{code,key:code,bubbles:true}));d.dispatchEvent(new w.KeyboardEvent('keyup',{code,bubbles:true}));qa.step(0);}
+      step(Math.max(0,g.duration-g.clock)+.01);
+      check(driver+': resultado conserva grupo, canción y encargo',g.phase==='result'&&g.performance.selectedCharacters.join()===cast.join()&&JSON.stringify(identity)===JSON.stringify([g.performance.locationId,g.performance.eventId,g.config.song]));
+      capture(driver+' · resultado',d,qa);
+      check(driver+': atlas artístico cargado',cast.slice(0,2).every(id=>qa.art.images[id+'-atlas'].src.includes('20261008-art1')));
+    }
+    results.textContent=passed+' comprobaciones correctas · 0 fallos\n'+lines.join('\n');document.body.dataset.passed=passed;document.body.dataset.failed=0;
+  }catch(e){results.textContent=lines.join('\n')+'\nFAIL '+e.message;document.body.dataset.failed=1;console.error(e);}
+};
+</script></html>

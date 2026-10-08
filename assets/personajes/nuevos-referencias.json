@@ -1,0 +1,99 @@
+[
+  {
+    "id": "andres",
+    "reference": "referencias/andres.png",
+    "referenceSha256": "b4c74d27e791e1a2f578a61a6f7b91c0ef2e077588f2551b4a0caa99d0218e41",
+    "artwork": "ilustraciones/andres-base.png",
+    "artworkSha256": "ff26866141785ade712048834fde7d8be12b3adc7d3af18e51e6a068249759a7",
+    "rendering": "Ilustración artística generada con ImageGen integrado; fotos solo como referencia de identidad.",
+    "frame": [
+      192,
+      320
+    ],
+    "rows": [
+      "idle",
+      "walk",
+      "playing",
+      "victory"
+    ],
+    "crop": [
+      151,
+      81,
+      800,
+      1560
+    ],
+    "fit": [
+      133,
+      304
+    ],
+    "offset": [
+      29,
+      12
+    ],
+    "immutableHead": [
+      0,
+      0,
+      192,
+      96
+    ],
+    "ground": 315,
+    "traits": [
+      "pandereta",
+      "traje negro"
+    ],
+    "distinguishingTraits": [
+      "pelo oscuro",
+      "barba poblada",
+      "rostro ancho"
+    ]
+  },
+  {
+    "id": "coki",
+    "reference": "referencias/coki.png",
+    "referenceSha256": "aed695c25064ac152bc0c7fc61f12b7130fae416bde6dc549f17b663ebbdb55d",
+    "artwork": "ilustraciones/coki-base.png",
+    "artworkSha256": "1177113a8ef1406a9545deab43b98f4202f23695f54b7c65a2900eaecca96fc7",
+    "rendering": "Ilustración artística generada con ImageGen integrado; fotos solo como referencia de identidad.",
+    "frame": [
+      192,
+      320
+    ],
+    "rows": [
+      "idle",
+      "walk",
+      "playing",
+      "victory"
+    ],
+    "crop": [
+      157,
+      73,
+      814,
+      1570
+    ],
+    "fit": [
+      133,
+      304
+    ],
+    "offset": [
+      29,
+      12
+    ],
+    "immutableHead": [
+      0,
+      0,
+      192,
+      96
+    ],
+    "ground": 315,
+    "traits": [
+      "pandereta",
+      "traje negro"
+    ],
+    "distinguishingTraits": [
+      "pelo corto",
+      "gafas de sol",
+      "sonrisa",
+      "beca roja"
+    ]
+  }
+]
