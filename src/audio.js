@@ -17,7 +17,7 @@
   const set=(p,v,t)=>{if(!p)return;if(typeof p.setValueAtTime==='function')p.setValueAtTime(v,t);else p.value=v};
   const ramp=(p,m,v,t)=>{if(p&&typeof p[m]==='function')p[m](v,t);else if(p)p.value=v};
   class AudioBus{
-    constructor(settings){this.settings=settings;this.ctx=null;this.available=true;this.nodes=new Set;this.bag=[];this.lastRandom=settings.lastSong||null;this.track=null;this.sequence=0;this.cursor=0;this.cycle=0;this.chainReady=false;this.recordingBuffers=new Map;this.recordingLoads=new Map;this.recordingTransport=null;this.recordingRequest=0}
+    constructor(settings){this.settings=settings;this.ctx=null;this.available=true;this.nodes=new Set;this.bag=[];this.lastRandom=settings.lastSong||null;this.track=null;this.sequence=0;this.cursor=0;this.cycle=0;this.chainReady=false;this.recordingBuffers=new Map;this.recordingLoads=new Map;this.recordingTransport=null;this.recordingRequest=0;this.ambientElement=null;this.ambientSource=null;this.ambientContext=null;this.ambientWanted=false;this.ambientBag=[];this.lastAmbient=null}
     calibratedMaster(){const value=clamp(this.settings.volume);return value===0?0:.84*Math.pow(value,.72)}
     makeChain(){
       if(this.chainReady)return;
@@ -33,7 +33,7 @@
     }
     async unlock(){
       if(!this.available&&!this.ctx)return;
-      try{if(!this.ctx){const Context=root.AudioContext||root.webkitAudioContext;if(!Context){this.available=false;return}this.ctx=new Context;this.makeChain()}if(this.ctx.state==='suspended'||this.ctx.state==='interrupted')await this.ctx.resume();if(this.ctx.state==='running')this.available=true;}catch{this.available=false}
+      try{if(!this.ctx){const Context=root.AudioContext||root.webkitAudioContext;if(!Context){this.available=false;return}this.ctx=new Context;this.makeChain()}if(this.ctx.state==='suspended'||this.ctx.state==='interrupted')await this.ctx.resume();if(this.ctx.state==='running'){this.available=true;if(this.ambientWanted)this.playAmbient().catch(()=>{});}}catch{this.available=false}
     }
     async resume(){return this.unlock()}
     volume(){if(this.master&&this.ctx){const value=this.calibratedMaster(),now=this.ctx.currentTime;if(typeof this.master.gain.setTargetAtTime==='function')this.master.gain.setTargetAtTime(value,now,.02);else set(this.master.gain,value,now)}}
@@ -51,7 +51,11 @@
     effect(type){if(!this.settings.effects)return;const sounds={collect:[523,659,784],hit:[880],damage:[140,100],wrong:[160],miss:[190],result:[523,659,784,1047],victory:[523,659,784,1047,1319],defeat:[330,294,220]};(sounds[type]||[]).forEach((f,i)=>this.tone(f,.16,i*.08,'sine',.34,'effects'))}
     random(){if(!this.bag.length||(this.bag.length===1&&this.bag[0]===this.lastRandom)){this.bag=root.TunaSongs.map(s=>s.id);for(let i=this.bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[this.bag[i],this.bag[j]]=[this.bag[j],this.bag[i]]}}let index=this.bag.length-1;if(this.bag[index]===this.lastRandom&&index>0)index--;this.lastRandom=this.bag.splice(index,1)[0];this.settings.lastSong=this.lastRandom;return this.lastRandom}
     select(id,{loop=false,offset=0,context='performance',end=null}={}){this.stop();this.track=root.TunaMusic.get(id);this.loop=loop;this.offset=offset;this.trim=this.track.trimBefore||0;this.context=context;this.end=end;this.sequence++;this.cursor=0;this.cycle=0;this.anchor=null;this.title=this.track.title;this.lastRandom=id;this.settings.lastSong=id}
-    ambient(context){this.select(this.random(),{loop:true,context})}
+    randomAmbient(){const tracks=root.TunaAmbientRecordings?.tracks||[];if(!tracks.length)return null;if(!this.ambientBag.length){this.ambientBag=tracks.map(t=>t.id);for(let i=this.ambientBag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[this.ambientBag[i],this.ambientBag[j]]=[this.ambientBag[j],this.ambientBag[i]]}if(this.ambientBag.length>1&&this.ambientBag.at(-1)===this.lastAmbient)[this.ambientBag[0],this.ambientBag[this.ambientBag.length-1]]=[this.ambientBag.at(-1),this.ambientBag[0]];}const id=this.ambientBag.pop();this.lastAmbient=id;return tracks.find(t=>t.id===id)||tracks[0]}
+    ambient(context){this.stop();this.ambientWanted=true;this.ambientContext=context;this.ambientConfig=this.randomAmbient();this.title=this.ambientConfig?.title||'Música de Tuna · MP3';this.playAmbient().catch(()=>{})}
+    resumeAmbient(){if(!this.ambientConfig)this.ambientConfig=this.randomAmbient();this.ambientWanted=true;this.playAmbient().catch(()=>{})}
+    async playAmbient(){if(!this.ambientWanted||!this.settings.music||!this.ambientConfig)return;await this.unlockContextOnly();if(!this.ctx||this.ctx.state!=='running')return;if(!this.ambientElement){const element=new Audio();element.preload='none';element.crossOrigin='anonymous';this.ambientElement=element;this.ambientSource=this.ctx.createMediaElementSource(element);this.ambientSource.connect(this.musicGain);}const element=this.ambientElement,sameTrack=element.dataset.track===this.ambientConfig.id;if(!element.paused&&sameTrack)return;if(!sameTrack){element.pause();element.dataset.track=this.ambientConfig.id;element.src=this.ambientConfig.file;element.currentTime=0;}element.onended=()=>{if(!this.ambientWanted)return;this.ambientConfig=this.randomAmbient();this.title=this.ambientConfig?.title||'Música de Tuna · MP3';this.playAmbient().catch(()=>{})};element.onerror=()=>{if(!this.ambientWanted)return;this.ambientConfig=this.randomAmbient();this.title=this.ambientConfig?.title||'Música de Tuna · MP3';setTimeout(()=>this.playAmbient().catch(()=>{}),250)};try{await element.play()}catch{}}
+    async unlockContextOnly(){try{if(!this.ctx){const Context=root.AudioContext||root.webkitAudioContext;if(!Context){this.available=false;return}this.ctx=new Context;this.makeChain()}if(this.ctx.state==='suspended'||this.ctx.state==='interrupted')await this.ctx.resume();if(this.ctx.state==='running')this.available=true;}catch{this.available=false}}
     async prepareRecording(config){
       if(this.recordingBuffers.has(config.audioFile))return this.recordingBuffers.get(config.audioFile);
       if(this.recordingLoads.has(config.audioFile))return this.recordingLoads.get(config.audioFile);
@@ -139,7 +143,7 @@
       if(this.loop&&current>duration*(this.cycle+1)){this.cycle++;this.cursor=this.track.notes.findIndex(n=>n.at>=this.trim-.04);if(this.cursor<0)this.cursor=this.track.notes.length}
       if(this.loop&&this.cycle>=1&&this.context!=='performance')this.ambient(this.context)
     }
-    stop(){this.recordingRequest++;this.releaseRecordingSource(this.recordingTransport);this.recordingTransport=null;this.nodes.forEach(o=>{try{o.stop()}catch{}});this.nodes.clear();this.anchor=null}
+    stop(){this.ambientWanted=false;if(this.ambientElement){this.ambientElement.pause();this.ambientElement.onended=null;this.ambientElement.onerror=null}this.recordingRequest++;this.releaseRecordingSource(this.recordingTransport);this.recordingTransport=null;this.nodes.forEach(o=>{try{o.stop()}catch{}});this.nodes.clear();this.anchor=null}
   }
   root.TunaAudio=AudioBus
 })(globalThis);
