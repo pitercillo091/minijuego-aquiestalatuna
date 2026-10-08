@@ -17,7 +17,7 @@
   const set=(p,v,t)=>{if(!p)return;if(typeof p.setValueAtTime==='function')p.setValueAtTime(v,t);else p.value=v};
   const ramp=(p,m,v,t)=>{if(p&&typeof p[m]==='function')p[m](v,t);else if(p)p.value=v};
   class AudioBus{
-    constructor(settings){this.settings=settings;this.ctx=null;this.available=true;this.nodes=new Set;this.bag=[];this.lastRandom=settings.lastSong||null;this.track=null;this.sequence=0;this.cursor=0;this.cycle=0;this.chainReady=false}
+    constructor(settings){this.settings=settings;this.ctx=null;this.available=true;this.nodes=new Set;this.bag=[];this.lastRandom=settings.lastSong||null;this.track=null;this.sequence=0;this.cursor=0;this.cycle=0;this.chainReady=false;this.recordingBuffers=new Map;this.recordingLoads=new Map;this.recordingTransport=null;this.recordingRequest=0}
     calibratedMaster(){const value=clamp(this.settings.volume);return value===0?0:.84*Math.pow(value,.72)}
     makeChain(){
       if(this.chainReady)return;
@@ -32,8 +32,8 @@
       this.chainReady=true
     }
     async unlock(){
-      if(!this.available)return;
-      try{if(!this.ctx){const Context=root.AudioContext||root.webkitAudioContext;if(!Context){this.available=false;return}this.ctx=new Context;this.makeChain()}if(this.ctx.state==='suspended'||this.ctx.state==='interrupted')await this.ctx.resume()}catch{this.available=false}
+      if(!this.available&&!this.ctx)return;
+      try{if(!this.ctx){const Context=root.AudioContext||root.webkitAudioContext;if(!Context){this.available=false;return}this.ctx=new Context;this.makeChain()}if(this.ctx.state==='suspended'||this.ctx.state==='interrupted')await this.ctx.resume();if(this.ctx.state==='running')this.available=true;}catch{this.available=false}
     }
     async resume(){return this.unlock()}
     volume(){if(this.master&&this.ctx){const value=this.calibratedMaster(),now=this.ctx.currentTime;if(typeof this.master.gain.setTargetAtTime==='function')this.master.gain.setTargetAtTime(value,now,.02);else set(this.master.gain,value,now)}}
@@ -52,7 +52,85 @@
     random(){if(!this.bag.length||(this.bag.length===1&&this.bag[0]===this.lastRandom)){this.bag=root.TunaSongs.map(s=>s.id);for(let i=this.bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[this.bag[i],this.bag[j]]=[this.bag[j],this.bag[i]]}}let index=this.bag.length-1;if(this.bag[index]===this.lastRandom&&index>0)index--;this.lastRandom=this.bag.splice(index,1)[0];this.settings.lastSong=this.lastRandom;return this.lastRandom}
     select(id,{loop=false,offset=0,context='performance',end=null}={}){this.stop();this.track=root.TunaMusic.get(id);this.loop=loop;this.offset=offset;this.trim=this.track.trimBefore||0;this.context=context;this.end=end;this.sequence++;this.cursor=0;this.cycle=0;this.anchor=null;this.title=this.track.title;this.lastRandom=id;this.settings.lastSong=id}
     ambient(context){this.select(this.random(),{loop:true,context})}
+    async prepareRecording(config){
+      if(this.recordingBuffers.has(config.audioFile))return this.recordingBuffers.get(config.audioFile);
+      if(this.recordingLoads.has(config.audioFile))return this.recordingLoads.get(config.audioFile);
+      const load=(async()=>{
+        await this.unlock();if(!this.ctx)throw new Error('Este navegador no permite reproducir el MP3.');
+        const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
+        try{
+          const response=await fetch(config.audioFile,{signal:controller.signal});
+          if(!response.ok)throw new Error('No se pudo cargar la grabación.');
+          const bytes=await response.arrayBuffer();
+          if(root.crypto?.subtle&&config.audioSha256){const digest=await root.crypto.subtle.digest('SHA-256',bytes);const hash=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');if(hash!==config.audioSha256)throw new Error('La grabación no coincide con su mapa de notas.');}
+          // Callback form also supports older Safari; decode only once. Keep
+          // only the selected PCM fragment, releasing the full-song buffer.
+          const decoded=await new Promise((resolve,reject)=>this.ctx.decodeAudioData(bytes,resolve,reject));
+          const start=Math.round(config.sourceOffset*decoded.sampleRate),length=Math.round(config.playableSeconds*decoded.sampleRate);
+          if(start+length>decoded.length)throw new Error('La grabación no contiene el fragmento completo.');
+          const excerpt=this.ctx.createBuffer(decoded.numberOfChannels,length,decoded.sampleRate);
+          for(let c=0;c<decoded.numberOfChannels;c++)excerpt.getChannelData(c).set(decoded.getChannelData(c).subarray(start,start+length));
+          this.recordingBuffers.clear();this.recordingBuffers.set(config.audioFile,excerpt);return excerpt;
+        }finally{clearTimeout(timer);}
+      })();
+      this.recordingLoads.set(config.audioFile,load);
+      try{return await load;}finally{this.recordingLoads.delete(config.audioFile);}
+    }
+    async selectRecording(config,position=-config.leadInSeconds){
+      this.stop();const request=this.recordingRequest;
+      const transport={config,position,anchor:null,source:null,gain:null,status:'loading',buffer:null,error:null};
+      this.recordingTransport=transport;this.track=null;this.context='recording';this.title=config.title+' · MP3';
+      try{transport.buffer=await this.prepareRecording(config);if(request!==this.recordingRequest)return;transport.status='ready';}
+      catch(error){if(request===this.recordingRequest){transport.status='error';transport.error=error.message;}}
+    }
+    outputTime(){
+      const ctx=this.ctx;
+      if(typeof ctx.getOutputTimestamp==='function'){
+        const ts=ctx.getOutputTimestamp();
+        if(ts.contextTime>0&&ts.performanceTime>0)return Math.min(ctx.currentTime,ts.contextTime+(performance.now()-ts.performanceTime)/1000);
+      }
+      return ctx.currentTime-Math.max(0,(ctx.outputLatency||0)+(ctx.baseLatency||0));
+    }
+    recordingClock(){
+      const t=this.recordingTransport;if(!t)return null;
+      if(t.anchor!==null&&this.ctx.state==='running')t.position=Math.min(t.config.playableSeconds,Math.max(t.position,this.outputTime()-t.anchor-.006));
+      return t.position;
+    }
+    releaseRecordingSource(t){
+      if(t?.source){const source=t.source;t.source=null;try{source.stop();source.disconnect();t.gain.disconnect();}catch{}}
+      if(t)t.gain=null;
+    }
+    pauseRecording(){
+      const t=this.recordingTransport;if(!t)return;
+      this.recordingClock();this.releaseRecordingSource(t);t.anchor=null;
+      if(t.status==='playing'||t.status==='ready')t.status='ready';
+    }
+    recordingVolume(){
+      const t=this.recordingTransport;if(!t?.gain||t.muted===!this.settings.music)return;
+      t.muted=!this.settings.music;
+      // Muting the music must not remove the authoritative playback clock.
+      const now=this.ctx.currentTime,base=t.muted?0:t.config.recordingGain;
+      t.gain.gain.cancelScheduledValues(now);t.gain.gain.setTargetAtTime(base,now,.01);
+      const end=t.anchor+t.config.playableSeconds;
+      t.gain.gain.setValueAtTime(base,Math.max(now+.03,end-t.config.fadeOutSeconds));t.gain.gain.linearRampToValueAtTime(0,end);
+    }
+    updateRecording(game){
+      const t=this.recordingTransport;if(!t||game.phase!=='playing')return;
+      if(t.status==='ready'&&this.ctx?.state==='running'){
+        const pos=Math.max(0,t.position),when=this.ctx.currentTime+Math.max(.04,-t.position),left=t.config.playableSeconds-pos;
+        if(left<=0)return;
+        const source=this.ctx.createBufferSource(),gain=this.ctx.createGain();source.buffer=t.buffer;
+        t.source=source;t.gain=gain;t.anchor=when-pos;t.status='playing';t.muted=!this.settings.music;
+        const base=t.muted?0:t.config.recordingGain;
+        set(gain.gain,0,when);ramp(gain.gain,'linearRampToValueAtTime',base,when+.012);
+        set(gain.gain,base,Math.max(when+.012,t.anchor+t.config.playableSeconds-t.config.fadeOutSeconds));ramp(gain.gain,'linearRampToValueAtTime',0,t.anchor+t.config.playableSeconds);
+        source.connect(gain);gain.connect(this.musicGain);source.start(when,pos,left);
+        source.onended=()=>{try{source.disconnect();gain.disconnect();}catch{}if(t.source===source){t.source=null;t.gain=null;}};
+      }
+      this.recordingVolume();this.recordingClock();
+    }
     update(game){
+      if(this.recordingTransport){this.updateRecording(game);return;}
       if(!this.ctx||this.ctx.state!=='running'||!this.settings.music||!this.track)return;if(this.context==='performance'&&game.phase!=='playing')return;if(this.context==='explore'&&game.phase!=='playing')return;
       const clock=this.context==='performance'?game.clock-this.offset:null;if(clock!==null&&clock<-.08){this.anchor=null;return}if(clock!==null&&this.anchor!==null&&Math.abs(this.ctx.currentTime-this.anchor-clock)>.12)this.stop();
       if(this.anchor===null){const pos=Math.max(0,clock||0);this.anchor=this.ctx.currentTime-pos;this.cursor=this.track.notes.findIndex(n=>n.at>=this.trim+pos-.04);if(this.cursor<0)this.cursor=this.track.notes.length}
@@ -61,7 +139,7 @@
       if(this.loop&&current>duration*(this.cycle+1)){this.cycle++;this.cursor=this.track.notes.findIndex(n=>n.at>=this.trim-.04);if(this.cursor<0)this.cursor=this.track.notes.length}
       if(this.loop&&this.cycle>=1&&this.context!=='performance')this.ambient(this.context)
     }
-    stop(){this.nodes.forEach(o=>{try{o.stop()}catch{}});this.nodes.clear();this.anchor=null}
+    stop(){this.recordingRequest++;this.releaseRecordingSource(this.recordingTransport);this.recordingTransport=null;this.nodes.forEach(o=>{try{o.stop()}catch{}});this.nodes.clear();this.anchor=null}
   }
   root.TunaAudio=AudioBus
 })(globalThis);

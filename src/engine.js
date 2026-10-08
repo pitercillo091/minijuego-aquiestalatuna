@@ -2,10 +2,11 @@
   'use strict';
   const D = typeof module !== 'undefined' && module.exports ? require('./data.js') : root.TunaData;
   const Music = typeof module !== 'undefined' && module.exports ? require('./midi.js') : root.TunaMusic;
+  const Recordings = typeof module !== 'undefined' && module.exports ? require('./recordings.js') : root.TunaRecordings;
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
   const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
   const positions = [[230,390],[465,245],[680,420],[330,480],[710,210]];
-  const PERFORMANCE_DURATION = 40;
+  const PERFORMANCE_DURATION = 60;
   const obstacles = [{x:355,y:315,w:100,h:55},{x:580,y:320,w:80,h:50}];
   function blocked(x,y) { return x<35 || x>925 || y<205 || y>505 || obstacles.some(o=>x>o.x-16&&x<o.x+o.w+16&&y>o.y-13&&y<o.y+o.h+13); }
   // Small grid A*: touch navigation obeys the same collision map as keyboard movement.
@@ -42,7 +43,7 @@
       const previousKey=this.performance?.key;this.level=clamp(level,0,D.levels.length-1); this.config=D.levels[this.level];if(!preservePerformance||!this.performance||this.performance.levelId!==this.config.id)this.performance=D.createPerformance(this.config,previousKey,this.progress);this.phase='brief'; this.mode='explore';this.clock=0;this.health=100;this.remaining=this.config.time;
       this.score=0;this.combo=0;this.bestCombo=0;this.hits=0;this.perfects=0;this.misses=0;this.lastHit=-10;this.invulnerable=0;this.flash=null;this.path=[];this.target=null;
       this.player={x:105,y:440,face:1,moving:false};this.items=this.config.items.map((type,i)=>({id:i,type,x:positions[i][0],y:positions[i][1],collected:false}));
-      this.stage={x:835,y:245};this.hazards=Array.from({length:this.config.hazards},(_,i)=>({x:0,y:0,index:i,r:22}));this.notes=[];this.emit('load');
+      this.stage={x:835,y:245};this.hazards=Array.from({length:this.config.hazards},(_,i)=>({x:0,y:0,index:i,r:22}));this.notes=[];this.recording=null;this.emit('load');
     }
     selectionStatus(ids=this.performance?.selectedCharacters||[]) {
       const selected=Array.isArray(ids)?ids:[ ];
@@ -79,13 +80,21 @@
     }
     startRhythm() {
       this.mode='rhythm';this.clock=0;this.combo=0;this.lastHit=-10;this.health=Math.max(this.health,75);this.path=[];
+      this.recording=Recordings?.get(this.config.song);
+      if(this.recording){
+        const chart=Recordings.chart(this.recording,this.config);
+        this.clock=-this.recording.leadInSeconds;this.musicOffset=0;this.beat=60/this.recording.bpmApproximate;this.laneCount=chart.laneCount;
+        this.notes=chart.notes.map((n,i)=>({id:i,lane:n.lane,at:n.at+this.recording.chartOffsetSeconds,type:n.type,judged:false,sounded:false}));
+        this.duration=this.recording.playableSeconds;this.emit('rhythm');return;
+      }
       const song=Music.get(this.config.song);this.beat=60/this.config.bpm;this.musicOffset=3;this.laneCount=this.config.laneCount;
       // Build a repeating phrase from the real MIDI melody. Some source files
-      // end before the fixed 40-second performance, so the phrase is repeated
+      // end before the fixed 60-second performance, so the phrase is repeated
       // at its musical span instead of leaving an empty final section.
       const trimBefore=song.trimBefore||0;const source=song.melody.filter(n=>n.at>=trimBefore).map(n=>({...n,at:n.at-trimBefore})).sort((a,b)=>a.at-b.at), firstAt=source[0]?.at||0;
       const lastAt=source[source.length-1]?.at||firstAt, span=Math.max(this.beat*4,lastAt-firstAt);
       const candidates=[];
+      const targetNotes=Math.ceil(this.config.notes*PERFORMANCE_DURATION/40);
       for(let cycle=0;cycle<32;cycle++){
         for(const n of source){
           const rel=n.at-firstAt+cycle*span, at=this.musicOffset+rel;
@@ -98,15 +107,15 @@
       const filtered=[];let last=-Infinity;
       for(const n of candidates){if(n.at-last+1e-6<this.config.minGap)continue;filtered.push(n);last=n.at;}
       const chosen=[];
-      if(filtered.length>=this.config.notes){
-        for(let i=0;i<this.config.notes;i++){const index=Math.min(filtered.length-1,Math.round(i*(filtered.length-1)/Math.max(1,this.config.notes-1)));chosen.push(filtered[index]);}
+      if(filtered.length>=targetNotes){
+        for(let i=0;i<targetNotes;i++){const index=Math.min(filtered.length-1,Math.round(i*(filtered.length-1)/Math.max(1,targetNotes-1)));chosen.push(filtered[index]);}
       }else{
         // Dense arrangements can still have too few distinct onsets after the
         // level gap is applied. Spread the requested notes over the full
         // window and inherit pitch/duration from the nearest real phrase onset.
         const pool=candidates.length?candidates:source;const spanEnd=PERFORMANCE_DURATION-.55;
-        for(let i=0;i<this.config.notes;i++){
-          const at=this.musicOffset+(spanEnd-this.musicOffset)*i/Math.max(1,this.config.notes-1);
+        for(let i=0;i<targetNotes;i++){
+          const at=this.musicOffset+(spanEnd-this.musicOffset)*i/Math.max(1,targetNotes-1);
           const base=pool.reduce((best,n)=>Math.abs((n.at??(this.musicOffset+n.rel))-at)<Math.abs((best.at??(this.musicOffset+best.rel))-at)?n:best,pool[0]);
           chosen.push({...base,at});
         }
@@ -126,9 +135,9 @@
       const earned=Math.round((perfect?120:80)*(1+Math.min(3,Math.floor(this.combo/8))*.25));this.score+=earned;
       this.flash={text:perfect?'¡Clavado!':'¡A compás!',kind:perfect?'perfect':'good',life:.55};this.emit('hit',{lane,earned,perfect});
     }
-    tick(dt,input={x:0,y:0}) {
+    tick(dt,input={x:0,y:0},audioClock=null) {
       if(this.phase!=='playing')return;
-      dt=clamp(Number.isFinite(dt)?dt:0,0,.1);this.clock+=dt;this.invulnerable=Math.max(0,this.invulnerable-dt);if(this.flash){this.flash.life-=dt;if(this.flash.life<=0)this.flash=null;}
+      dt=clamp(Number.isFinite(dt)?dt:0,0,.1);if(this.recording&&Number.isFinite(audioClock))this.clock=clamp(audioClock,-this.recording.leadInSeconds,this.duration);else this.clock+=dt;this.invulnerable=Math.max(0,this.invulnerable-dt);if(this.flash){this.flash.life-=dt;if(this.flash.life<=0)this.flash=null;}
       if(this.mode==='explore') {
         this.remaining-=dt;let mx=input.x||0,my=input.y||0;
         if(mx||my){this.path=[];this.target=null;}

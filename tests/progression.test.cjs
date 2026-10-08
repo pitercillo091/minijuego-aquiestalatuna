@@ -28,6 +28,6 @@ test('Level and charity rules are validated in the engine against tampered UI li
 test('Dancer remains in a stable five-person act without a personal instrument',()=>{
  const save=E.readSave(storage({version:2,unlocked:12})),g=new E.Game({progress:save});g.start(2);g.performance.eventId='evento-benefico';g.performance.event=D.events.find(e=>e.id===g.performance.eventId);D.refreshPerformanceAvailability(g.performance,save);
  const ids=['pedro-v','pena','ponder','coki','legia'];ids.forEach(id=>assert.ok(g.toggleCharacter(id)));assert.equal(g.toggleCharacter('andres'),false);assert.ok(g.begin());const act=g.performance;assert.equal(D.characters.find(c=>c.id==='pedro-v').instrument,null);assert.ok(g.items.every(i=>i.type!=='pedro-v'&&i.type!=='bailarin'));
- g.items.forEach(i=>i.collected=true);g.startRhythm();assert.equal(g.duration,40);assert.strictEqual(g.performance,act);assert.deepEqual(act.selectedCharacters,ids);assert.ok(g.notes.some(n=>n.at>39));g.pause();g.resume();g.retry();assert.strictEqual(g.performance,act);assert.deepEqual(act.selectedCharacters,ids);
+  g.items.forEach(i=>i.collected=true);g.startRhythm();assert.equal(g.duration,60);assert.strictEqual(g.performance,act);assert.deepEqual(act.selectedCharacters,ids);assert.ok(g.notes.some(n=>n.at>57));g.pause();g.resume();g.retry();assert.strictEqual(g.performance,act);assert.deepEqual(act.selectedCharacters,ids);
 });
 console.log(`${passed} progression suites passed`);

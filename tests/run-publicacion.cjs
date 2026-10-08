@@ -25,7 +25,7 @@ const root=process.env.GAME_URL||'http://127.0.0.1:8765/',out=path.join(__dirnam
    await page.locator('[data-target="stage"]').click();await page.waitForFunction(()=>document.getElementById('play-area').dataset.mode==='rhythm',{timeout:12000});
    await page.screenshot({path:path.join(out,`${root.startsWith('https')?'online':'local'}-actuacion-real.png`)});
    const start=Date.now();let pressed=0;
-   while(Date.now()-start<46000&&!await page.locator('.result-cast').count()){
+   while(Date.now()-start<66000&&!await page.locator('.result-cast').count()){
     const text=await page.locator('#next-note').textContent(),seconds=Number(text.match(/([\d.]+) s/)?.[1]);
     if(Number.isFinite(seconds)&&seconds<=.14){await page.locator('#game').focus();await page.keyboard.press('Space');pressed++;}
     await page.waitForTimeout(60);
