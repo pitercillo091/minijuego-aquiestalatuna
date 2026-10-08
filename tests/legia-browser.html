@@ -1,0 +1,50 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LEGÍA · pruebas reales</title><style>body{background:#201d2a;color:#f0dfc7;font:14px system-ui;margin:0}header{padding:16px}iframe{border:0;width:100%;height:860px}button{padding:12px}#results{white-space:pre-wrap;max-height:220px;overflow:auto}#captures img{width:min(960px,100%);display:block;margin:16px auto}#captures p{margin:12px}</style><header><h1>LEGÍA · selección y actuación</h1><button id="run" disabled>Probar LEGÍA y el grupo completo</button><div id="results">Cargando…</div></header><iframe id="app" src="../index.html?v=20261008-legia1#qa" title="Juego real con LEGÍA" allow="autoplay"></iframe><section id="captures"></section><script>
+const iframe=document.getElementById('app'),run=document.getElementById('run'),output=document.getElementById('results');
+iframe.onload=()=>{run.disabled=false;output.textContent='Listo para probar.';};
+run.onclick=async()=>{
+ run.disabled=true;let passed=0;const lines=[];
+ const check=(text,yes)=>{if(!yes)throw Error(text);passed++;lines.push('PASS '+text);};
+ try{
+  const w=iframe.contentWindow,d=w.document,qa=w.TunaQA,g=qa.game,D=w.TunaData;await qa.musicReady;
+  qa.save.music=false;qa.save.effects=false;qa.audio.stop();
+  const click=selector=>d.querySelector(selector).click();
+  const pick=id=>click(`[data-character-pick="${id}"]`);
+  const step=seconds=>{for(let t=0;t<seconds;t+=.01)qa.step(Math.min(.01,seconds-t));};
+  const capture=label=>{qa.step(0);const p=document.createElement('p'),im=document.createElement('img');p.textContent=label;im.alt=label;im.src=d.getElementById('game').toDataURL('image/png');document.getElementById('captures').append(p,im);};
+  const startEvent=id=>{let guard=0;do{qa.start(0);}while((id==='normal'?g.performance.eventId==='evento-benefico':g.performance.eventId!==id)&&++guard<300);check('Encargo '+id,guard<300);click('[data-action="choose-group"]');};
+  check('Ocho personajes en el menú',d.querySelectorAll('[data-character]').length===8);
+  check('LEGÍA carga SVG y atlas artístico',qa.art.images.legia?.naturalWidth===192&&qa.art.images['legia-atlas']?.naturalWidth===768);
+  check('Los siete atlas anteriores siguen cargando',D.characters.filter(c=>c.id!=='legia').every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===768));
+  startEvent('normal');
+  check('Ocho fichas y contador 0/5',d.querySelectorAll('[data-character-pick]').length===8&&g.performance.selectedCharacters.length===0);
+  check('Instrumento confirmado en la ficha',d.querySelector('[data-character-pick="legia"]').textContent.includes('Guitarra'));
+  pick('legia');check('LEGÍA seleccionable y resaltado',g.performance.selectedCharacters.includes('legia')&&d.querySelector('[data-character-pick="legia"]').classList.contains('is-selected'));
+  pick('legia');check('LEGÍA se deselecciona',g.performance.selectedCharacters.length===0);pick('legia');
+  ['andres','coki','bandurria'].forEach(pick);
+  check('Con cuatro el botón está desactivado',d.querySelector('[data-action="begin"]').disabled&&g.begin()===false);
+  pick('laud');const cast=[...g.performance.selectedCharacters];
+  check('Con cinco se habilita empezar',!d.querySelector('[data-action="begin"]').disabled&&g.selectionStatus().valid);
+  pick('pandereta');check('Un sexto no entra',g.performance.selectedCharacters.join()===cast.join());
+  const act=g.performance,identity=[act.locationId,act.eventId,act.song];click('[data-action="begin"]');
+  check('LEGÍA puede recoger y transportar',g.collectorCharacter==='legia'&&g.mode==='explore'&&g.remaining===30);
+  capture('LEGÍA · recogida y grupo elegido');
+  for(const item of g.items){click(`[data-target="${item.id}"]`);let guard=0;while(g.target!==null&&g.phase==='playing'&&guard++<3000)qa.step(.01);check('Instrumento recogido '+item.id,item.collected);}
+  click('[data-target="stage"]');let guard=0;while(g.mode!=='rhythm'&&g.phase==='playing'&&guard++<3000)qa.step(.01);
+  check('Actuación de 40 segundos con los mismos cinco',g.mode==='rhythm'&&g.duration===40&&g.performance===act&&act.selectedCharacters.join()===cast.join());
+  capture('LEGÍA · actuación con cuatro compañeros');
+  for(const note of g.notes){step(Math.max(0,note.at-g.clock));const code=D.codes[note.lane];d.dispatchEvent(new w.KeyboardEvent('keydown',{code,bubbles:true}));d.dispatchEvent(new w.KeyboardEvent('keyup',{code,bubbles:true}));qa.step(0);}
+  step(Math.max(0,g.duration-g.clock)+.01);
+  check('Resultado completo con identidad y grupo intactos',g.phase==='result'&&g.performance===act&&JSON.stringify(identity)===JSON.stringify([act.locationId,act.eventId,act.song])&&act.selectedCharacters.join()===cast.join());
+  check('Resultado muestra LEGÍA',d.querySelector('.result-cast').textContent.includes('LEGÍA'));capture('LEGÍA · resultado de la actuación');
+  startEvent('normal');['pandereta','guitarra','bandurria','guitarra-gafas','laud'].forEach(pick);click('[data-action="begin"]');
+  check('Sin seleccionarlo no está en el grupo ni de conductor',!g.performance.selectedCharacters.includes('legia')&&g.collectorCharacter!=='legia');
+  startEvent('evento-benefico');
+  check('LEGÍA disponible en Evento benéfico',!d.querySelector('[data-character-pick="legia"]').disabled&&g.performance.allowedCharacters.includes('legia'));
+  check('Pacheco conserva bloqueo y mensaje exacto',d.querySelector('[data-character-pick="guitarra"]').disabled&&d.querySelector('[data-character-pick="guitarra"]').textContent.includes('Pone una escusa para no actuar'));
+  ['legia','andres','coki','bandurria','laud'].forEach(pick);const validCast=[...g.performance.selectedCharacters];
+  g.performance.selectedCharacters=['guitarra',...validCast.slice(0,4)];check('Pacheco no puede entrar manipulando el estado',!g.begin());g.performance.selectedCharacters=validCast;click('[data-action="begin"]');
+  check('Evento benéfico comienza con LEGÍA y sin Pacheco',g.phase==='playing'&&g.performance.selectedCharacters.includes('legia')&&!g.performance.selectedCharacters.includes('guitarra'));
+  output.textContent=passed+' comprobaciones correctas · 0 fallos\n'+lines.join('\n');document.body.dataset.passed=passed;document.body.dataset.failed=0;
+ }catch(error){output.textContent=lines.join('\n')+'\nFAIL '+error.stack;document.body.dataset.failed=1;console.error(error);}
+};
+</script></html>

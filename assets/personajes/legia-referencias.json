@@ -1,0 +1,54 @@
+{
+  "id": "legia",
+  "name": "LEGÍA",
+  "instrument": "guitarra",
+  "instrumentConfirmedBy": "Usuario, 8 octubre 2026",
+  "reference": "referencias/legia.png",
+  "artwork": "ilustraciones/legia-base.png",
+  "referenceSha256": "d6a679c02c8c135533898dbb185a16ab7a70b8eb1f4ccfcc01f13fdbc75dc833",
+  "artworkSha256": "fa4e336e51409712438b1269cb9d43b6873f33fdb7673f6762147e65955b2e5a",
+  "frame": [
+    192,
+    320
+  ],
+  "atlas": [
+    768,
+    1280
+  ],
+  "rows": [
+    "idle",
+    "walk",
+    "playing",
+    "victory"
+  ],
+  "immutableHead": [
+    0,
+    0,
+    192,
+    96
+  ],
+  "ground": 315,
+  "crop": [
+    120,
+    110,
+    958,
+    1536
+  ],
+  "fit": [
+    179,
+    304
+  ],
+  "offset": [
+    6,
+    12
+  ],
+  "method": "ImageGen integrado: reinterpretación artística; mismo empaquetado y animación del elenco aprobado.",
+  "traits": [
+    "pelo corto oscuro con entradas",
+    "rostro ancho",
+    "barba muy corta",
+    "beca roja",
+    "capa negra con forro rojo",
+    "guitarra clásica"
+  ]
+}

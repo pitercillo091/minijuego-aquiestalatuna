@@ -16,7 +16,7 @@ document.getElementById('run').addEventListener('click',async()=>{
   const key=(code,keyValue)=>{d.getElementById('game').focus();d.dispatchEvent(new w.KeyboardEvent('keydown',{code,key:keyValue||code,bubbles:true}));};
   const release=code=>d.dispatchEvent(new w.KeyboardEvent('keyup',{code,bubbles:true}));
   output.textContent='';
-  check('Carga inicial',!d.getElementById('home').hidden&&d.querySelectorAll('.character-card').length===7);
+  check('Carga inicial',!d.getElementById('home').hidden&&d.querySelectorAll('.character-card').length===8);
   click('[data-character="laud"]');check('Selección de personaje canónico',qa.save.character==='laud');
   const initialSong=qa.audio.track.id;click('#next-song');check('Menú cambia canción sin repetición',qa.audio.track.id!==initialSong);click('[data-level="0"]');check('Empezar partida abre instrucciones',g.phase==='brief'&&d.getElementById('modal').open);
  click('[data-action="choose-group"]');check('La introducción pasa a selección de grupo',d.querySelector('.party-picker h3')?.textContent==='TUNA: 0/5'&&d.querySelector('[data-action="begin"]').disabled);check('Selecciona cinco músicos',chooseGroup()&&d.querySelector('.party-picker h3')?.textContent==='TUNA: 5/5');const chosen=[...g.performance.selectedCharacters];click('[data-action="begin"]');check('Inicio de nivel y grupo seleccionado',g.phase==='playing'&&JSON.stringify(g.performance.selectedCharacters)===JSON.stringify(chosen)&&chosen.includes(g.collectorCharacter));
@@ -47,7 +47,7 @@ document.getElementById('run').addEventListener('click',async()=>{
   }
   check('Victoria final visible',g.phase==='victory'&&d.getElementById('modal-content').textContent.includes('Una ronda para recordar'));
   const restored=w.TunaEngine.readSave(qa.storage);check('Guardado y desbloqueo de las veinte etapas',restored.unlocked===19&&restored.best.every(n=>n>0)&&restored.stars.every(n=>n===3));
-  check('Los diez archivos MIDI cargan en veinte etapas',w.TunaMusic.status.size===10&&Array.from(w.TunaMusic.status.values()).every(x=>x==='archivo'));check('Escudo y sprites cargados',Array.from(d.querySelectorAll('#characters img,.brand img')).every(im=>im.complete&&im.naturalWidth>0));check('Los siete atlas PNG cargan y se usan en el renderer',w.TunaData.characters.length===7&&w.TunaData.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===768));
+  check('Los diez archivos MIDI cargan en veinte etapas',w.TunaMusic.status.size===10&&Array.from(w.TunaMusic.status.values()).every(x=>x==='archivo'));check('Escudo y sprites cargados',Array.from(d.querySelectorAll('#characters img,.brand img')).every(im=>im.complete&&im.naturalWidth>0));check('Los ocho atlas PNG cargan y se usan en el renderer',w.TunaData.characters.length===8&&w.TunaData.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===768));
   // Force a valid random draw for the restricted event and exercise its real UI.
   const D=w.TunaData,previousKey=g.performance.key,pairs=D.locations.flatMap(location=>D.events.map(event=>({location,event}))),available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previousKey),benefitIndex=available.findIndex(pair=>pair.event.id==='evento-benefico'),originalRandom=w.Math.random;
   w.Math.random=()=>((benefitIndex+.25)/available.length);qa.start(0);w.Math.random=originalRandom;

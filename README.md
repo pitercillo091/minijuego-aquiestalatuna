@@ -79,7 +79,7 @@ JUEGO/
   assets/audio/partituras.json  Frases editables y tempos
   assets/audio/generar-midi.py  Exportador MIDI, Python sin dependencias
   assets/audio/FUENTES.md      Procedencia, atribución y alcance musical
-  assets/personajes/           Siete diseños, siete atlas y generadores
+  assets/personajes/           Ocho diseños, ocho atlas y generadores
   assets/referencias/          Fotografías optimizadas y referencia del reparto
   assets/ui/escudo.webp        Escudo original optimizado
   PERSONAJES/                  Imagen aportada por el usuario, preservada
@@ -99,7 +99,7 @@ La actuación se crea una sola vez al iniciar una etapa y se conserva en `game.p
 
 ### Selección de grupo
 
-El catálogo incluye siete músicos. Andrés y Coki tocan la pandereta. Sus referencias originales están en `assets/personajes/referencias/andres.png` y `assets/personajes/referencias/coki.png`; los sprites y las cuatro filas de animación se generan con `assets/personajes/generar_nuevos.py`. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
+El catálogo incluye ocho músicos. LEGÍA toca la guitarra, confirmado por el usuario; su referencia está en `assets/personajes/referencias/legia.png`. Se incorporó con el mismo proceso artístico de Andrés y Coki, con 16 poses en `legia-atlas.png`, y se empaqueta con `python assets/personajes/generar_legia.py`. Las pruebas específicas están en `tests/legia.test.py` y `tests/legia-browser.html`; documentación y capturas en `docs/sprites-legia/`. Andrés y Coki tocan la pandereta. Sus referencias originales están en `assets/personajes/referencias/andres.png` y `assets/personajes/referencias/coki.png`; los sprites y las cuatro filas de animación se generan con `assets/personajes/generar_nuevos.py`. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
 
 Las reglas futuras viven en los campos de restricciones del evento. Ahora `evento-benefico` declara `guitarra` como personaje prohibido y muestra `Pone una escusa para no actuar` para Pacheco´s. El motor valida de nuevo el grupo al comenzar, aunque se manipule el estado desde fuera de la interfaz.
 

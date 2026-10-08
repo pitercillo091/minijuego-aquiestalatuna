@@ -8,7 +8,8 @@
     {id:'guitarra-gafas',name:'Piter',role:'El compás se ve venir.',instrument:'guitarra',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Cuarto: gafas rectangulares, cabello corto gris oscuro, sin barba, guitarra clara y beca roja colgando al costado.'},
     {id:'laud',name:'Pesetas',role:'La última nunca es la última.',instrument:'laud',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Quinto: cabello castaño corto, sonrisa, barba muy corta, beca roja y pequeño instrumento de cuerda. La identificación del instrumento es una interpretación visual.'},
     {id:'andres',name:'Andrés',role:'La pandereta marca el camino.',instrument:'pandereta',reference:'andres.png',referencePath:'assets/personajes/referencias/andres.png',detail:'Sexto: cabello corto oscuro, barba poblada, rostro ancho y traje negro; toca la pandereta.'},
-    {id:'coki',name:'Coki',role:'Pandereta con gafas de sol.',instrument:'pandereta',reference:'coki.png',referencePath:'assets/personajes/referencias/coki.png',detail:'Séptimo: pelo corto, gafas de sol, sonrisa, beca roja y pandereta.'}
+    {id:'coki',name:'Coki',role:'Pandereta con gafas de sol.',instrument:'pandereta',reference:'coki.png',referencePath:'assets/personajes/referencias/coki.png',detail:'Séptimo: pelo corto, gafas de sol, sonrisa, beca roja y pandereta.'},
+    {id:'legia',name:'LEGÍA',role:'La guitarra está lista para la ronda.',instrument:'guitarra',reference:'legia.png',referencePath:'assets/personajes/referencias/legia.png',detail:'Octavo: pelo corto oscuro con entradas, rostro ancho, barba muy corta, beca roja y capa negra con forro rojo. Toca la guitarra, confirmado por el usuario.'}
   ];
   // Catalogue for the touring layer. New places and events can be added here
   // without changing the level engine or the screen templates.
