@@ -15,7 +15,7 @@ test('Five unlock thresholds, losses and persistent acknowledgments',()=>{
 });
 test('Migration retains old results, settings and all five earned rewards',()=>{
  const old={version:2,unlocked:12,best:Array(20).fill(4444),stars:Array.from({length:20},(_,i)=>i<12?2:0),volume:.28,music:false,effects:false,character:'legia',easy:false};
- const save=E.readSave(storage(old));assert.equal(save.unlocked,12);assert.deepEqual(save.best,old.best);assert.deepEqual(save.stars,old.stars);assert.equal(save.volume,.28);assert.equal(save.character,'legia');assert.equal(save.easy,false);assert.equal(save.music,false);assert.deepEqual(save.characterUnlocks,['pedro-v','andres','ponder','pena','legia']);assert.equal(E.pendingCharacterRewards(save).length,5);
+ const save=E.readSave(storage(old));assert.equal(save.unlocked,15);assert.ok(save.legacyCampaigns['midi-20-v3']);assert.equal(save.best.length,D.levels.length);for(let i=0;i<12;i++){const song=D.legacySongIds[i%10],round=i<10?1:2,index=D.levels.findIndex(level=>level.song===song&&level.round===round);if(index>=0)assert.equal(save.stars[index],2);}assert.equal(save.volume,.28);assert.equal(save.character,'legia');assert.equal(save.easy,false);assert.equal(save.music,false);assert.deepEqual(save.characterUnlocks,['pedro-v','andres','ponder','pena','legia']);assert.equal(E.pendingCharacterRewards(save).length,5);
  E.ackCharacterReward(save,'pedro-v');const reload=E.readSave(storage(save));assert.equal(E.pendingCharacterRewards(reload).length,4);
  // Replaying earlier levels never locks a previously earned character.
  reload.unlocked=0;reload.stars=[];assert.ok(D.isCharacterUnlocked(D.characters.find(c=>c.id==='pena'),reload));
@@ -23,7 +23,7 @@ test('Migration retains old results, settings and all five earned rewards',()=>{
 test('Level and charity rules are validated in the engine against tampered UI lists',()=>{
  const save=fresh(),g=new E.Game({progress:save});g.start();g.performance.selectedCharacters=['pedro-v','pandereta','bandurria','guitarra-gafas','laud'];g.performance.allowedCharacters=D.characters.map(c=>c.id);assert.equal(g.begin(),false);assert.equal(g.toggleCharacter('pena'),false);
  g.performance.eventId='evento-benefico';g.performance.event=D.events.find(e=>e.id===g.performance.eventId);g.performance.selectedCharacters=['guitarra','pandereta','bandurria','guitarra-gafas','laud'];assert.equal(g.begin(),false);assert.equal(g.performance.restrictionReasons.guitarra,'Pone una escusa para no actuar');
- for(let level=0;level<20;level++){save.unlocked=level;for(let repeat=0;repeat<60;repeat++){const p=D.createPerformance(D.levels[level],'',save);assert.ok(p.allowedCharacters.length>=5);if(p.eventId==='evento-benefico')assert.equal(p.allowedCharacters.includes('guitarra'),false);}}
+ for(let level=0;level<D.levels.length;level++){save.unlocked=level;for(let repeat=0;repeat<60;repeat++){const p=D.createPerformance(D.levels[level],'',save);assert.ok(p.allowedCharacters.length>=5);if(p.eventId==='evento-benefico')assert.equal(p.allowedCharacters.includes('guitarra'),false);}}
 });
 test('Dancer remains in a stable five-person act without a personal instrument',()=>{
  const save=E.readSave(storage({version:2,unlocked:12})),g=new E.Game({progress:save});g.start(2);g.performance.eventId='evento-benefico';g.performance.event=D.events.find(e=>e.id===g.performance.eventId);D.refreshPerformanceAvailability(g.performance,save);

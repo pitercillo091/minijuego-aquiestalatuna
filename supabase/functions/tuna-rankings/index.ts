@@ -7,15 +7,18 @@ const APP_ORIGINS = new Set([
 ])
 const LEVELS = [
   { song: 'clavelitos', normal: 46, hard: 156, normalThreshold: 0.5, hardThreshold: 0.545 },
-  { song: 'cielito-lindo', normal: 36, hard: 72, normalThreshold: 0.5, hardThreshold: 0.545 },
-  { song: 'adelita', normal: 45, hard: 81, normalThreshold: 0.525, hardThreshold: 0.57 },
-  { song: 'el-rey', normal: 54, hard: 72, normalThreshold: 0.525, hardThreshold: 0.57 },
-  { song: 'estudiantina-madrilena', normal: 63, hard: 99, normalThreshold: 0.55, hardThreshold: 0.595 },
-  { song: 'cintas-capa', normal: 71, hard: 107, normalThreshold: 0.55, hardThreshold: 0.595 },
-  { song: 'isa-canaria', normal: 81, hard: 117, normalThreshold: 0.575, hardThreshold: 0.62 },
-  { song: 'morena-copla', normal: 90, hard: 117, normalThreshold: 0.575, hardThreshold: 0.62 },
-  { song: 'maria-portuguesa', normal: 99, hard: 135, normalThreshold: 0.6, hardThreshold: 0.645 },
-  { song: 'cartagenera', normal: 107, hard: 144, normalThreshold: 0.6, hardThreshold: 0.645 },
+  { song: 'cielito-lindo', normal: 54, hard: 121, normalThreshold: 0.5, hardThreshold: 0.545 },
+  { song: 'estudiantina-madrilena', normal: 45, hard: 111, normalThreshold: 0.5, hardThreshold: 0.545 },
+  { song: 'cintas-capa', normal: 49, hard: 130, normalThreshold: 0.525, hardThreshold: 0.57 },
+  { song: 'isa-canaria', normal: 51, hard: 110, normalThreshold: 0.525, hardThreshold: 0.57 },
+  { song: 'morena-copla', normal: 50, hard: 118, normalThreshold: 0.525, hardThreshold: 0.57 },
+  { song: 'maria-portuguesa', normal: 47, hard: 116, normalThreshold: 0.55, hardThreshold: 0.595 },
+  { song: 'soy-cordobes', normal: 46, hard: 108, normalThreshold: 0.55, hardThreshold: 0.595 },
+  { song: 'guantanamera', normal: 48, hard: 129, normalThreshold: 0.55, hardThreshold: 0.595 },
+  { song: 'viva-espana', normal: 47, hard: 127, normalThreshold: 0.575, hardThreshold: 0.62 },
+  { song: 'isa-de-ronda', normal: 51, hard: 103, normalThreshold: 0.575, hardThreshold: 0.62 },
+  { song: 'san-cayetano', normal: 50, hard: 133, normalThreshold: 0.575, hardThreshold: 0.62 },
+  { song: 'todos-los-besos', normal: 48, hard: 129, normalThreshold: 0.6, hardThreshold: 0.645 },
 ]
 const cors = (origin: string) => ({
   'Access-Control-Allow-Origin': origin,
@@ -82,7 +85,7 @@ Deno.serve(async (req: Request) => {
 
     if (body.action === 'start') {
       const level = Number(body.level)
-      if (!Number.isInteger(level) || level < 1 || level > 20 || !validUuid(body.playerId)) return json({ error: 'Etapa no válida.' }, 400, origin)
+      if (!Number.isInteger(level) || level < 1 || level > LEVELS.length * 2 || !validUuid(body.playerId)) return json({ error: 'Etapa no válida.' }, 400, origin)
       const spec = LEVELS[(level - 1) % LEVELS.length]
       const hard = level > LEVELS.length
       const expectedNotes = hard ? spec.hard : spec.normal
@@ -92,11 +95,12 @@ Deno.serve(async (req: Request) => {
       const { count, error: countError } = await db.from('game_rank_sessions').select('token_hash', { count: 'exact', head: true }).eq('player_id', body.playerId).gte('started_at', since)
       if (countError) throw countError
       if ((count || 0) >= 8) return json({ error: 'Has iniciado demasiadas partidas seguidas. Espera unos minutos.' }, 429, origin)
-      const chartVersion = spec.song === 'clavelitos' ? 'clavelitos-mp3-v1' : 'midi-map-v1'
+      const chartVersion = `${spec.song}-mp3-v1`
       const { error } = await db.from('game_rank_sessions').insert({
         token_hash: tokenHash,
         player_id: body.playerId,
         level,
+        campaign_version: 'mp3-13-two-rounds-v1',
         song_id: spec.song,
         difficulty: hard ? 'dificil' : 'normal',
         chart_version: chartVersion,
@@ -136,7 +140,7 @@ Deno.serve(async (req: Request) => {
     if (body.action === 'list') {
       const mode = body.mode === 'general' ? 'general' : body.mode === 'level' ? 'level' : ''
       const level = Number(body.level || 1), limit = Math.max(1, Math.min(50, Math.trunc(Number(body.limit) || 10))), offset = Math.max(0, Math.min(5000, Math.trunc(Number(body.offset) || 0)))
-      if (!mode || (mode === 'level' && (!Number.isInteger(level) || level < 1 || level > 20))) return json({ error: 'Clasificación no válida.' }, 400, origin)
+      if (!mode || (mode === 'level' && (!Number.isInteger(level) || level < 1 || level > LEVELS.length * 2))) return json({ error: 'Clasificación no válida.' }, 400, origin)
       const { data, error } = await db.rpc('game_rankings_page', { p_mode: mode, p_level: level, p_limit: limit, p_offset: offset })
       if (error) throw error
       return json(data, 200, origin)

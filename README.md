@@ -1,4 +1,4 @@
-# Una ronda más · versión 4
+# Una ronda más · campaña MP3
 
 Juego web de la Rondalla de Lopera. Cada nivel combina una preparación en la plaza y una actuación musical de 60 segundos. Conserva el motor, la selección de cinco, las dos dificultades y el guardado anterior; el reparto tiene once personajes pixel art.
 
@@ -27,25 +27,29 @@ Los navegadores requieren un primer toque o pulsación para activar el sonido. P
 
 Pulsa cuando la nota llegue a la línea dorada. Los aciertos iluminan el botón y producen partículas; los fallos muestran feedback rojo y reducen el ánimo. Al cambiar de pestaña se pausa. J y K solo actúan durante la música y no interfieren con el movimiento.
 
-## Las veinte etapas musicales
+## Campaña musical MP3 · 26 niveles
 
-Los niveles 1–10 usan el repertorio base. Los niveles 11–20 repiten las mismas canciones en una segunda ronda: conservan el tempo musical, añaden teclas cuando corresponde y aumentan la densidad de notas. Cada actuación dura 60 segundos. Clavelitos usa el MP3 aprobado y su mapa medido; las otras nueve canciones siguen con la música MIDI existente.
-La preparación para recoger el equipo dura 30 segundos. El músico encargado rota entre los cinco diseños y lleva un pequeño icono de coche sobre la cabeza.
+La biblioteca de juego contiene 13 grabaciones MP3 disponibles y autorizadas por el usuario. Se juegan dos vueltas: niveles 1–13 en dificultad normal y 14–26 en difícil. Cada actuación dura 60 segundos; la preparación sigue durando 30. El menú y la recogida reproducen MP3 aleatorios de la misma biblioteca mediante una bolsa que evita repetir inmediatamente. El MIDI original se conserva como respaldo técnico, no como música de estos niveles.
 
-| Etapa | Canción | Lugar y preparación | Teclas | Notas | BPM | Aciertos mínimos |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | Clavelitos | Lopera: tres instrumentos | A S | 18 | 108 | 50% |
-| 2 | Cielito Lindo | Marmolejo: tres compañeros | A S | 24 | 112 | 50% |
-| 3 | Adelita | Baños de la Encina: cuatro flores | A S W | 30 | 104 | 53% |
-| 4 | El Rey | Arjona: cuatro partituras | A S W | 36 | 108 | 53% |
-| 5 | Estudiantina Madrileña | Lopera: cuatro músicos de cuerda | A S W D | 42 | 112 | 55% |
-| 6 | Las Cintas de mi Capa | Marmolejo: flores, partitura e instrumentos | A S W D | 48 | 116 | 55% |
-| 7 | La Isa Canaria | Baños: cuatro instrumentos de cuerda | A S W D J | 54 | 120 | 58% |
-| 8 | La Morena de mi Copla | Arjona: flores, partitura y guitarra | A S W D J | 60 | 124 | 58% |
-| 9 | María la Portuguesa | Lopera: partitura y equipo | A S W D J K | 66 | 128 | 60% |
-| 10 | Cartagenera | Lopera: los cinco músicos | A S W D J K | 72 | 132 | 60% |
+| Normal | Difícil | Canción |
+| ---: | ---: | --- |
+| 1 | 14 | Clavelitos |
+| 2 | 15 | Cielito Lindo |
+| 3 | 16 | Estudiantina Madrileña |
+| 4 | 17 | Las Cintas de mi Capa |
+| 5 | 18 | La Isa Canaria |
+| 6 | 19 | La Morena de mi Copla |
+| 7 | 20 | María la Portuguesa |
+| 8 | 21 | Soy Cordobés |
+| 9 | 22 | Guantanamera |
+| 10 | 23 | Viva España |
+| 11 | 24 | Isa de Ronda |
+| 12 | 25 | San Cayetano |
+| 13 | 26 | Todos los Besos |
 
-El porcentaje mostrado redondea los umbrales internos de 52,5% y 57,5%. Completar una etapa desbloquea la siguiente. Cada nueva tecla se presenta en las instrucciones y aparece entre las primeras notas. La segunda ronda aumenta la densidad y la velocidad visual sin acelerar artificialmente las canciones; disminuye la separación mínima entre ataques elegibles. Se introducen notas a contratiempo y patrones derivados de las alturas del MIDI. Los charcos crecen de cero a cuatro y la preparación dura 30 segundos en todas las etapas.
+Faltan Adelita, El Rey y Cartagenera. No tienen archivos MP3 utilizables en la biblioteca disponible, por eso no generan niveles sin música. Si se incorporan después, se pueden añadir al catálogo y regenerar ambas vueltas.
+
+Clavelitos conserva el MP3 y el mapa que el usuario aprobó. Las otras doce canciones además de Clavelitos tienen mapas separados derivados de pulsos y ataques medidos en cada MP3; no reutilizan los tiempos MIDI. La segunda vuelta usa más entradas y más teclas, sin acelerar la grabación. Los datos de offsets, BPM aproximados, cobertura y densidad están en `docs/mp3-migration/analysis-summary.json`. Las estimaciones automáticas se contrastan con el archivo real y la continuidad de los 60 segundos; una escucha musical final por parte del usuario sigue siendo la mejor revisión de fraseo.
 
 «Ritmo tranquilo» da un margen de ±230 ms, perfecto ±110 ms, daño de charco −12 y nota perdida −3,5. Normal: ±160 ms, perfecto ±75 ms, charco −18 y nota perdida −5. Al empezar la actuación se recupera el ánimo hasta un mínimo de 75. Espacio permite disfrutar del ritmo sin memorizar seis teclas.
 
@@ -53,7 +57,7 @@ El porcentaje mostrado redondea los umbrales internos de 52,5% y 57,5%. Completa
 
 Cada objeto suma 100 puntos una sola vez. Una nota perfecta suma 120 y una buena 80. El multiplicador crece 0,25 cada ocho notas consecutivas, hasta ×1,75. El tiempo de preparación restante da cinco puntos por segundo. Tres estrellas requieren 90% de aciertos; dos, 72%; una, superar el mínimo. Pierdes si se agota el tiempo, el ánimo o no alcanzas el mínimo musical. Puedes reiniciar y repetir niveles desbloqueados. Repetir una etapa completada sustituye su aportación al total, sin duplicarla.
 
-Se conserva la clave `rondalla-una-ronda-mas-v1` de localStorage. La migración mantiene personaje, preferencias, marcas y estrellas anteriores; el tamaño de las listas se adapta automáticamente a las veinte etapas. Guardados corruptos o almacenamiento bloqueado no impiden jugar. El origen `file://` puede usar un guardado distinto al de HTTP.
+Se conserva la clave `rondalla-una-ronda-mas-v1` de localStorage. La migración mantiene personaje, preferencias, marcas y estrellas anteriores; el tamaño de las listas se adapta a la campaña de 26 niveles. Las partidas MIDI anteriores conservan sus marcas por canción y vuelta; los tres temas que salen se archivan localmente, sin reasignar sus resultados a otros MP3. Guardados corruptos o almacenamiento bloqueado no impiden jugar. El origen `file://` puede usar un guardado distinto al de HTTP.
 
 ## Tecnología y estructura
 
@@ -74,7 +78,7 @@ JUEGO/
   src/songs.js                 Catálogo MIDI y copia binaria de respaldo
   src/midi.js                  Lector SMF, tempos y carga segura
   src/audio.js                 Reproducción, mezcla, rotación y efectos
-  assets/audio/midi/           Diez archivos MIDI reutilizados en veinte etapas SMF-1 reutilizados en veinte etapas
+  assets/audio/midi/           Copias MIDI originales conservadas como respaldo
   midi/                        Copias originales descargadas de las fuentes públicas accesibles
   assets/audio/partituras.json  Frases editables y tempos
   assets/audio/generar-midi.py  Exportador MIDI, Python sin dependencias
@@ -99,26 +103,21 @@ La actuación se crea una sola vez al iniciar una etapa y se conserva en `game.p
 
 ### Selección de grupo
 
-El catálogo incluye ocho músicos. LEGÍA toca la guitarra, confirmado por el usuario; su referencia está en `assets/personajes/referencias/legia.png`. Se incorporó con el mismo proceso artístico de Andrés y Coki, con 16 poses en `legia-atlas.png`, y se empaqueta con `python assets/personajes/generar_legia.py`. Las pruebas específicas están en `tests/legia.test.py` y `tests/legia-browser.html`; documentación y capturas en `docs/sprites-legia/`. Andrés y Coki tocan la pandereta. Sus referencias originales están en `assets/personajes/referencias/andres.png` y `assets/personajes/referencias/coki.png`; los sprites y las cuatro filas de animación se generan con `assets/personajes/generar_nuevos.py`. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
+El catálogo incluye once personajes. LEGÍA toca la guitarra, confirmado por el usuario; su referencia está en `assets/personajes/referencias/legia.png`. Andrés y Coki tocan la pandereta. Peña y Ponder tocan la bandurria. Pedro V. es bailarín y no tiene instrumento asignado. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
 
 Las reglas futuras viven en los campos de restricciones del evento. Ahora `evento-benefico` declara `guitarra` como personaje prohibido y muestra `Pone una escusa para no actuar` para Pacheco´s. El motor valida de nuevo el grupo al comenzar, aunque se manipule el estado desde fuera de la interfaz.
 
 La actuación generada también incluye `allowedCharacters`, `recommendedCharacters`, `requiredCharacters` y `unavailableCharacters`. Permanecen vacíos por ahora, pero dejan preparada la futura selección de cinco músicos y sus condiciones por encargo sin alterar el motor actual.
 
-El lector acepta MIDI formato 0 y 1 y elige automáticamente el canal melódico principal; no exige que todos los archivos tengan tres pistas. Clavelitos usa el MP3 local aprobado por el usuario y conserva el MIDI original como respaldo. Las otras actuaciones mantienen el repertorio MIDI existente. Si un MIDI termina antes del límite, se repite su frase y se distribuyen ataques para cubrir 60 segundos.
+Los 26 niveles activos usan MP3: trece grabaciones disponibles, cada una en una ronda normal y otra difícil. Cada canción tiene mapas de notas independientes, medidos sobre sus propios ataques y pulsos; los niveles difíciles añaden densidad sin acelerar la grabación. Las actuaciones duran 60 segundos y el menú y la recogida usan una rotación aleatoria de la misma biblioteca MP3. Los MIDI originales se conservan como respaldo, pero no son la música de la campaña activa.
 
-Las fuentes, cambios y atribuciones están en `assets/audio/FUENTES.md` y en créditos. La licencia de los arreglos de Tablatunas no concede por sí misma derechos sobre las composiciones. La publicación de los temas protegidos requiere comprobar los permisos que cubren el repertorio del grupo; esta revisión no acredita tales permisos. No se distribuyen PDFs ajenos ni grabaciones comerciales.
+Las grabaciones incluidas en la campaña fueron autorizadas por el usuario para su publicación. Los MP3 originales no se transforman; se decodifica el fragmento seleccionado al iniciar la actuación. La biblioteca preparatoria y las herramientas de revisión locales no se publican.
 
-En menú y recogida se usa una bolsa aleatoria con los diez temas MIDI. «Otra canción» cambia el tema del menú. En la actuación Clavelitos reproduce el MP3 y sus notas usan el reloj de audio; el resto usa el MIDI del nivel. En MIDI se conserva el patrón y se amplía la densidad para cubrir 60 segundos. Pausar detiene el audio y reanudar mantiene la posición musical.
+En menú y recogida, una bolsa aleatoria recorre las trece grabaciones y evita repetir la misma inmediatamente. «Otra canción» elige otra pista. Durante la actuación, el reloj del MP3 sincroniza el mapa de notas. Pausar detiene audio y notas; reanudar continúa desde la posición musical guardada.
 
-El lector admite SMF 0/1, PPQN, cambios de tempo, running status, Program Change, bancos, controladores de volumen, expresión, panoramización y pitch bend. Si falta un archivo, es inválido o tarda demasiado, usa los mismos bytes integrados en `songs.js`. Con `file://` se usa directamente esa copia. El juego sigue funcionando sin Web Audio. Imágenes secundarias ausentes tienen alternativas.
+El reproductor mantiene una sola cadena Web Audio para grabaciones, efectos e interfaz. Los MP3 se precargan, se decodifican una vez por pista seleccionada y se limitan al fragmento jugable. Si falta Web Audio, la página sigue siendo navegable y el fallo de audio no bloquea el juego.
 
-Para editar una canción:
-
-1. Cambia su entrada en `assets/audio/partituras.json`. `phrase` contiene notas `G4:1` (una negra), `G#4:.5` (corchea), `R:1` (silencio) o TAB `20:.5` (segunda cuerda, traste 0). La afinación de referencia está en el generador.
-2. Ejecuta `python assets/audio/generar-midi.py` desde JUEGO. Regenera los `.mid` y su copia integrada, sin instalar librerías.
-3. Ajusta las pistas de acompañamiento en el generador si necesitas otra armonía. Cambia los timbres, envolventes y efectos en `src/audio.js`.
-4. Comprueba los ataques, cantidad de objetivos, duración y permisos. Para importar otro MIDI, exporta los bytes en el catálogo y deja que el lector detecte el canal melódico principal; `trimBefore` permite empezar un MIDI desde un punto concreto. No basta con sustituir el `.mid`: actualiza también su respaldo.
+Para añadir una canción MP3, incorpora su entrada con ruta y hash en `src/charts/`, agrégala al registro de `src/recordings.js` y al conjunto ambiental de `src/ambient-recordings.js`. Ajusta mapas normal y difícil contra el audio real, mantén 60 segundos de objetivos musicales y añade validación de duraciones y coberturas en las pruebas. La cantidad de niveles se calcula a partir de grabaciones activas.
 
 ## Personajes y escenarios
 
@@ -132,18 +131,19 @@ Las plazas incorporan fachadas claras, macetas, banderines, luces, escenario, mi
 
 ## Añadir niveles
 
-Añade la canción a `partituras.json` y una preparación a `settings` de `data.js`. Amplía los arrays de la primera ronda y, si quieres una segunda vuelta, añade su objetivo y separación en `secondTargets`. Configura lugar, tema, foto, tiempo, charcos, objetos, textos, teclas, separación entre objetivos y velocidad. Hay cinco posiciones de recogida: añade posiciones y verifica rutas si necesitas más de cinco objetivos. El guardado usa la cantidad de niveles automáticamente. Para superar seis teclas debes ampliar `keys`, `codes`, colores y distribución visual. Comprueba que el MIDI ofrece suficientes ataques para cubrir los 60 segundos.
+La campaña crea una vuelta normal y otra difícil por cada grabación MP3 activa. Al añadir una pista, incluye sus dos mapas en `src/charts/`, sus metadatos de audio en el registro y los datos del ranking de servidor. El progreso y la numeración se basan en la longitud de la campaña.
 
 ## Pruebas
 
 ```sh
 node tests/engine.test.cjs --report
 node tests/audio.test.cjs
+node tests/mp3-campaign.test.cjs
 python tests/personajes.test.py
 python tests/integrity.py
 ```
 
-Desde el servidor, abre `tests/browser-integration.html`: usa el controlador, dibujo y menús reales para completar las veinte etapas con un reloj controlado y guardado en memoria. `#qa` solo se habilita dentro del iframe de pruebas. `tests/music-browser.html` mide la señal de Web Audio de las diez canciones; su enlace de recursos ausentes comprueba las copias de respaldo. `tests/responsive.html` muestra escritorio y móvil, incluida la actuación de seis columnas. Resultados y límites de la campaña: `docs/PRUEBAS.md`. La sustitución posterior de los personajes y sus comprobaciones se documentan en `docs/PRUEBAS-PERSONAJES.md`.
+Desde el servidor, abre `tests/browser-integration.html`: usa el controlador, dibujo y menús reales para completar las 26 etapas con un reloj controlado y guardado en memoria. `#qa` solo se habilita dentro del iframe de pruebas. `tests/music-browser.html` mide la señal de Web Audio de las diez canciones; su enlace de recursos ausentes comprueba las copias de respaldo. `tests/responsive.html` muestra escritorio y móvil, incluida la actuación de seis columnas. Resultados y límites de la campaña: `docs/PRUEBAS.md`. La sustitución posterior de los personajes y sus comprobaciones se documentan en `docs/PRUEBAS-PERSONAJES.md`.
 
 ## Siguientes ampliaciones
 
@@ -170,10 +170,10 @@ Los nuevos dibujos se generaron con ImageGen integrado, usando las fotografías 
 
 Para añadir personajes: agrega su registro con `id`, `name`, `instrument` (o `kind:'dancer'` e `instrument:null`), `unlockLevel`, `unlockMessage` y, si corresponde, `animationColumns`; incorpora su base y atlas. Las reglas se combinan centralmente desde localidad, evento, canción y nivel: `forbiddenCharacters`, `requiredCharacters`, `recommendedCharacters`, `incompatibleCharacters` y `reasons`. No hay reglas nuevas activas fuera de los desbloqueos y la exclusión benéfica de Pacheco´s.
 
-Pruebas de esta ampliación: `node tests/progression.test.cjs`, `node tests/engine.test.cjs`, `node tests/audio.test.cjs` y `tests/ampliacion-browser.html`. El último usa el controlador real, un reloj controlado y guardado aislado para completar las veinte etapas, verificar las cinco tarjetas y capturar a los once juntos. `tests/run-ampliacion.cjs` automatiza esa revisión con Playwright; `tests/run-publicacion.cjs` comprueba además recargas, migración, selección móvil y una actuación completa con reloj normal. Solo el mantenimiento necesita esas herramientas; jugar continúa sin dependencias. Las capturas e informes locales están en `docs/ampliacion-once/`, sin publicar las copias de seguridad ni la biblioteca MP3.
+Pruebas de esta ampliación: `node tests/progression.test.cjs`, `node tests/engine.test.cjs`, `node tests/audio.test.cjs` y `tests/ampliacion-browser.html`. El último usa el controlador real, un reloj controlado y guardado aislado para completar las 26 etapas, verificar las cinco tarjetas y capturar a los once juntos. `tests/run-ampliacion.cjs` automatiza esa revisión con Playwright; `tests/run-publicacion.cjs` comprueba además recargas, migración, selección móvil y una actuación completa con reloj normal. Solo el mantenimiento necesita esas herramientas; jugar continúa sin dependencias. Las capturas e informes locales están en `docs/ampliacion-once/`, sin publicar las copias de seguridad ni la biblioteca MP3.
 # Piloto local de Clavelitos MP3
 
-Clavelitos (niveles 1 y 11) usa el MP3 aprobado de 60 segundos y sus mapas normal/difícil versionados. Las demás canciones siguen usando MIDI; el menú y la recogida permanecen en MIDI. Los MP3 de revisión no se copian al juego público sin permiso documentado de distribución.
+Clavelitos (niveles 1 y 14) usa el MP3 aprobado de 60 segundos y sus mapas normal/difícil versionados. Las otras doce canciones también usan MP3 con mapas por grabación; menú y recogida usan la biblioteca MP3 aleatoria. Los recursos de revisión no se copian al juego público.
 
 Documentación, resultados y limitaciones: [docs/clavelitos-mp3/INFORME.md](docs/clavelitos-mp3/INFORME.md). La herramienta local para revisar la onda y el audio no forma parte del despliegue público. Prueba de ambas dificultades con progreso aislado: `tests/clavelitos-browser.html`.
 
@@ -181,12 +181,12 @@ Documentación, resultados y limitaciones: [docs/clavelitos-mp3/INFORME.md](docs
 
 El juego ofrece una tabla por nivel y otra general sin crear cuentas. Los nombres se muestran en mayúsculas y quedan en el dispositivo; las puntuaciones públicas se conservan doce meses. Un UUID local distingue una instalación, no identifica ni verifica a una persona y no se sincroniza entre dispositivos. No se guardan correos ni direcciones IP. El navegador que envió una marca conserva un recibo privado para poder retirarla.
 
-Los registros están en `public.game_rankings` y las sesiones temporales en `public.game_rank_sessions`, con RLS activa y sin permisos de lectura o escritura para los roles del navegador. La Edge Function `tuna-rankings` valida origen, clave publicable, apodo, nivel, mapa, duración mínima, notas y puntuación. Cada sesión se usa una vez y caduca a los quince minutos; se limitan los inicios por instalación local. Solo se conserva la mejor marca por jugador local y nivel. La general suma la mejor precisión de cada nivel y divide entre veinte; los niveles no jugados valen cero. Sin cuentas ni ejecución confiable en servidor, no se pueden eliminar todas las trampas.
+Los registros están en `public.game_rankings` y las sesiones temporales en `public.game_rank_sessions`, con RLS activa y sin permisos de lectura o escritura para los roles del navegador. La Edge Function `tuna-rankings` valida origen, clave publicable, apodo, nivel, mapa, duración mínima, notas y puntuación. Cada sesión se usa una vez y caduca a los quince minutos; se limitan los inicios por instalación local. Solo se conserva la mejor marca por jugador local y nivel. La general suma la mejor precisión de cada nivel y divide entre 26 niveles; los niveles no jugados valen cero. Sin cuentas ni ejecución confiable en servidor, no se pueden eliminar todas las trampas.
 
 El ranking usa el proyecto Supabase gratuito existente; no se abrió otro servicio. El coste depende de mantenerse dentro de las cuotas del plan. El SQL está en `supabase/migrations/20261008_game_rankings.sql` y la API en `supabase/functions/tuna-rankings/index.ts`.
 
 ## Disponibilidad de MP3
 
-En la biblioteca local `MP3/` hay doce MP3 y un vídeo; el vídeo no es un MP3. El sitio público distribuye solo Clavelitos, cuya publicación aprobó el usuario. Los nueve temas MIDI restantes siguen jugables. Faltan MP3 de Adelita, El Rey, Cartagenera y Todos los Besos; los otros archivos de escucha se mantienen fuera del despliegue mientras no conste permiso de distribución. El catálogo local `MP3/catalogo.json` registra fuentes y autorizaciones. Por eso esta versión tiene diez canciones y veinte niveles, no treinta y dos.
+Hay 13 pistas MP3 publicadas para 26 niveles. Faltan Adelita, El Rey y Cartagenera; no se sustituyen por otras versiones. `MP3/catalogo.json` documenta origen, intérprete, duración, formato y estado. El archivo MP4 utilizado como origen de Todos los Besos se conserva localmente y no se publica.
 
-Para restaurar solo Clavelitos MIDI, cambiar su registro a `enabled:false` en `src/recordings.js`; el MIDI original y el resto del repertorio se conservan. El resto de MP3 locales y las herramientas de revisión no forman parte del despliegue.
+El resto de los archivos de revisión, informes y fuentes preparatorias de `MP3/` no forma parte del despliegue; solo se publican las trece grabaciones que usa la campaña.

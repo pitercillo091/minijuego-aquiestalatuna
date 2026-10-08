@@ -1,6 +1,9 @@
 (function (root) {
   'use strict';
   const songs=typeof module!=='undefined'&&module.exports?require('./songs.js'):root.TunaSongs;
+  const recordings=typeof module!=='undefined'&&module.exports?require('./recordings.js'):root.TunaRecordings;
+  const campaignSongs=recordings.list();
+  const songCatalog=[...songs,...campaignSongs.filter(recording=>!songs.some(song=>song.id===recording.songId)).map(recording=>({id:recording.songId,title:recording.title,bpm:recording.bpmApproximate}))];
   const characters = [
     {id:'pandereta',name:'Miguel A.',role:'La capa también lleva el ritmo.',instrument:'pandereta',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Primero por la izquierda: gafas, barba poblada castaña y gris, cabello ondulado, complexión ancha y capa con cintas.'},
     {id:'guitarra',name:'Pacheco´s',role:'Que nadie olvide el estuche.',instrument:'guitarra',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Segundo: cabeza despejada, cabello en las sienes, cara sin barba, beca roja y guitarra grande de madera.'},
@@ -46,7 +49,7 @@
   }
   // Rules are resolved from catalogues, never from the UI's editable availability list.
   function selectionRules(performance) {
-    const sources=[locations.find(l=>l.id===performance.locationId),events.find(e=>e.id===performance.eventId),songs.find(s=>s.id===performance.song),levels.find(l=>l.id===performance.levelId)].map(item=>item?.restrictions||{});
+    const sources=[locations.find(l=>l.id===performance.locationId),events.find(e=>e.id===performance.eventId),songCatalog.find(s=>s.id===performance.song),levels.find(l=>l.id===performance.levelId)].map(item=>item?.restrictions||{});
     const list=key=>[...new Set(sources.flatMap(source=>source[key]||[]))];
     return {forbiddenCharacters:list('forbiddenCharacters'),requiredCharacters:list('requiredCharacters'),recommendedCharacters:list('recommendedCharacters'),incompatibleCharacters:sources.flatMap(source=>source.incompatibleCharacters||[]),reasons:Object.assign({},...sources.map(source=>source.reasons||{}))};
   }
@@ -84,11 +87,18 @@
     ['Lopera · El certamen','castle','caras',85,3,['partitura','bandurria','guitarra','laud','pandereta'],'Encuentra la partitura y reúne al equipo.','El jurado toma notas. Procura que las tuyas lleguen a tiempo.','El jurado también pide otra, aunque no lo diga.'],
     ['Lopera · La gran actuación','finale','grupo',85,4,['pandereta','guitarra','bandurria','guitarra-gafas','laud'],'Reúne a los cinco músicos para el gran final.','Última canción. Lo de irnos después lo hablamos después.','Veinte etapas. Cinco músicos. Y el público sigue pidiendo otra.']
   ];
-  const counts=[2,2,3,3,4,4,5,5,6,6],targets=[18,24,30,36,42,47,54,60,66,71],gaps=[.76,.708,.656,.42,.552,.5,.448,.2,.23,.39];
-  const firstRound=songs.map((s,i)=>{const [place,theme,photo,_time,hazards,items,goal,intro,after]=settings[i];const time=30;return {id:i,round:1,song:s.id,title:s.title,short:s.title,place,theme,photo,time,hazards,items,goal,intro,after,bpm:s.bpm,notes:targets[i],laneCount:counts[i],minGap:gaps[i],scrollSpeed:140+i*7,threshold:.5+Math.floor(i/2)*.025};});
-  const secondTargets=[42,48,54,48,66,71,78,78,90,96];
-  const secondRound=firstRound.map((level,i)=>({...level,id:i+10,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:secondTargets[i],laneCount:Math.min(6,level.laneCount+1),minGap:.2,scrollSpeed:level.scrollSpeed+24,threshold:Math.min(.9,level.threshold+.045)}));
+  const settingBySong=new Map(songs.map((song,i)=>[song.id,settings[i]]));
+  const firstRound=campaignSongs.map((recording,i)=>{
+    const s={id:recording.songId,title:recording.title,bpm:recording.bpmApproximate};
+    const [place,theme,photo,_time,hazards,items,goal,intro,after]=settingBySong.get(s.id)||settings[i%settings.length];
+    const chart=recording.charts.normal,laneCount=chart.laneCount;
+    return {id:i,round:1,song:s.id,title:s.title,short:s.title,place,theme,photo,time:30,hazards,items,goal,intro,after,bpm:s.bpm,notes:chart.notes.length,laneCount,minGap:1.35,scrollSpeed:140+i*5,threshold:.5+Math.floor(i/3)*.025};
+  });
+  const secondRound=firstRound.map((level,i)=>{
+    const recording=recordings.get(level.song),chart=recording.charts.hard;
+    return {...level,id:i+campaignSongs.length,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:chart.notes.length,laneCount:chart.laneCount,minGap:.2,scrollSpeed:level.scrollSpeed+20,threshold:Math.min(.9,level.threshold+.045)};
+  });
   const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,createPerformance,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:6};
+  const data={characters,locations,events,createPerformance,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:7};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);

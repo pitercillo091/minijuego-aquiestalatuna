@@ -177,10 +177,32 @@
     let saved={};try{saved=JSON.parse(storage.getItem('rondalla-una-ronda-mas-v1')||'{}')||{};}catch{}
     const valid= n=>Number.isFinite(n)&&n>=0;
     const size=D.levels.length;
-    // Keep the original storage key, scores, character and preferences. An old
-    // completed five-stage campaign opens song six; no existing result is lost.
-    const unlocked=Math.max(Number.isInteger(saved.unlocked)?saved.unlocked:0,(!saved.version||saved.version<2)&&saved.stars?.[4]>0?5:0);
-    const result={version:3,unlocked:clamp(unlocked,0,size-1),best:Array.from({length:size},(_,i)=>valid(saved.best?.[i])?Math.floor(saved.best[i]):0),stars:Array.from({length:size},(_,i)=>clamp(Number.isInteger(saved.stars?.[i])?saved.stars[i]:0,0,3)),character:D.characters.some(c=>c.id===saved.character)?saved.character:'bandurria',easy:saved.easy!==false,music:saved.music!==false,effects:saved.effects!==false,volume:valid(saved.volume)?clamp(saved.volume,0,1):.45,lastSong:typeof saved.lastSong==='string'?saved.lastSong:null,characterUnlocks:saved.characterUnlocks,characterRewardsSeen:saved.characterRewardsSeen};
+    const oldBest=Array.isArray(saved.best)?saved.best:[],oldStars=Array.isArray(saved.stars)?saved.stars:[];
+    const migrating=saved.campaignId!==D.campaignId&&oldStars.length===20;
+    const best=Array.from({length:size},(_,i)=>valid(oldBest[i])?Math.floor(oldBest[i]):0);
+    const stars=Array.from({length:size},(_,i)=>clamp(Number.isInteger(oldStars[i])?oldStars[i]:0,0,3));
+    let unlocked=Number.isInteger(saved.unlocked)?Math.max(0,Math.min(size-1,saved.unlocked)):0;
+    const legacyCampaigns=saved.legacyCampaigns&&typeof saved.legacyCampaigns==='object'?{...saved.legacyCampaigns}:{};
+    if(migrating){
+      best.fill(0);stars.fill(0);
+      // Preserve old marks by song and difficulty, not by their former array
+      // position. The missing MIDI-only songs are archived instead of being
+      // falsely assigned to unrelated MP3 levels.
+      const mappedBest=Array(size).fill(0),mappedStars=Array(size).fill(0);
+      let highestPreviouslyUnlocked=-1;
+      for(let oldIndex=0;oldIndex<20;oldIndex++){
+        const oldSong=D.legacySongIds[oldIndex%10],round=oldIndex<10?1:2;
+        const newIndex=D.levels.findIndex(level=>level.song===oldSong&&level.round===round);
+        if(newIndex<0)continue;
+        mappedBest[newIndex]=Math.max(mappedBest[newIndex],valid(oldBest[oldIndex])?Math.floor(oldBest[oldIndex]):0);
+        mappedStars[newIndex]=Math.max(mappedStars[newIndex],Number.isInteger(oldStars[oldIndex])?clamp(oldStars[oldIndex],0,3):0);
+        if(oldIndex<Math.max(0,Number.isInteger(saved.unlocked)?saved.unlocked:0))highestPreviouslyUnlocked=Math.max(highestPreviouslyUnlocked,newIndex);
+      }
+      legacyCampaigns['midi-20-v3']={best:oldBest.slice(0,20),stars:oldStars.slice(0,20),unlocked:saved.unlocked||0};
+      for(let i=0;i<size;i++){best[i]=Math.max(best[i],mappedBest[i]);stars[i]=Math.max(stars[i],mappedStars[i]);}
+      if(highestPreviouslyUnlocked>=0)unlocked=Math.max(unlocked,highestPreviouslyUnlocked+1);
+    }else if(!saved.version||saved.version<2){unlocked=Math.max(unlocked,oldStars[4]>0?5:0);}
+    const result={version:4,campaignId:D.campaignId,legacyCampaigns,unlocked:clamp(unlocked,0,size-1),best,stars,character:D.characters.some(c=>c.id===saved.character)?saved.character:'bandurria',easy:saved.easy!==false,music:saved.music!==false,effects:saved.effects!==false,volume:valid(saved.volume)?clamp(saved.volume,0,1):.45,lastSong:typeof saved.lastSong==='string'?saved.lastSong:null,characterUnlocks:saved.characterUnlocks,characterRewardsSeen:saved.characterRewardsSeen};
     result.unlocked=Math.max(result.unlocked,Math.min(size-1,D.completedLevel(result)));syncCharacterProgress(result);if(!D.isCharacterUnlocked(D.characters.find(c=>c.id===result.character),result))result.character='bandurria';return result;
   }
   function writeSave(storage,save) {try{storage.setItem('rondalla-una-ronda-mas-v1',JSON.stringify(save));return true;}catch{return false;}}

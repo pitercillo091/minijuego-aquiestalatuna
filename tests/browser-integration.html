@@ -19,7 +19,7 @@ document.getElementById('run').addEventListener('click',async()=>{
   check('Carga inicial',!d.getElementById('home').hidden&&d.querySelectorAll('.character-card').length===11);
   click('#rankings-open');for(let wait=0;wait<80&&d.querySelector('#ranking-table')?.textContent.includes('Cargando');wait++)await new Promise(resolve=>setTimeout(resolve,25));check('Clasificación pública carga sin cuenta y sin resultados de prueba',d.querySelector('#ranking-table')?.textContent.includes('0 resultados'));click('[data-action="close"]');
   click('[data-character="laud"]');check('Selección de personaje canónico',qa.save.character==='laud');
-  const initialSong=qa.audio.track.id;click('#next-song');check('Menú cambia canción sin repetición',qa.audio.track.id!==initialSong);click('[data-level="0"]');check('Empezar partida abre instrucciones',g.phase==='brief'&&d.getElementById('modal').open);
+  const initialSong=qa.audio.ambientConfig.id;click('#next-song');check('Menú cambia canción MP3 sin repetición',qa.audio.ambientConfig.id!==initialSong);click('[data-level="0"]');check('Empezar partida abre instrucciones',g.phase==='brief'&&d.getElementById('modal').open);
  click('[data-action="choose-group"]');check('La introducción pasa a selección de grupo',d.querySelector('.party-picker h3')?.textContent==='TUNA: 0/5'&&d.querySelector('[data-action="begin"]').disabled);check('Selecciona cinco músicos',chooseGroup()&&d.querySelector('.party-picker h3')?.textContent==='TUNA: 5/5');const chosen=[...g.performance.selectedCharacters];click('[data-action="begin"]');check('Inicio de nivel y grupo seleccionado',g.phase==='playing'&&JSON.stringify(g.performance.selectedCharacters)===JSON.stringify(chosen)&&chosen.includes(g.collectorCharacter));
   const before=g.player.x;key('KeyD','d');qa.step(.1,{x:1,y:0});release('KeyD');check('Movimiento de teclado',g.player.x>before);
   g.player={x:330,y:338};step(2,{x:1,y:0});check('Colisión con banco',g.player.x<=339.1);
@@ -34,7 +34,7 @@ document.getElementById('run').addEventListener('click',async()=>{
   // Simulated seconds run faster than audible time: mute after checking audio.
   qa.save.music=false;qa.save.effects=false;qa.audio.stop();
   let scoreTotal=0;
-  for(let level=0;level<20;level++){
+  for(let level=0;level<w.TunaData.levels.length;level++){
    if(!d.querySelector('[data-action="begin"]'))click('[data-action="choose-group"]');
    check(`Etapa ${level+1}: se eligen cinco antes de salir`,chooseGroup()&&d.querySelector('[data-action="begin"]').disabled===false);
    const actCast=[...g.performance.selectedCharacters];click('[data-action="begin"]');check(`Etapa ${level+1}: preparación usa personaje del grupo`,actCast.includes(g.collectorCharacter));const pickupLabels=[...d.querySelectorAll('#beacons .beacon:not(.stage)')].map(button=>button.getAttribute('aria-label')||'');check(`Etapa ${level+1}: recogida muestra equipo, no personajes ajenos`,pickupLabels.every(label=>!w.TunaData.characters.some(character=>label.includes(character.name))));
@@ -42,14 +42,14 @@ document.getElementById('run').addEventListener('click',async()=>{
    click('[data-target="stage"]');let watchdog=0;while(g.mode!=='rhythm'&&g.phase==='playing'&&watchdog++<3000)qa.step(.01);check(`Etapa ${level+1}: transición musical`,g.mode==='rhythm');let sourceOk;if(g.recording){for(let wait=0;wait<100&&qa.audio.recordingTransport?.status==='loading';wait++)await new Promise(resolve=>setTimeout(resolve,25));sourceOk=qa.audio.track===null&&qa.audio.recordingTransport?.status==='ready'&&qa.audio.recordingTransport.buffer?.duration>=60;}else sourceOk=qa.audio.track?.id===g.config.song;check(`Etapa ${level+1}: fuente musical correcta y teclas progresivas`,sourceOk&&d.querySelectorAll('[data-lane]').length===g.config.laneCount);
    for(const note of g.notes){step(Math.max(0,note.at-g.clock));const code=w.TunaData.codes[note.lane];if(g.recording)g.hit(note.lane);else if(level===2)key('Space',' ');else if(level===3){const b=d.querySelector(`[data-lane="${note.lane}"]`);b.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,pointerId:1}));}else key(code,code);release(code);qa.step(0);}
    step(Math.max(0,g.duration-g.clock)+.1);
-   check(`Etapa ${level+1}: canción completa con controles reales`,g.hits===g.notes.length&&g.phase===(level===19?'victory':'result'));
+   check(`Etapa ${level+1}: canción completa con controles reales`,g.hits===g.notes.length&&g.phase===(level===w.TunaData.levels.length-1?'victory':'result'));
    check(`Etapa ${level+1}: puntuación y estrellas`,g.score>1000&&qa.save.stars[level]===3&&g.total>scoreTotal);scoreTotal=g.total;
    while(d.querySelector('[data-action="reward-continue"]'))click('[data-action="reward-continue"]');
-   if(level<19)click('[data-action="next"]');
+   if(level<w.TunaData.levels.length-1)click('[data-action="next"]');
   }
   check('Victoria final visible',g.phase==='victory'&&d.getElementById('modal-content').textContent.includes('Una ronda para recordar'));
-  const restored=w.TunaEngine.readSave(qa.storage);check('Guardado y desbloqueo de las veinte etapas',restored.unlocked===19&&restored.best.every(n=>n>0)&&restored.stars.every(n=>n===3));
-  check('Los diez archivos MIDI cargan en veinte etapas',w.TunaMusic.status.size===10&&Array.from(w.TunaMusic.status.values()).every(x=>x==='archivo'));check('Escudo y sprites cargados',Array.from(d.querySelectorAll('#characters img,.brand img')).every(im=>im.complete&&im.naturalWidth>0));check('Los once atlas PNG cargan y se usan en el renderer',w.TunaData.characters.length===11&&w.TunaData.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===192*(c.animationColumns||4)));
+  const restored=w.TunaEngine.readSave(qa.storage);check('Guardado y desbloqueo de los 26 niveles',restored.unlocked===w.TunaData.levels.length-1&&restored.best.every(n=>n>0)&&restored.stars.every(n=>n===3));
+  check('Trece MP3 con mapa propio cubren los 26 niveles',w.TunaRecordings.list().length===13&&w.TunaData.levels.length===26&&w.TunaData.levels.every(level=>w.TunaRecordings.get(level.song)));check('Escudo y sprites cargados',Array.from(d.querySelectorAll('#characters img,.brand img')).every(im=>im.complete&&im.naturalWidth>0));check('Los once atlas PNG cargan y se usan en el renderer',w.TunaData.characters.length===11&&w.TunaData.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===192*(c.animationColumns||4)));
   // Force a valid random draw for the restricted event and exercise its real UI.
   const D=w.TunaData,previousKey=g.performance.key,pairs=D.locations.flatMap(location=>D.events.map(event=>({location,event}))),available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previousKey),benefitIndex=available.findIndex(pair=>pair.event.id==='evento-benefico'),originalRandom=w.Math.random;
   w.Math.random=()=>((benefitIndex+.25)/available.length);qa.start(0);w.Math.random=originalRandom;
