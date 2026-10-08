@@ -44,3 +44,4 @@ dialog.party-dialog{width:min(900px,calc(100% - 24px))}.party-dialog .party-grid
 @media(max-width:800px){.party-dialog .party-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.party-dialog .party-grid{grid-template-columns:repeat(2,minmax(0,1fr))}dialog.party-dialog{padding:16px}.party-dialog .gig-card{padding:10px;margin:10px 0}.party-dialog .gig-card p{font-size:11px;line-height:1.5}.party-dialog .party-picker{padding:8px;margin-top:10px}.party-dialog .dialog-actions{bottom:-16px}.party-card{min-height:72px}.unlock-card h2{font-size:23px}.party-dialog h2{font-size:24px}.character-card strong{overflow-wrap:anywhere}}
 @media(prefers-reduced-motion:reduce){.reward-sprite,.reward-sparkles i{animation:none}}
+.party-card strong{text-transform:uppercase}
