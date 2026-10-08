@@ -7,9 +7,12 @@
     {id:'bandurria',name:'C15',role:'Una púa y toda la plaza.',instrument:'bandurria',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Tercero: cabello corto oscuro con canas, bigote y barba corta, rostro alargado, beca roja y bandurria dorada.'},
     {id:'guitarra-gafas',name:'Piter',role:'El compás se ve venir.',instrument:'guitarra',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Cuarto: gafas rectangulares, cabello corto gris oscuro, sin barba, guitarra clara y beca roja colgando al costado.'},
     {id:'laud',name:'Pesetas',role:'La última nunca es la última.',instrument:'laud',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Quinto: cabello castaño corto, sonrisa, barba muy corta, beca roja y pequeño instrumento de cuerda. La identificación del instrumento es una interpretación visual.'},
-    {id:'andres',name:'Andrés',role:'La pandereta marca el camino.',instrument:'pandereta',reference:'andres.png',referencePath:'assets/personajes/referencias/andres.png',detail:'Sexto: cabello corto oscuro, barba poblada, rostro ancho y traje negro; toca la pandereta.'},
+    {id:'andres',name:'Andrés',role:'La pandereta marca el camino.',instrument:'pandereta',unlockLevel:5,unlockMessage:'¡Una nueva pandereta se une a la Tuna!',reference:'andres.png',referencePath:'assets/personajes/referencias/andres.png',detail:'Sexto: cabello corto oscuro, barba poblada, rostro ancho y traje negro; toca la pandereta.'},
     {id:'coki',name:'Coki',role:'Pandereta con gafas de sol.',instrument:'pandereta',reference:'coki.png',referencePath:'assets/personajes/referencias/coki.png',detail:'Séptimo: pelo corto, gafas de sol, sonrisa, beca roja y pandereta.'},
-    {id:'legia',name:'LEGÍA',role:'La guitarra está lista para la ronda.',instrument:'guitarra',reference:'legia.png',referencePath:'assets/personajes/referencias/legia.png',detail:'Octavo: pelo corto oscuro con entradas, rostro ancho, barba muy corta, beca roja y capa negra con forro rojo. Toca la guitarra, confirmado por el usuario.'}
+    {id:'legia',name:'LEGÍA',role:'La guitarra está lista para la ronda.',instrument:'guitarra',unlockLevel:10,unlockMessage:'¡Una nueva guitarra se une a la Tuna!',reference:'legia.png',referencePath:'assets/personajes/referencias/legia.png',detail:'Octavo: pelo corto oscuro con entradas, rostro ancho, barba muy corta, beca roja y capa negra con forro rojo. Toca la guitarra, confirmado por el usuario.'},
+    {id:'pedro-v',name:'PEDRO V.',role:'El baile también lleva el compás.',kind:'dancer',instrument:null,unlockLevel:3,unlockMessage:'¡Un nuevo bailarín se une a la Tuna!',animationColumns:8,assetVersion:'20261008-once1',reference:'pedro-v.png',referencePath:'assets/personajes/referencias/pedro-v.png',detail:'Cabello oscuro peinado hacia atrás, rostro sin barba, hombros anchos, cuello negro y beca roja. Bailarín sin instrumento.'},
+    {id:'ponder',name:'PONDER',role:'Una bandurria y una sonrisa.',instrument:'bandurria',unlockLevel:6,unlockMessage:'¡Una nueva bandurria se une a la Tuna!',assetVersion:'20261008-once1',reference:'ponder.png',referencePath:'assets/personajes/referencias/ponder.png',detail:'Cabello corto rizado con entradas, rostro redondeado, sonrisa amplia y barba corta con canas. Bandurria.'},
+    {id:'pena',name:'PEÑA',role:'La púa está lista para otra ronda.',instrument:'bandurria',unlockLevel:8,unlockMessage:'¡Otro bandurrista se incorpora a la Tuna!',assetVersion:'20261008-once1',reference:'pena.png',referencePath:'assets/personajes/referencias/pena.png',detail:'Frente despejada, cabello corto, cejas marcadas, bigote y perilla, rostro alargado, cuello blanco y beca roja. Bandurria.'}
   ];
   // Catalogue for the touring layer. New places and events can be added here
   // without changing the level engine or the screen templates.
@@ -31,15 +34,43 @@
     {id:'evento-benefico',name:'Evento benéfico',icon:'❤️',description:'Una ronda solidaria para echar una mano con música y buen humor.',narrative:'Hoy tocamos por una buena causa. Afinad, sonreíd y que cada nota ayude a llenar la hucha.',restrictions:{forbiddenCharacters:['guitarra'],reasons:{guitarra:'Pone una escusa para no actuar'}}}
   ];
   let lastPerformanceKey=null;
-  function createPerformance(level,previousKey='') {
+  function completedLevel(progress={}) {
+    return Math.max(Math.max(0,Math.min(levels.length-1,Number.isInteger(progress.unlocked)?progress.unlocked:0)),...(Array.isArray(progress.stars)?progress.stars.slice(0,levels.length).map((stars,i)=>stars>0?i+1:0):[0]));
+  }
+  function isCharacterUnlocked(character,progress={}) {
+    return !character.unlockLevel||completedLevel(progress)>=character.unlockLevel-1||(Array.isArray(progress.characterUnlocks)&&progress.characterUnlocks.includes(character.id));
+  }
+  function characterAsset(character,atlas=false) {
+    const version=character.assetVersion||(['andres','coki'].includes(character.id)?'20261008-art1':'6');
+    return `assets/personajes/${character.id}${atlas?'-atlas.png':'.svg'}?v=${version}`;
+  }
+  // Rules are resolved from catalogues, never from the UI's editable availability list.
+  function selectionRules(performance) {
+    const sources=[locations.find(l=>l.id===performance.locationId),events.find(e=>e.id===performance.eventId),songs.find(s=>s.id===performance.song),levels.find(l=>l.id===performance.levelId)].map(item=>item?.restrictions||{});
+    const list=key=>[...new Set(sources.flatMap(source=>source[key]||[]))];
+    return {forbiddenCharacters:list('forbiddenCharacters'),requiredCharacters:list('requiredCharacters'),recommendedCharacters:list('recommendedCharacters'),incompatibleCharacters:sources.flatMap(source=>source.incompatibleCharacters||[]),reasons:Object.assign({},...sources.map(source=>source.reasons||{}))};
+  }
+  function characterAvailability(character,performance,progress={}) {
+    const rules=selectionRules(performance);
+    if(rules.forbiddenCharacters.includes(character.id))return {available:false,reason:rules.reasons[character.id]||'No disponible para esta actuación'};
+    if(!isCharacterUnlocked(character,progress))return {available:false,reason:`🔒 Disponible en nivel ${character.unlockLevel}`};
+    return {available:true,reason:''};
+  }
+  function refreshPerformanceAvailability(performance,progress={}) {
+    const rules=selectionRules(performance);performance.allowedCharacters=[];performance.unavailableCharacters=[];performance.restrictionReasons={};
+    for(const character of characters){const status=characterAvailability(character,performance,progress);if(status.available)performance.allowedCharacters.push(character.id);else{performance.unavailableCharacters.push(character.id);performance.restrictionReasons[character.id]=status.reason;}}
+    performance.requiredCharacters=rules.requiredCharacters;performance.recommendedCharacters=rules.recommendedCharacters;return performance;
+  }
+  function createPerformance(level,previousKey='',progress={}) {
     const previous=previousKey||lastPerformanceKey;
-    const pairs=[];for(const location of locations)for(const event of events)pairs.push({location,event});
+    const pairs=[];for(const location of locations)for(const event of events){const candidate={locationId:location.id,eventId:event.id,song:level.song,levelId:level.id};if(characters.filter(c=>characterAvailability(c,candidate,progress).available).length>=5)pairs.push({location,event});}
+    if(!pairs.length)throw new Error('No hay un encargo con cinco componentes disponibles.');
     const available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previous);
     const pair=(available.length?available:pairs)[Math.floor(Math.random()*(available.length?available.length:pairs.length))];
     const key=`${pair.location.id}:${pair.event.id}`;lastPerformanceKey=key;
     const forbidden=pair.event.restrictions?.forbiddenCharacters||[];
     const availableCharacters=characters.filter(character=>!forbidden.includes(character.id)).map(character=>character.id);
-    return {id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},allowedCharacters:availableCharacters,recommendedCharacters:[],requiredCharacters:[],unavailableCharacters:forbidden,selectedCharacters:[],restrictionReasons:pair.event.restrictions?.reasons||{},prepText:`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`,readyText:`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`,closingText:`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`};
+    return refreshPerformanceAvailability({id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},allowedCharacters:availableCharacters,recommendedCharacters:[],requiredCharacters:[],unavailableCharacters:forbidden,selectedCharacters:[],restrictionReasons:pair.event.restrictions?.reasons||{},prepText:`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`,readyText:`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`,closingText:`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`},progress);
   }
   const settings=[
     ['Lopera · El ensayo','rehearsal','ensayo',105,0,['guitarra','bandurria','pandereta'],'Recoge los tres instrumentos y prepara Clavelitos.','Hay quien trae la voz. Tú trae también los instrumentos.','La primera ya suena. El ensayo empieza a parecer una actuación.'],
@@ -58,6 +89,6 @@
   const secondTargets=[42,48,54,48,66,71,78,78,90,96];
   const secondRound=firstRound.map((level,i)=>({...level,id:i+10,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:secondTargets[i],laneCount:Math.min(6,level.laneCount+1),minGap:.2,scrollSpeed:level.scrollSpeed+24,threshold:Math.min(.9,level.threshold+.045)}));
   const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,createPerformance,levels,lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:5};
+  const data={characters,locations,events,createPerformance,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:6};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "pena",
+    "frame": [
+      192,
+      320
+    ],
+    "columns": 4,
+    "rows": [
+      "idle",
+      "walk",
+      "playing",
+      "victory"
+    ],
+    "ground": 315,
+    "crop": [
+      189,
+      68,
+      923,
+      1459
+    ],
+    "fit": [
+      160,
+      304
+    ],
+    "offset": [
+      16,
+      12
+    ],
+    "reference": "referencias/pena.png",
+    "artwork": "ilustraciones/pena-base.png",
+    "referenceSha256": "9410ba2f3b9761bfa4d17c32ea3c145da6713185446fade7fe3e0872136eacf9",
+    "artworkSha256": "1e4c3a85660d5df370181200ac4206cbc9fd026a58640687b271aeab5b23fdb9",
+    "method": "ImageGen integrado; mismo empaquetado artístico aprobado. Fotos solo como referencia.",
+    "function": "bandurria"
+  },
+  {
+    "id": "ponder",
+    "frame": [
+      192,
+      320
+    ],
+    "columns": 4,
+    "rows": [
+      "idle",
+      "walk",
+      "playing",
+      "victory"
+    ],
+    "ground": 315,
+    "crop": [
+      77,
+      78,
+      960,
+      1572
+    ],
+    "fit": [
+      180,
+      304
+    ],
+    "offset": [
+      6,
+      12
+    ],
+    "reference": "referencias/ponder.png",
+    "artwork": "ilustraciones/ponder-base.png",
+    "referenceSha256": "a32ac9f060ddf29ee86cf73013cd1424e509ec471cdf3bd261a4a3d0332850a5",
+    "artworkSha256": "2510af43b3782eee1b7a7d73e796680456ed1c32e12ed5c1c3ed13e512f29eb1",
+    "method": "ImageGen integrado; mismo empaquetado artístico aprobado. Fotos solo como referencia.",
+    "function": "bandurria"
+  },
+  {
+    "id": "pedro-v",
+    "frame": [
+      192,
+      320
+    ],
+    "columns": 8,
+    "rows": [
+      "idle",
+      "walk",
+      "playing",
+      "victory"
+    ],
+    "ground": 315,
+    "crop": [
+      85,
+      85,
+      922,
+      1552
+    ],
+    "fit": [
+      173,
+      304
+    ],
+    "offset": [
+      9,
+      12
+    ],
+    "reference": "referencias/pedro-v.png",
+    "artwork": "ilustraciones/pedro-v-base.png",
+    "referenceSha256": "1bc0d81f95f8e2bf14aad8fb4354f1504a3876b4cecb0d34dc5f34e8c96c9eed",
+    "artworkSha256": "985e7bb3a1dd0511cb96ac62d9e12d5a63db34191949104de9e5e32727099877",
+    "method": "ImageGen integrado; mismo empaquetado artístico aprobado. Fotos solo como referencia.",
+    "function": "bailarín sin instrumento"
+  }
+]

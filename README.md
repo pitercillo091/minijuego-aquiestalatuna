@@ -1,6 +1,6 @@
-# Una ronda más · versión 3
+# Una ronda más · versión 4
 
-Juego web de la Rondalla de Lopera. Cada etapa combina una preparación en la plaza y una actuación musical de 40 segundos. Esta actualización conserva el motor, las colisiones, los objetivos, la puntuación, las dos dificultades y el guardado de la versión anterior; amplía el repertorio a veinte etapas y el reparto a cinco músicos pixel art.
+Juego web de la Rondalla de Lopera. Cada etapa combina una preparación en la plaza y una actuación musical de 40 segundos. Esta actualización conserva el motor, las colisiones, los objetivos, la puntuación, las dos dificultades y el guardado de la versión anterior; amplía el repertorio a veinte etapas y el reparto a once componentes pixel art, con cinco elegidos para cada encargo.
 
 ## Jugar
 
@@ -79,7 +79,7 @@ JUEGO/
   assets/audio/partituras.json  Frases editables y tempos
   assets/audio/generar-midi.py  Exportador MIDI, Python sin dependencias
   assets/audio/FUENTES.md      Procedencia, atribución y alcance musical
-  assets/personajes/           Ocho diseños, ocho atlas y generadores
+  assets/personajes/           Once diseños, once atlas y generadores
   assets/referencias/          Fotografías optimizadas y referencia del reparto
   assets/ui/escudo.webp        Escudo original optimizado
   PERSONAJES/                  Imagen aportada por el usuario, preservada
@@ -148,3 +148,26 @@ Desde el servidor, abre `tests/browser-integration.html`: usa el controlador, di
 ## Siguientes ampliaciones
 
 Una transcripción más detallada de la referencia de Cartagenera, calibración de latencia de audio y nombres confirmados de los músicos. La curva de dificultad puede ajustarse después de observar partidas de jugadores reales.
+
+
+## Once componentes y recompensas (8 de octubre de 2026)
+
+El catálogo único de `src/data.js` incluye a Miguel A., Pacheco´s, C15, Piter, Pesetas, Andrés, Coki, LEGÍA, PEDRO V., PONDER y PEÑA. El jugador elige exactamente cinco antes de preparar cada encargo. La localidad, el evento, la canción, el nivel y `selectedCharacters` permanecen en la misma actuación. Repetir conserva ese encargo; avanzar crea uno nuevo con la selección vacía.
+
+| Personaje | Función | Disponible desde | Victoria necesaria |
+| --- | --- | --- | --- |
+| PEDRO V. | Bailarín, sin instrumento | 3 | 2 |
+| Andrés | Pandereta | 5 | 4 |
+| PONDER | Bandurria | 6 | 5 |
+| PEÑA | Bandurria | 8 | 7 |
+| LEGÍA | Guitarra | 10 | 9 |
+
+Se puede repetir un nivel anterior usando personajes ya conseguidos. Perder no concede recompensas. Todos los personajes aparecen en «ELIGE TU TUNA»; los bloqueados muestran el nivel necesario. Pacheco´s sigue excluido de los eventos benéficos con «Pone una escusa para no actuar». El motor vuelve a validar el catálogo, desbloqueos, duplicados y restricciones al comenzar, aunque la interfaz se haya manipulado. La generación admite únicamente encargos con al menos cinco componentes elegibles.
+
+El guardado conserva su clave y pasa a versión 3. `characterUnlocks` registra personajes ganados y `characterRewardsSeen` registra las tarjetas confirmadas con «CONTINUAR». Al leer una partida anterior, las estrellas y el avance desbloquean automáticamente lo ya conseguido sin borrar marcas, ajustes ni progreso. Las tarjetas pendientes se muestran en orden y sobreviven a una recarga antes de confirmarlas. Las confirmadas no vuelven a aparecer.
+
+Los nuevos dibujos se generaron con ImageGen integrado, usando las fotografías individuales como identidad y los ocho sprites aprobados como estilo. Los originales no se modificaron. `assets/personajes/generar_ampliacion.py` empaqueta las ilustraciones maestras en celdas de 192 × 320; la línea de apoyo es y=315. Peña y Ponder usan atlas de cuatro columnas y cuatro filas. Pedro usa ocho columnas y cuatro filas; su fila de actuación incluye ocho poses de baile, con brazos, torso y piernas en movimiento y rostro constante. El motor selecciona dos poses por pulso usando el reloj musical existente, también después de una pausa. La recogida sigue tratando objetos de equipo compartido y no exige al bailarín un instrumento personal.
+
+Para añadir personajes: agrega su registro con `id`, `name`, `instrument` (o `kind:'dancer'` e `instrument:null`), `unlockLevel`, `unlockMessage` y, si corresponde, `animationColumns`; incorpora su base y atlas. Las reglas se combinan centralmente desde localidad, evento, canción y nivel: `forbiddenCharacters`, `requiredCharacters`, `recommendedCharacters`, `incompatibleCharacters` y `reasons`. No hay reglas nuevas activas fuera de los desbloqueos y la exclusión benéfica de Pacheco´s.
+
+Pruebas de esta ampliación: `node tests/progression.test.cjs`, `node tests/engine.test.cjs`, `node tests/audio.test.cjs` y `tests/ampliacion-browser.html`. El último usa el controlador real, un reloj controlado y guardado aislado para completar las veinte etapas, verificar las cinco tarjetas y capturar a los once juntos. `tests/run-ampliacion.cjs` automatiza esa revisión con Playwright; `tests/run-publicacion.cjs` comprueba además recargas, migración, selección móvil y una actuación completa con reloj normal. Solo el mantenimiento necesita esas herramientas; jugar continúa sin dependencias. Las capturas e informes locales están en `docs/ampliacion-once/`, sin publicar las copias de seguridad ni la biblioteca MP3.

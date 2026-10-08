@@ -1,0 +1,57 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Once integrantes · pruebas de integración</title>
+<style>body{margin:0;background:#181720;color:#f1e5ce;font:14px system-ui}header{padding:16px}button{padding:12px}iframe{width:100%;height:900px;border:0}#results{white-space:pre-wrap;max-height:220px;overflow:auto}#captures img{width:min(960px,100%);display:block;margin:14px auto}#captures p{margin:14px}</style>
+<header><h1>Once integrantes · actuación y progresión</h1><button id="run" disabled>Probar la campaña completa</button><div id="results">Cargando…</div></header><iframe id="app" src="../index.html?v=20261008-once1#qa" allow="autoplay" title="Juego real con guardado aislado"></iframe><section id="captures"></section>
+<script>
+const frame=document.getElementById('app'),output=document.getElementById('results'),run=document.getElementById('run');
+let lines=[],passed=0;window.testResult=null;window.captures={};
+frame.onload=()=>{run.disabled=false;output.textContent='Listo.';};
+const check=(name,okay)=>{if(!okay)throw Error(name);passed++;lines.push('PASS '+name);output.textContent=lines.join('\n');};
+run.onclick=async()=>{run.disabled=true;try{
+ const w=frame.contentWindow,d=w.document,qa=w.TunaQA,g=qa.game,D=w.TunaData,E=w.TunaEngine;await qa.musicReady;
+ await Promise.all(D.characters.flatMap(c=>[new Promise(r=>{let i=new w.Image();i.onload=r;i.onerror=()=>r();i.src=D.characterAsset(c);}),new Promise(r=>{let i=new w.Image();i.onload=r;i.onerror=()=>r();i.src=D.characterAsset(c,true);})]));
+ const click=selector=>{const el=d.querySelector(selector);if(!el)throw Error('Falta '+selector);el.click();};
+ const step=(seconds,input)=>{for(let t=0;t<seconds;t+=.01)qa.step(Math.min(.01,seconds-t),input);};
+ const capture=(name,canvas=d.getElementById('game'))=>{window.captures[name]=canvas.toDataURL();const p=document.createElement('p'),img=document.createElement('img');p.textContent=name;img.src=window.captures[name];document.getElementById('captures').append(p,img);};
+ const keys=lane=>{d.getElementById('game').focus();const code=D.codes[lane];d.dispatchEvent(new w.KeyboardEvent('keydown',{code,bubbles:true}));d.dispatchEvent(new w.KeyboardEvent('keyup',{code,bubbles:true}));};
+ check('Catálogo de once en el menú',d.querySelectorAll('[data-character]').length===11);
+ check('Cinco bloqueados iniciales',d.querySelectorAll('[data-character]:disabled').length===5);
+ check('Once atlas reales cargados',D.characters.every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===192*(c.animationColumns||4)));
+ const castCanvas=d.createElement('canvas');castCanvas.width=960;castCanvas.height=540;const castArt=new w.TunaArt(castCanvas);castArt.images=qa.art.images;castArt.time=1;castArt.background('plaza');D.characters.forEach((c,i)=>{castArt.character(c.id,45+i*87,434,.85,'playing',1,2);castArt.text(c.name,45+i*87,463,10);});capture('once-personajes-juntos',castCanvas);
+ click('#play');click('[data-action="choose-group"]');
+ check('Once fichas y 0/5',d.querySelectorAll('[data-character-pick]').length===11&&d.querySelector('.party-picker h3').textContent==='TUNA: 0/5');
+ for(const id of ['pedro-v','ponder','pena','andres','legia']){check('Bloqueado '+id,d.querySelector(`[data-character-pick="${id}"]`).disabled);click(`[data-character-pick="${id}"]`);check('No cuenta '+id,g.performance.selectedCharacters.length===0);}
+ const available=g.performance.allowedCharacters;available.slice(0,4).forEach(id=>click(`[data-character-pick="${id}"]`));check('Con cuatro no comienza',d.querySelector('[data-action="begin"]').disabled&&!g.begin());click(`[data-character-pick="${available[4]}"]`);check('Con cinco comienza',!d.querySelector('[data-action="begin"]').disabled);if(available[5])click(`[data-character-pick="${available[5]}"]`);check('No entra un sexto',g.performance.selectedCharacters.length===5);
+ click('[data-action="begin"]');qa.step(.1,{x:1,y:0});check('Movimiento intacto',g.player.x>105);click('#pause');const before=g.clock;step(2);check('Pausa congela reloj',g.clock===before&&g.phase==='paused');click('[data-action="resume"]');
+ g.health=0;qa.step(.01);check('Perder no concede desbloqueos',g.phase==='defeat'&&qa.save.characterUnlocks.length===0);click('[data-action="retry"]');check('Repetir conserva encargo y grupo',g.performance.selectedCharacters.length===5);
+ await qa.audio.unlock();check('Contexto de audio real',qa.audio.ctx?.state==='running'||qa.audio.available===false);qa.save.music=false;qa.save.effects=false;qa.audio.stop();
+ const expected={1:'pedro-v',3:'andres',4:'ponder',6:'pena',8:'legia'};const rewardIds=[];
+ for(let level=0;level<20;level++){
+  click('[data-action="choose-group"]');const act=g.performance,identity=[act.locationId,act.eventId,act.song,act.levelId].join('|');
+  // From stage three Pedro is a real selected component, including transport.
+  if(level>=2&&g.performance.allowedCharacters.includes('pedro-v')&&!g.performance.selectedCharacters.includes('pedro-v'))click('[data-character-pick="pedro-v"]');
+  for(const id of g.performance.allowedCharacters){if(g.performance.selectedCharacters.length===5)break;if(!g.performance.selectedCharacters.includes(id))click(`[data-character-pick="${id}"]`);}
+  const ids=[...act.selectedCharacters];click('[data-action="begin"]');check('Etapa '+(level+1)+' · cinco y preparación de 30 s',g.phase==='playing'&&ids.length===5&&g.remaining===30&&ids.includes(g.collectorCharacter));
+  if(level===2)check('Pedro sin instrumento ficticio',D.characters.find(c=>c.id==='pedro-v').instrument===null&&g.items.every(i=>!['pedro-v','bailarin'].includes(i.type)));
+  for(const item of g.items){click(`[data-target="${item.id}"]`);let guard=0;while(g.target!==null&&g.phase==='playing'&&guard++<3000)qa.step(.01);check('Etapa '+(level+1)+' · recogida '+item.id,item.collected);}
+  click('[data-target="stage"]');let guard=0;while(g.mode!=='rhythm'&&g.phase==='playing'&&guard++<3000)qa.step(.01);
+  check('Etapa '+(level+1)+' · música y notas hasta 40 s',g.mode==='rhythm'&&g.duration===40&&qa.audio.track.id===act.song&&g.notes.some(n=>n.at>38));
+  if(level===2){capture('pedro-actuacion');const frames=[];const original=qa.art.ctx.drawImage;qa.art.ctx.drawImage=function(image,...args){if(image===qa.art.images['pedro-v-atlas'])frames.push(args[0]);return original.call(this,image,...args);};for(let beat=0;beat<4;beat+=.5)qa.art.character('pedro-v',82,266,.9,'playing',1,beat);qa.art.ctx.drawImage=original;check('Ocho poses de baile sincronizadas al pulso',new Set(frames).size===8);}
+  for(const note of g.notes){step(Math.max(0,note.at-g.clock));keys(note.lane);qa.step(0);}step(Math.max(0,g.duration-g.clock)+.1);
+  check('Etapa '+(level+1)+' · resultado y aciertos',g.phase===(level===19?'victory':'result')&&g.hits===g.notes.length&&qa.save.stars[level]===3);
+  check('Etapa '+(level+1)+' · identidad y grupo intactos',g.performance===act&&identity===[act.locationId,act.eventId,act.song,act.levelId].join('|')&&ids.join()===act.selectedCharacters.join());
+  if(expected[level]){const id=expected[level];check('Tarjeta de recompensa '+id,d.querySelector('[data-action="reward-continue"]')&&d.querySelector('.reward-sprite').style.backgroundImage.includes(id));rewardIds.push(id);check('Recompensa pendiente antes de confirmar',E.pendingCharacterRewards(E.readSave(qa.storage)).some(c=>c.id===id));click('[data-action="reward-continue"]');check('Recompensa reconocida y no duplicada',!E.pendingCharacterRewards(E.readSave(qa.storage)).some(c=>c.id===id));}
+  check('Resultados muestran los mismos cinco',d.querySelectorAll('.result-cast>div').length===5);
+  if(level<19){click('[data-action="next"]');check('Nuevo encargo limpio '+(level+2),g.performance!==act&&g.performance.selectedCharacters.length===0);}
+ }
+ check('Cinco recompensas en el orden correcto',rewardIds.join()==='pedro-v,andres,ponder,pena,legia');
+ const reloaded=E.readSave(qa.storage);check('Guardado conserva avance y recompensas',reloaded.unlocked===19&&reloaded.characterUnlocks.length===5&&reloaded.characterRewardsSeen.length===5);
+ // A charity act validates both level and event restrictions with all unlocked.
+ let guard=0;do{qa.start(0);}while(g.performance.eventId!=='evento-benefico'&&guard++<300);click('[data-action="choose-group"]');
+ check('Benéfico bloquea Pacheco con texto exacto',d.querySelector('[data-character-pick="guitarra"]').disabled&&d.querySelector('[data-character-pick="guitarra"] small').textContent==='Pone una escusa para no actuar');
+ for(const id of ['pedro-v','pena','ponder','andres','legia'])click(`[data-character-pick="${id}"]`);check('Nuevos y antiguos disponibles en benéfico',g.selectionStatus().valid);
+ g.performance.selectedCharacters=['guitarra','pena','ponder','andres','legia'];g.performance.allowedCharacters=D.characters.map(c=>c.id);check('No hay bypass con Pacheco ni disponibilidad manipulada',!g.begin());
+ g.performance.selectedCharacters=['pedro-v','pena','ponder','andres','legia'];click('[data-action="begin"]');capture('grupo-nuevo-preparacion');
+ const old={version:2,unlocked:12,best:Array(20).fill(999),stars:Array.from({length:20},(_,i)=>i<12?2:0),volume:.28};const migrated=E.readSave({getItem:()=>JSON.stringify(old)});check('Partida anterior desbloquea cinco sin perder marcas',migrated.characterUnlocks.length===5&&migrated.best[11]===999&&migrated.unlocked===12&&migrated.volume===.28);
+ qa.audio.stop();window.testResult={passed,failed:0,lines};output.textContent+=`\n${passed} comprobaciones correctas.`;
+ }catch(error){window.testResult={passed,failed:1,error:error.stack,lines};output.textContent+='\nFAIL '+error.stack;console.error(error);}};
+</script></html>

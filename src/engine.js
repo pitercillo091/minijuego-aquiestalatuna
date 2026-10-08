@@ -34,12 +34,12 @@
     return [];
   }
   class Game {
-    constructor(options={}) { this.character=options.character||'bandurria'; this.easy=options.easy!==false; this.events=[]; this.total=0; this.phase='menu'; this.level=0; this.clock=0; }
+    constructor(options={}) { this.character=options.character||'bandurria'; this.easy=options.easy!==false; this.progress=options.progress||{};this.events=[]; this.total=0; this.phase='menu'; this.level=0; this.clock=0; }
     emit(type, details={}) { this.events.push({type,...details}); }
     drain() { return this.events.splice(0); }
     start(level=0) { this.total=0;this.load(level); }
     load(level,{preservePerformance=false}={}) {
-      const previousKey=this.performance?.key;this.level=clamp(level,0,D.levels.length-1); this.config=D.levels[this.level];if(!preservePerformance||!this.performance||this.performance.levelId!==this.config.id)this.performance=D.createPerformance(this.config,previousKey);this.phase='brief'; this.mode='explore';this.clock=0;this.health=100;this.remaining=this.config.time;
+      const previousKey=this.performance?.key;this.level=clamp(level,0,D.levels.length-1); this.config=D.levels[this.level];if(!preservePerformance||!this.performance||this.performance.levelId!==this.config.id)this.performance=D.createPerformance(this.config,previousKey,this.progress);this.phase='brief'; this.mode='explore';this.clock=0;this.health=100;this.remaining=this.config.time;
       this.score=0;this.combo=0;this.bestCombo=0;this.hits=0;this.perfects=0;this.misses=0;this.lastHit=-10;this.invulnerable=0;this.flash=null;this.path=[];this.target=null;
       this.player={x:105,y:440,face:1,moving:false};this.items=this.config.items.map((type,i)=>({id:i,type,x:positions[i][0],y:positions[i][1],collected:false}));
       this.stage={x:835,y:245};this.hazards=Array.from({length:this.config.hazards},(_,i)=>({x:0,y:0,index:i,r:22}));this.notes=[];this.emit('load');
@@ -47,12 +47,18 @@
     selectionStatus(ids=this.performance?.selectedCharacters||[]) {
       const selected=Array.isArray(ids)?ids:[ ];
       const unique=[...new Set(selected)];
-      const allowed=new Set(this.performance?.allowedCharacters||[]);
-      const valid=unique.length===5&&unique.every(id=>allowed.has(id))&&unique.length===selected.length;
-      return {valid,selected:unique,reason:unique.length!==5?'Elige exactamente cinco músicos.':unique.some(id=>!allowed.has(id))?'Hay un músico que no puede participar en este evento.':'El grupo contiene personajes repetidos.'};
+      if(!this.performance)return {valid:false,selected:[],reason:'Falta el encargo.'};
+      const act=this.performance;
+      if(act.event?.id!==act.eventId||act.location?.id!==act.locationId||(this.config&&(act.song!==this.config.song||act.levelId!==this.config.id)))return {valid:false,selected:unique,reason:'Los datos del encargo no coinciden.'};
+      D.refreshPerformanceAvailability(this.performance,this.progress);
+      const allowed=new Set(this.performance.allowedCharacters),rules=D.selectionRules(this.performance);
+      const reason=unique.length!==5?'Elige exactamente cinco componentes.':unique.length!==selected.length?'El grupo contiene personajes repetidos.':unique.some(id=>!allowed.has(id))?'Hay un componente que no puede participar en esta actuación.':rules.requiredCharacters.some(id=>!unique.includes(id))?'Falta un componente obligatorio.':rules.incompatibleCharacters.some(pair=>pair.every(id=>unique.includes(id)))?'Hay componentes incompatibles en el grupo.':'';
+      return {valid:!reason,selected:unique,reason};
     }
     toggleCharacter(id) {
-      if(this.phase!=='brief'||!this.performance?.allowedCharacters.includes(id))return false;
+      if(this.phase!=='brief'||!this.performance)return false;
+      D.refreshPerformanceAvailability(this.performance,this.progress);
+      if(!this.performance.allowedCharacters.includes(id))return false;
       const selected=this.performance.selectedCharacters||[];const index=selected.indexOf(id);
       if(index>=0)selected.splice(index,1);
       else if(selected.length<5)selected.push(id);else return false;
@@ -145,16 +151,30 @@
     retry() { const wasComplete=this.phase==='result'||this.phase==='victory';if(wasComplete)this.total-=this.score;this.load(this.level,{preservePerformance:true}); }
     stats() {return {level:this.level,phase:this.phase,mode:this.mode,score:this.score,total:this.total,health:this.health,time:this.remaining,collected:this.items?.filter(i=>i.collected).length||0,hits:this.hits,notes:this.notes?.length||0,combo:this.combo};}
   }
+  function syncCharacterProgress(save) {
+    const rewards=D.characters.filter(c=>c.unlockLevel).sort((a,b)=>a.unlockLevel-b.unlockLevel);
+    const old=new Set(Array.isArray(save.characterUnlocks)?save.characterUnlocks:[]);
+    save.characterUnlocks=rewards.filter(c=>old.has(c.id)||D.isCharacterUnlocked(c,save)).map(c=>c.id);
+    save.characterRewardsSeen=[...new Set(Array.isArray(save.characterRewardsSeen)?save.characterRewardsSeen:[])].filter(id=>save.characterUnlocks.includes(id));
+    return save;
+  }
+  function pendingCharacterRewards(save) {syncCharacterProgress(save);return D.characters.filter(c=>c.unlockLevel&&save.characterUnlocks.includes(c.id)&&!save.characterRewardsSeen.includes(c.id)).sort((a,b)=>a.unlockLevel-b.unlockLevel);}
+  function ackCharacterReward(save,id) {syncCharacterProgress(save);if(!save.characterUnlocks.includes(id))return false;if(!save.characterRewardsSeen.includes(id))save.characterRewardsSeen.push(id);return true;}
+  function recordCompletion(save,level,score,stars) {
+    if(!Number.isInteger(level)||level<0||level>=D.levels.length||!Number.isInteger(stars)||stars<1||stars>3)return false;
+    save.unlocked=Math.max(save.unlocked,Math.min(D.levels.length-1,level+1));save.best[level]=Math.max(save.best[level],Number.isFinite(score)?Math.max(0,Math.floor(score)):0);save.stars[level]=Math.max(save.stars[level],stars);syncCharacterProgress(save);return true;
+  }
   function readSave(storage) {
     let saved={};try{saved=JSON.parse(storage.getItem('rondalla-una-ronda-mas-v1')||'{}')||{};}catch{}
     const valid= n=>Number.isFinite(n)&&n>=0;
     const size=D.levels.length;
     // Keep the original storage key, scores, character and preferences. An old
     // completed five-stage campaign opens song six; no existing result is lost.
-    const unlocked=saved.version!==2&&saved.stars?.[4]>0?5:saved.unlocked;
-    return {version:2,unlocked:clamp(Number.isInteger(unlocked)?unlocked:0,0,size-1),best:Array.from({length:size},(_,i)=>valid(saved.best?.[i])?Math.floor(saved.best[i]):0),stars:Array.from({length:size},(_,i)=>clamp(Number.isInteger(saved.stars?.[i])?saved.stars[i]:0,0,3)),character:D.characters.some(c=>c.id===saved.character)?saved.character:'bandurria',easy:saved.easy!==false,music:saved.music!==false,effects:saved.effects!==false,volume:valid(saved.volume)?clamp(saved.volume,0,1):.45,lastSong:typeof saved.lastSong==='string'?saved.lastSong:null};
+    const unlocked=Math.max(Number.isInteger(saved.unlocked)?saved.unlocked:0,(!saved.version||saved.version<2)&&saved.stars?.[4]>0?5:0);
+    const result={version:3,unlocked:clamp(unlocked,0,size-1),best:Array.from({length:size},(_,i)=>valid(saved.best?.[i])?Math.floor(saved.best[i]):0),stars:Array.from({length:size},(_,i)=>clamp(Number.isInteger(saved.stars?.[i])?saved.stars[i]:0,0,3)),character:D.characters.some(c=>c.id===saved.character)?saved.character:'bandurria',easy:saved.easy!==false,music:saved.music!==false,effects:saved.effects!==false,volume:valid(saved.volume)?clamp(saved.volume,0,1):.45,lastSong:typeof saved.lastSong==='string'?saved.lastSong:null,characterUnlocks:saved.characterUnlocks,characterRewardsSeen:saved.characterRewardsSeen};
+    result.unlocked=Math.max(result.unlocked,Math.min(size-1,D.completedLevel(result)));syncCharacterProgress(result);if(!D.isCharacterUnlocked(D.characters.find(c=>c.id===result.character),result))result.character='bandurria';return result;
   }
   function writeSave(storage,save) {try{storage.setItem('rondalla-una-ronda-mas-v1',JSON.stringify(save));return true;}catch{return false;}}
-  const exports={Game,blocked,pathfind,readSave,writeSave,obstacles,clamp};
+  const exports={Game,blocked,pathfind,readSave,writeSave,obstacles,clamp,syncCharacterProgress,pendingCharacterRewards,ackCharacterReward,recordCompletion};
   if(typeof module!=='undefined'&&module.exports)module.exports=exports;else root.TunaEngine=exports;
 })(typeof globalThis!=='undefined'?globalThis:this);

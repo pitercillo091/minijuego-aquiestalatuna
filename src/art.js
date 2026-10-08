@@ -3,7 +3,7 @@
   const D=root.TunaData;
   class Art {
     constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.images={};this.backgrounds={};this.particles=[];this.time=0;
-      D.characters.forEach(c=>{const version=c.id==='andres'||c.id==='coki'?'20261008-art1':'6';this.load(c.id,`assets/personajes/${c.id}.svg?v=${version}`);this.load(c.id+'-atlas',`assets/personajes/${c.id}-atlas.png?v=${version}`);});this.load('escudo','assets/ui/escudo.webp');
+      D.characters.forEach(c=>{this.load(c.id,D.characterAsset(c));this.load(c.id+'-atlas',D.characterAsset(c,true));});this.load('escudo','assets/ui/escudo.webp');
     }
     load(id,src){const im=new Image();im.onload=()=>{this.images[id]=im;if(id==='escudo')this.backgrounds={};};im.onerror=()=>{this.images[id]=null;};im.src=src;}
     resize(){const dpr=Math.min(2,root.devicePixelRatio||1);if(this.canvas.width!==960*dpr){this.canvas.width=960*dpr;this.canvas.height=540*dpr;}this.ctx.setTransform(dpr,0,0,dpr,0,0);}
@@ -62,12 +62,13 @@
     carIcon(x,y){
       const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));c.fillStyle='#e8bd7e';c.strokeStyle='#342333';c.lineWidth=2;c.beginPath();c.roundRect(-17,-8,34,13,4);c.fill();c.stroke();c.beginPath();c.moveTo(-10,-8);c.lineTo(-5,-16);c.lineTo(9,-16);c.lineTo(14,-8);c.closePath();c.fill();c.stroke();c.fillStyle='#a7c8dc';c.fillRect(-3,-13,9,5);c.fillStyle='#342333';c.beginPath();c.arc(-10,6,4,0,Math.PI*2);c.arc(10,6,4,0,Math.PI*2);c.fill();c.restore();
     }
-    character(id,x,y,scale=1,mode='idle',face=1){
+    character(id,x,y,scale=1,mode='idle',face=1,beatPosition=null){
       const c=this.ctx,bob=mode==='walk'?Math.round(Math.sin(this.time*14))*2:mode==='victory'?Math.round(Math.abs(Math.sin(this.time*5))*-12):0;
       this.ellipse(x,y+2,23*scale,7*scale,'#14182955');c.save();c.translate(Math.round(x),Math.round(y+bob));c.scale(scale,scale);c.imageSmoothingEnabled=false;
       // All animation frames reuse the same canonical face and costume.
-      const row={idle:0,walk:1,playing:2,victory:3}[mode]||0,frame=Math.floor(this.time*(mode==='walk'?9:mode==='playing'?7:4))%4;
-      if(this.images[id+'-atlas']){const atlas=this.images[id+'-atlas'],w=atlas.naturalWidth/4,h=atlas.naturalHeight/4;c.drawImage(atlas,frame*w,row*h,w,h,-40,-132,80,133);}
+      const character=D.characters.find(ch=>ch.id===id),columns=character?.animationColumns||4;
+      const row={idle:0,walk:1,playing:2,victory:3}[mode]||0,frame=character?.kind==='dancer'&&mode==='playing'&&Number.isFinite(beatPosition)?Math.floor(Math.max(0,beatPosition)*2)%columns:Math.floor(this.time*(mode==='walk'?9:mode==='playing'?7:4))%columns;
+      if(this.images[id+'-atlas']){const atlas=this.images[id+'-atlas'],w=atlas.naturalWidth/columns,h=atlas.naturalHeight/4;c.drawImage(atlas,frame*w,row*h,w,h,-40,-132,80,133);}
       else if(this.images[id])c.drawImage(this.images[id],-40,-132,80,133);else{this.rect(-22,-76,44,66,'#292635');this.rect(-17,-121,34,40,'#d9a17c');this.line([[-19,-71],[0,-50],[19,-71]],'#ba2b42',8);}
       if(mode==='playing'){this.text('♪',37,-75,24,'#f1c774');this.text('♫',-37,-100,18,'#ead9b6');}
       c.restore();
@@ -93,8 +94,8 @@
         if(!(game.invulnerable>0&&Math.floor(this.time*12)%2===0))this.character(game.collectorCharacter||game.character,game.player.x,game.player.y,.62,game.player.moving?'walk':'idle',game.player.face);this.carIcon(game.player.x,game.player.y-94);
         if(game.level===0&&game.items.every(i=>!i.collected)){this.text('Recoge los instrumentos iluminados',480,529,14,'#ffdfaa');}
       }else{
-        c.fillStyle='#14182580';c.fillRect(0,0,960,540);const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);cast.forEach((ch,i)=>this.character(ch.id,82+i*66,266,.9,'playing'));
-        this.rect(57,257,316,110,'#201c2bbf',12);this.text(game.config.place.split(' · ')[0].toUpperCase(),215,283,12,'#dcaf77');this.text('¡Que siga la ronda!',215,316,22,'#f0dfc4');this.text(`${game.hits} notas a compás · combo ${game.combo}`,215,344,14,'#baadbc');
+        c.fillStyle='#14182580';c.fillRect(0,0,960,540);const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);cast.forEach((ch,i)=>this.character(ch.id,82+i*66,266,.9,'playing',1,(game.clock-game.musicOffset)/game.beat));
+        this.rect(57,257,316,110,'#201c2bbf',12);this.text(game.performance.location.name.toUpperCase(),215,283,12,'#dcaf77');this.text('¡Que siga la ronda!',215,316,22,'#f0dfc4');this.text(`${game.hits} notas a compás · combo ${game.combo}`,215,344,14,'#baadbc');
         const left=427,width=456,lane=width/game.laneCount,top=38,hitY=443,speed=game.config.scrollSpeed;
         this.rect(left-13,top-12,width+26,472,'#171926e8',15);
         for(let i=0;i<game.laneCount;i++){this.rect(left+i*lane+4,top,lane-8,441,`${D.laneColors[i]}09`,9);this.line([[left+i*lane+lane/2,top],[left+i*lane+lane/2,hitY-24]],`${D.laneColors[i]}25`,1);this.ellipse(left+i*lane+lane/2,hitY,28,28,`${D.laneColors[i]}25`);c.strokeStyle=D.laneColors[i];c.lineWidth=2;c.beginPath();c.arc(left+i*lane+lane/2,hitY,26,0,Math.PI*2);c.stroke();this.text(D.lanes[i],left+i*lane+lane/2,hitY+8,26,D.laneColors[i]);this.text(D.keys[i],left+i*lane+lane/2,hitY+48,14,'#c9bfcc');}
