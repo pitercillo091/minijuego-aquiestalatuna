@@ -15,6 +15,9 @@ run.onclick=async()=>{
   check('Ocho personajes en el menú',d.querySelectorAll('[data-character]').length===8);
   check('LEGÍA carga SVG y atlas artístico',qa.art.images.legia?.naturalWidth===192&&qa.art.images['legia-atlas']?.naturalWidth===768);
   check('Los siete atlas anteriores siguen cargando',D.characters.filter(c=>c.id!=='legia').every(c=>qa.art.images[c.id+'-atlas']?.naturalWidth===768));
+  const positions=[],originalCharacter=qa.art.character;
+  qa.art.character=function(id,x,y,scale,...args){positions.push({id,x,scale});return originalCharacter.call(this,id,x,y,scale,...args);};qa.art.render(null,0);qa.art.character=originalCharacter;
+  check('Los ocho músicos caben completos en la portada',positions.length===8&&positions.every(p=>p.x-40*p.scale>=0&&p.x+40*p.scale<=960));
   startEvent('normal');
   check('Ocho fichas y contador 0/5',d.querySelectorAll('[data-character-pick]').length===8&&g.performance.selectedCharacters.length===0);
   check('Instrumento confirmado en la ficha',d.querySelector('[data-character-pick="legia"]').textContent.includes('Guitarra'));

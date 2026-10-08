@@ -10,7 +10,7 @@ La ilustración maestra está en `assets/personajes/ilustraciones/legia-base.png
 
 ## Integración
 
-El único cambio del código del juego es un registro añadido a `src/data.js` con id `legia`, nombre `LEGÍA`, instrumento `guitarra` y referencia de créditos. `index.html` renueva la caché de ese catálogo. La selección, rotación del conductor, grupo durante la recogida, actuación y resultado funcionan automáticamente con el sistema existente. LEGÍA no tiene restricciones; sigue vigente únicamente la prohibición de Pacheco´s en Evento benéfico. No se cambia el máximo de cinco.
+El catálogo incorpora un registro añadido a `src/data.js` con id `legia`, nombre `LEGÍA`, instrumento `guitarra` y referencia de créditos. `index.html` renueva la caché del catálogo y renderizador. En `src/art.js` se limita la posición del elenco de la portada cuando hay más de siete músicos para evitar que el octavo quede cortado; no se cambia tamaño, dibujo ni la representación durante las fases. La selección, rotación del conductor, grupo durante la recogida, actuación y resultado funcionan automáticamente con el sistema existente. LEGÍA no tiene restricciones; sigue vigente únicamente la prohibición de Pacheco´s en Evento benéfico. No se cambia el máximo de cinco.
 
 `antes.json` guarda SHA-256 del estado previo, incluidos los siete sprites y los recursos musicales; `backup/` conserva los archivos de integración anteriores. No se publican los respaldos ni documentos de referencia privados.
 
@@ -24,13 +24,14 @@ El único cambio del código del juego es un registro añadido a `src/data.js` c
 
 ## Archivos actualizados
 
+- `src/art.js`: encaje en la portada para el catálogo ampliado, sin cambiar el dibujado de sprites.
 - `src/data.js`: octavo personaje, sin alterar los siete registros anteriores.
 - `index.html`: versión del catálogo para invalidar caché.
 - `README.md`: catálogo y mantenimiento de LEGÍA.
 - `tests/engine.test.cjs` y `tests/browser-integration.html`: expectativas de ocho músicos.
 - `tests/personajes-browser.html`: comparación adaptable a ocho o más personajes.
 
-No se modifican motor, renderizador, CSS, audio, MIDI, controles, duración, niveles ni puntuaciones.
+No se modifican motor, renderizado de sprites, CSS, audio, MIDI, controles, duración, niveles ni puntuaciones.
 
 ## Pruebas locales
 
@@ -38,7 +39,7 @@ No se modifican motor, renderizador, CSS, audio, MIDI, controles, duración, niv
 - Motor: 24/24, incluidos los veinte niveles en ambas dificultades y restricciones.
 - Audio: 22 comprobaciones correctas.
 - Los cinco sprites originales y Andrés/Coki pasan sus pruebas anteriores.
-- Navegador: 253 comprobaciones generales y 25 específicas de LEGÍA, cero fallos. Actuación completa con LEGÍA; recogida como conductor, resultado, grupo sin LEGÍA y evento benéfico con bloqueo de Pacheco.
+- Navegador: 253 comprobaciones generales y 26 específicas de LEGÍA, cero fallos. Actuación completa con LEGÍA; recogida como conductor, resultado, grupo sin LEGÍA y evento benéfico con bloqueo de Pacheco.
 - Selección a 390 × 844: ocho fichas visibles, nombre e instrumento completos, contador 0/5 y 5/5, botón y límite correctos. Capturas `seleccion-movil*.png`.
 - Comparación del elenco completo con el renderizador real: `elenco-final.png`, `caminar.png` y `victoria.png`. Capturas de recogida, actuación y resultado: `flujo-1.png` a `flujo-3.png`.
 

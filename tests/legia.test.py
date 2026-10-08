@@ -36,6 +36,14 @@ print('PASS LEGÍA: referencia intacta, guitarra confirmada, transparencia, 16 p
 before = json.loads((ROOT / 'docs/sprites-legia/antes.json').read_text(encoding='utf-8'))
 for rel, digest in before.items():
     if rel == 'src\\data.js':
-        continue  # Sole production code change: adding one catalogue record.
+        continue  # Catalogue change: adding one record.
+    if rel == 'src\\art.js':
+        current = (ROOT / rel).read_text(encoding='utf-8')
+        before_line = (ROOT / 'docs/sprites-legia/menu-original.txt').read_text(encoding='utf-8')
+        after_line = next(line for line in current.splitlines() if "if(!game||['menu'].includes(game.phase))" in line)
+        restored = current.replace(after_line, before_line)
+        assert digest in {hashlib.sha256(restored.encode('utf-8')).hexdigest(), hashlib.sha256(restored.replace('\n', '\r\n').encode('utf-8')).hexdigest()}
+        assert 'D.characters.length>7' in after_line and '910-span/2' in after_line
+        continue  # Only menu placement for enlarged rosters; sprites and in-game render unchanged.
     assert hashlib.sha256((ROOT / rel).read_bytes()).hexdigest() == digest, rel
 print('PASS siete personajes y demás código, canciones, MIDI, audio y fotografías protegidos sin cambios')
