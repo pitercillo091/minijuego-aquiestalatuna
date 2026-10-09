@@ -58,7 +58,19 @@
       // Gentle pools of blue and amber light on the paving.
       this.ellipse(839,298,93,15,'#85adff18');this.ellipse(132,278,100,14,'#ffd49113');
     }
-    background(theme){if(!this.backgrounds[theme]){const back=document.createElement('canvas');back.width=960;back.height=540;const original=this.ctx;this.ctx=back.getContext('2d');this.scene(theme);this.ctx=original;this.backgrounds[theme]=back;}this.ctx.drawImage(this.backgrounds[theme],0,0);}
+    background(theme,performance=null){
+      const visual=performance?.visual,eventScene=visual&&root.TunaEventScenes?.ids.includes(visual.sceneId);
+      const key=eventScene?`${visual.sceneId}:${visual.locationId}`:theme;
+      if(!this.backgrounds[key]){
+        const back=document.createElement('canvas');back.width=eventScene?480:960;back.height=eventScene?270:540;
+        if(eventScene){const context=back.getContext('2d');context.scale(.5,.5);root.TunaEventScenes.draw(context,visual.sceneId,performance.location,this.images.escudo);}
+        else{const original=this.ctx;this.ctx=back.getContext('2d');this.scene(theme);this.ctx=original;}
+        // Bounded cache: no growing collection of canvases over a long tour.
+        if(Object.keys(this.backgrounds).length>=8)delete this.backgrounds[Object.keys(this.backgrounds)[0]];
+        this.backgrounds[key]=back;
+      }
+      this.ctx.save();this.ctx.imageSmoothingEnabled=false;this.ctx.drawImage(this.backgrounds[key],0,0,960,540);this.ctx.restore();
+    }
     carIcon(x,y){
       const c=this.ctx;c.save();c.translate(Math.round(x),Math.round(y));c.fillStyle='#e8bd7e';c.strokeStyle='#342333';c.lineWidth=2;c.beginPath();c.roundRect(-17,-8,34,13,4);c.fill();c.stroke();c.beginPath();c.moveTo(-10,-8);c.lineTo(-5,-16);c.lineTo(9,-16);c.lineTo(14,-8);c.closePath();c.fill();c.stroke();c.fillStyle='#a7c8dc';c.fillRect(-3,-13,9,5);c.fillStyle='#342333';c.beginPath();c.arc(-10,6,4,0,Math.PI*2);c.arc(10,6,4,0,Math.PI*2);c.fill();c.restore();
     }
@@ -82,7 +94,7 @@
     }
     burst(x,y,color='#f5c579'){for(let i=0;i<15;i++)this.particles.push({x,y,vx:Math.cos(i*2.4)*50*(1+i%3),vy:Math.sin(i*2.4)*60-50,life:1,color});}
     render(game,dt){
-      this.time+=dt;this.resize();const c=this.ctx;this.background(game?.config?.theme||'castle');
+      this.time+=dt;this.resize();const c=this.ctx;this.background(game?.config?.theme||'castle',game&&game.phase!=='menu'?game.performance:null);
       if(!game||['menu'].includes(game.phase)){const spacing=Math.min(83,720/Math.max(1,D.characters.length-1)),span=(D.characters.length-1)*spacing,center=D.characters.length>7?Math.min(680,910-span/2):680,start=center-span/2;D.characters.forEach((ch,i)=>this.character(ch.id,start+i*spacing,452+(i%2)*12,1.05,'playing'));this.text('LA RONDALLA DE LOPERA',697,496,12,'#e7c898');return;}
       if(game.mode==='explore'){
         const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);

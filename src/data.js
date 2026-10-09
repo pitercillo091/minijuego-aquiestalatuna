@@ -22,11 +22,17 @@
   // without changing the level engine or the screen templates.
   const locations = [
     {id:'andujar',name:'Andújar',description:'Una plaza con ganas de escuchar una ronda completa.',scene:'plaza'},
-    {id:'porcuna',name:'Porcuna',description:'Calles blancas, balcones atentos y una noche por delante.',scene:'street'},
-    {id:'puente-genil',name:'Puente Genil',description:'El público ya está reunido cuando llega la Tuna.',scene:'festival'},
+    {id:'porcuna',name:'Porcuna',description:'Calles blancas, balcones atentos y una noche por delante.',scene:'street',restrictions:{forbiddenCharacters:['canero']}},
+    {id:'puente-genil',name:'Puente Genil',description:'El público ya está reunido cuando llega la Tuna.',scene:'festival',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}},
     {id:'jaen',name:'Jaén',description:'La ciudad de los olivares también tiene oído para las cuerdas.',scene:'university'},
     {id:'villa-del-rio',name:'Villa del Río',description:'Una celebración familiar donde nadie quiere quedarse sentado.',scene:'garden'},
-    {id:'montoro',name:'Montoro',description:'La noche baja hacia el río y pide una serenata.',scene:'castle'}
+    {id:'montoro',name:'Montoro',description:'La noche baja hacia el río y pide una serenata.',scene:'castle'},
+    {id:'baena',name:'Baena',description:'Una nueva parada de la gira, con las cuerdas a punto.',scene:'plaza',restrictions:{forbiddenCharacters:['ponder']}},
+    {id:'el-carpio',name:'El Carpio',description:'Otra celebración y un público que espera la primera canción.',scene:'street'},
+    {id:'canete',name:'Cañete',description:'La Tuna llega con capas, estuches y ganas de ronda.',scene:'garden'},
+    {id:'migueltanze',name:'Migueltanze',description:'Una nueva localidad en el cuaderno de encargos.',scene:'plaza'},
+    {id:'puertollano',name:'Puertollano',description:'La siguiente actuación ya tiene público esperando.',scene:'festival',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}},
+    {id:'ciudad-real',name:'Ciudad Real',description:'La gira continúa con otra noche de canciones.',scene:'university',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}}
   ];
   const events = [
     {id:'boda',name:'Boda',icon:'💍',description:'Música para uno de los días más importantes de sus vidas.',narrative:'Nos han contratado para poner música a uno de los días más importantes de sus vidas. Afinad bien: hoy hasta los novios llevan el compás.'},
@@ -37,6 +43,9 @@
     {id:'bodas-oro',name:'Bodas de oro',icon:'🏆',description:'Medio siglo de historias y una Tuna lista para celebrarlo.',narrative:'Cincuenta años de historias no se celebran en silencio. Nos toca levantar el ánimo, cuidar cada nota y hacer que la plaza pida otra.'},
     {id:'evento-benefico',name:'Evento benéfico',icon:'❤️',description:'Una ronda solidaria para echar una mano con música y buen humor.',narrative:'Hoy tocamos por una buena causa. Afinad, sonreíd y que cada nota ayude a llenar la hucha.',restrictions:{forbiddenCharacters:['guitarra'],reasons:{guitarra:'Pone una escusa para no actuar'}}}
   ];
+  // Stable scene IDs belong to the event catalogue, not to individual screens.
+  const eventScenes={'boda':'wedding','serenata':'serenade','cumpleanos':'birthday','jubilacion':'retirement','bodas-plata':'silver','bodas-oro':'gold','evento-benefico':'charity'};
+  events.forEach(event=>{event.scene=eventScenes[event.id];});
   let lastPerformanceKey=null;
   function completedLevel(progress={}) {
     return Math.max(Math.max(0,Math.min(levels.length-1,Number.isInteger(progress.unlocked)?progress.unlocked:0)),...(Array.isArray(progress.stars)?progress.stars.slice(0,levels.length).map((stars,i)=>stars>0?i+1:0):[0]));
@@ -50,9 +59,11 @@
   }
   // Rules are resolved from catalogues, never from the UI's editable availability list.
   function selectionRules(performance) {
-    const sources=[locations.find(l=>l.id===performance.locationId),events.find(e=>e.id===performance.eventId),songCatalog.find(s=>s.id===performance.song),levels.find(l=>l.id===performance.levelId)].map(item=>item?.restrictions||{});
+    const location=locations.find(l=>l.id===performance.locationId);
+    const sources=[location,events.find(e=>e.id===performance.eventId),songCatalog.find(s=>s.id===performance.song),levels.find(l=>l.id===performance.levelId)].map(item=>item?.restrictions||{});
     const list=key=>[...new Set(sources.flatMap(source=>source[key]||[]))];
-    return {forbiddenCharacters:list('forbiddenCharacters'),requiredCharacters:list('requiredCharacters'),recommendedCharacters:list('recommendedCharacters'),incompatibleCharacters:sources.flatMap(source=>source.incompatibleCharacters||[]),reasons:Object.assign({},...sources.map(source=>source.reasons||{}))};
+    const localReasons=Object.fromEntries((location?.restrictions?.forbiddenCharacters||[]).map(id=>[id,`No disponible en ${location.name}`]));
+    return {forbiddenCharacters:list('forbiddenCharacters'),requiredCharacters:list('requiredCharacters'),recommendedCharacters:list('recommendedCharacters'),incompatibleCharacters:sources.flatMap(source=>source.incompatibleCharacters||[]),reasons:Object.assign(localReasons,...sources.map(source=>source.reasons||{}))};
   }
   function characterAvailability(character,performance,progress={}) {
     const rules=selectionRules(performance);
@@ -63,18 +74,26 @@
   function refreshPerformanceAvailability(performance,progress={}) {
     const rules=selectionRules(performance);performance.allowedCharacters=[];performance.unavailableCharacters=[];performance.restrictionReasons={};
     for(const character of characters){const status=characterAvailability(character,performance,progress);if(status.available)performance.allowedCharacters.push(character.id);else{performance.unavailableCharacters.push(character.id);performance.restrictionReasons[character.id]=status.reason;}}
+    // Discard stale or injected selections without making any new selections.
+    performance.selectedCharacters=[...new Set(Array.isArray(performance.selectedCharacters)?performance.selectedCharacters:[])].filter(id=>performance.allowedCharacters.includes(id)).slice(0,5);
     performance.requiredCharacters=rules.requiredCharacters;performance.recommendedCharacters=rules.recommendedCharacters;return performance;
+  }
+  function canFormGroup(performance,progress={}) {
+    const allowed=characters.filter(c=>characterAvailability(c,performance,progress).available).map(c=>c.id),rules=selectionRules(performance);
+    if(allowed.length<5||rules.requiredCharacters.length>5||rules.requiredCharacters.some(id=>!allowed.includes(id)))return false;
+    const chosen=[...rules.requiredCharacters],pool=allowed.filter(id=>!chosen.includes(id));
+    const compatible=ids=>!rules.incompatibleCharacters.some(pair=>pair.every(id=>ids.includes(id)));
+    const search=start=>{if(!compatible(chosen))return false;if(chosen.length===5)return true;if(chosen.length+pool.length-start<5)return false;for(let i=start;i<pool.length;i++){chosen.push(pool[i]);if(search(i+1))return true;chosen.pop();}return false;};
+    return search(0);
   }
   function createPerformance(level,previousKey='',progress={}) {
     const previous=previousKey||lastPerformanceKey;
-    const pairs=[];for(const location of locations)for(const event of events){const candidate={locationId:location.id,eventId:event.id,song:level.song,levelId:level.id};if(characters.filter(c=>characterAvailability(c,candidate,progress).available).length>=5)pairs.push({location,event});}
+    const pairs=[];for(const location of locations)for(const event of events){const candidate={locationId:location.id,eventId:event.id,song:level.song,levelId:level.id};if(canFormGroup(candidate,progress))pairs.push({location,event});}
     if(!pairs.length)throw new Error('No hay un encargo con cinco componentes disponibles.');
     const available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previous);
     const pair=(available.length?available:pairs)[Math.floor(Math.random()*(available.length?available.length:pairs.length))];
     const key=`${pair.location.id}:${pair.event.id}`;lastPerformanceKey=key;
-    const forbidden=pair.event.restrictions?.forbiddenCharacters||[];
-    const availableCharacters=characters.filter(character=>!forbidden.includes(character.id)).map(character=>character.id);
-    return refreshPerformanceAvailability({id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},allowedCharacters:availableCharacters,recommendedCharacters:[],requiredCharacters:[],unavailableCharacters:forbidden,selectedCharacters:[],restrictionReasons:pair.event.restrictions?.reasons||{},prepText:`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`,readyText:`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`,closingText:`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`},progress);
+    return refreshPerformanceAvailability({id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,visual:{sceneId:pair.event.scene,locationId:pair.location.id},difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},selectedCharacters:[],prepText:`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`,readyText:`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`,closingText:`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`},progress);
   }
   const settings=[
     ['Lopera · El ensayo','rehearsal','ensayo',105,0,['guitarra','bandurria','pandereta'],'Recoge los tres instrumentos y prepara Clavelitos.','Hay quien trae la voz. Tú trae también los instrumentos.','La primera ya suena. El ensayo empieza a parecer una actuación.'],
@@ -100,6 +119,6 @@
     return {...level,id:i+campaignSongs.length,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:chart.notes.length,laneCount:chart.laneCount,minGap:.2,scrollSpeed:level.scrollSpeed+20,threshold:Math.min(.9,level.threshold+.045)};
   });
   const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,createPerformance,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:7};
+  const data={characters,locations,events,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:7};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);
