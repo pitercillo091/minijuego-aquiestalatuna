@@ -60,7 +60,7 @@
     }
     background(theme,performance=null){
       const visual=performance?.visual,eventScene=visual&&root.TunaEventScenes?.ids.includes(visual.sceneId);
-      const key=eventScene?`${visual.sceneId}:${visual.locationId}`:theme;
+      const key=eventScene?`${visual.sceneId}:${visual.variantId||'default'}:${visual.locationId}`:theme;
       if(!this.backgrounds[key]){
         const back=document.createElement('canvas');back.width=eventScene?480:960;back.height=eventScene?270:540;
         if(eventScene){const context=back.getContext('2d');context.scale(.5,.5);root.TunaEventScenes.draw(context,visual.sceneId,performance.location,this.images.escudo);}

@@ -2,11 +2,11 @@
   'use strict';
   // Native pixel scenery: one 480×270 canvas per cached scene, enlarged 2×.
   // All coordinates below use the existing 960×540 world and collision floor.
-  const ids=['wedding','serenade','birthday','retirement','silver','gold','charity'];
+  const ids=['wedding','serenade','birthday','retirement','silver','gold','charity','procession'];
   function draw(c,id,location,crest){
     if(!ids.includes(id))id='serenade';
-    const night=id==='serenade',anniversary=id==='silver'||id==='gold',hall=id==='wedding'||anniversary;
-    const accent=id==='silver'?'#c9e3ee':id==='gold'?'#efd17c':id==='charity'?'#72d0b7':'#f2ba86';
+    const night=id==='serenade'||id==='procession',anniversary=id==='silver'||id==='gold',hall=id==='wedding'||anniversary;
+    const accent=id==='silver'?'#c9e3ee':id==='gold'?'#efd17c':id==='charity'?'#72d0b7':id==='procession'?'#e5cb91':'#f2ba86';
     const ink='#302b42',cream='#fff0cc',skin='#e3b18c';
     const r=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(Math.round(x/2)*2,Math.round(y/2)*2,Math.round(w/2)*2,Math.round(h/2)*2);};
     const text=(s,x,y,size=18,color=cream)=>{c.fillStyle=color;c.font=`bold ${size}px monospace`;c.textAlign='center';c.fillText(s,x,y);};
@@ -31,6 +31,55 @@
       r(0,0,960,18,'#49364f');r(0,18,960,8,'#ddb993');r(0,26,960,212,'#c4a6b1');
       for(const x of [18,384,742]){r(x,32,180,173,'#87687d');r(x+12,44,156,150,'#597d9f');for(let y=46;y<184;y+=24)r(x+14,y,152,4,'#6e8faf');r(x+82,44,6,152,'#d9c1b3');r(x+12,110,156,6,'#d9c1b3');r(x-8,28,24,181,'#955166');r(x+164,28,24,181,'#955166');r(x-8,193,28,8,accent);r(x+160,193,28,8,accent);}
       for(const x of [60,450,830]){r(x,26,2,22,accent);r(x-22,48,46,6,accent);for(let i=0;i<5;i++){r(x-20+i*10,52,4,14,'#f8e0a0');r(x-22+i*10,66,8,8,'#ffedc0');}}
+    }else if(id==='procession'){
+      // Drawn scenery inspired by the project's Arjona / Marmolejo photos.
+      // Twilight is an artistic setting, not a claim about those services' times.
+      const silver='#b5c2d3',silverLight='#e2e1dc',gold='#d6b571';
+      const glow=(x,y,rx=18,ry=24)=>{oval(x,y,rx,ry,'#f8c5770a');oval(x,y,rx*.65,ry*.7,'#f8c57713');};
+      const candle=(x,y,h=26)=>{glow(x,y-5);r(x-3,y,6,h,'#bbaa89');r(x-2,y,4,h,'#f7dfad');r(x-2,y-8,4,8,'#e8a459');r(x,y-10,2,8,'#fff3bf');r(x-6,y+h,12,4,silver);};
+      r(0,0,960,48,'#293046');r(0,48,960,94,'#35354f');r(0,142,960,104,'#404057');
+      for(let i=0;i<32;i++)r((i*149+15)%960,(i*41+8)%71,2,2,'#d4ceb080');
+      oval(658,38,17,17,'#c4bd9a');oval(664,33,16,16,'#293046');
+      // Church portal and quiet street: a backdrop, not a new collision shape.
+      r(20,58,96,188,'#736476');r(118,10,246,236,'#897785');r(108,10,266,10,'#aa938c');
+      r(134,26,214,220,'#a18b8a');r(142,32,198,214,'#6e5e70');
+      oval(241,109,88,74,'#ccaf94');r(153,109,176,136,'#ccaf94');
+      oval(241,108,75,62,'#494052');r(166,108,150,137,'#494052');
+      for(const x of [130,342]){r(x,20,12,225,'#b39c93');r(x-4,234,20,12,'#c9ad98');r(x-4,22,20,10,'#c9ad98');}
+      r(231,17,20,4,gold);r(239,10,4,18,gold);
+      r(28,100,75,94,'#3e394f');r(33,108,65,79,'#a99687');r(45,122,41,66,'#665368');r(60,116,8,10,'#665368');
+      for(const [x,y,w,h] of [[388,85,140,161],[535,53,151,193],[693,110,148,136],[850,74,110,172]]){
+        r(x,y,w,h,'#686174');r(x-4,y-5,w+8,7,'#8d7780');
+        for(let dx=14;dx<w-20;dx+=46){r(x+dx,y+28,24,39,'#333147');r(x+dx+4,y+32,16,29,'#a38e74');r(x+dx+10,y+32,2,29,'#4b465a');r(x+dx-3,y+65,30,4,'#2c2b3e');for(let bx=0;bx<30;bx+=8)r(x+dx-3+bx,y+57,2,12,'#2c2b3e');}
+      }
+      for(const x of [94,388,738]){glow(x,141,25,32);r(x-2,154,4,90,'#332e43');r(x-9,132,18,22,'#bca47c');r(x-5,136,10,14,'#f4d095');r(x-11,128,22,4,'#302b42');r(x-11,152,22,4,'#302b42');}
+      // Contact shadow, silver float and embroidered skirt behind the five tunos.
+      oval(236,242,118,9,'#22213570');r(126,210,222,32,'#353047');r(133,212,208,27,'#4e425a');
+      for(let x=141;x<337;x+=18){r(x,216,4,17,gold);r(x-2,216,8,3,gold);r(x-2,232,8,3,gold);}
+      r(123,202,228,8,silver);r(128,208,218,4,'#8793a9');r(122,200,230,3,silverLight);
+      r(161,181,151,19,'#aaa7ac');r(166,185,141,8,silverLight);
+      for(let x=172;x<307;x+=22){r(x,186,10,7,'#7c8396');r(x+2,185,6,2,'#f0e1bc');}
+      // Radiating halo, crown, face and pale-blue mantle (Virgen de Gracia reference).
+      glow(240,81,67,72);oval(240,79,45,46,'#dfcfa41b');
+      for(let i=0;i<24;i++){const a=i*Math.PI/12;for(let j=30;j<42;j+=2)r(240+Math.cos(a)*j,79+Math.sin(a)*j,2,2,j>36?silverLight:silver);}
+      oval(240,79,29,31,silver);oval(240,79,25,27,'#4c4056');
+      r(226,58,28,8,gold);r(225,56,30,3,'#fff0bd');
+      for(const x of [228,238,250]){r(x,48,4,9,gold);r(x,46,4,3,silverLight);}r(226,66,27,3,'#a17d58');
+      r(228,70,24,23,'#40343d');r(232,73,16,19,'#b98d79');r(232,73,14,4,'#d2a68a');
+      r(232,80,3,2,'#443541');r(242,80,3,2,'#443541');r(238,82,3,5,'#a77769');r(236,89,7,2,'#8e5e61');
+      for(let y=93;y<179;y+=2){const half=14+(y-93)*.42;r(240-half,y,half*2,2,'#91a8c8');r(240-half+4,y,6,2,'#c0cde0');r(240+half-8,y,5,2,'#617994');}
+      for(let y=97;y<180;y+=2){const half=7+(y-97)*.24;r(240-half,y,half*2,2,'#f1e5cc');}
+      r(235,94,10,9,'#e6d2af');r(238,99,4,66,gold);
+      for(let y=109;y<174;y+=14)for(const x of [227,246]){r(x,y,4,2,gold);r(x+2,y-2,2,6,'#d1bd8e');}
+      r(227,111,7,6,'#c6967d');r(222,109,11,3,'#e8dbc6');
+      // Niño, small crown and gown; integrated into the same pixel drawing.
+      r(256,102,12,12,'#bd937e');r(256,101,12,3,'#5c423f');r(254,98,16,3,gold);r(258,94,3,4,gold);r(266,94,3,4,gold);
+      r(259,106,2,2,'#4b3940');r(266,106,2,2,'#4b3940');r(256,115,13,23,'#f4e6cb');r(260,119,3,20,gold);r(270,117,5,5,'#cda087');r(256,138,5,5,'#bf987e');r(264,138,5,5,'#bf987e');
+      // Silver candle branches and dense flowers, as in the real floats.
+      for(const x of [145,327]){r(x-2,147,4,44,silver);r(x-20,146,40,4,silver);r(x-18,135,4,13,silver);r(x+14,135,4,13,silver);r(x-8,188,16,4,silverLight);candle(x,113,29);candle(x-16,120,15);candle(x+16,120,15);}
+      for(let i=0;i<25;i++){const x=129+i*9,y=195-(i%3)*6;r(x-3,y-3,8,8,'#6b836f');flower(x,y,i%5===0?'#c3cde3':i%7===0?'#d9a1b4':'#eee9d7');}
+      // Confraternity banners echo the navy/gold colours in Marmolejo's photos.
+      for(const x of [48,397]){r(x-1,166,2,71,gold);r(x-17,164,34,4,gold);r(x-15,169,30,43,'#3a4560');r(x-15,169,3,43,gold);r(x+12,169,3,43,gold);r(x-15,212,30,3,gold);r(x-1,177,2,20,silver);r(x-7,184,14,2,silver);}
     }else if(night){
       for(let i=0;i<45;i++)r((i*137+11)%960,(i*37)%126,2,2,'#e4d7a4');oval(86,38,26,26,'#f4dfa1');oval(96,30,24,24,'#18223e');
       r(0,176,960,68,'#243953');r(16,84,138,161,'#bd958b');r(164,44,206,201,'#e0baa0');r(376,123,138,122,'#9db6b1');r(660,72,174,173,'#a78d98');r(838,127,122,118,'#d4a894');

@@ -41,11 +41,22 @@
     {id:'jubilacion',name:'Jubilación',icon:'🎉',description:'Una despedida con más alegría que prisa y muchas historias que celebrar.',narrative:'Nos piden una despedida a la altura de toda una vida de trabajo. Traed alegría, capas y una canción que dure más que el discurso.'},
     {id:'bodas-plata',name:'Bodas de plata',icon:'🥈',description:'Veinticinco años juntos merecen una ronda con brillo propio.',narrative:'Veinticinco años juntos merecen una ronda con brillo propio. Hoy tocamos para una pareja que ya conoce todos los estribillos.'},
     {id:'bodas-oro',name:'Bodas de oro',icon:'🏆',description:'Medio siglo de historias y una Tuna lista para celebrarlo.',narrative:'Cincuenta años de historias no se celebran en silencio. Nos toca levantar el ánimo, cuidar cada nota y hacer que la plaza pida otra.'},
-    {id:'evento-benefico',name:'Evento benéfico',icon:'❤️',description:'Una ronda solidaria para echar una mano con música y buen humor.',narrative:'Hoy tocamos por una buena causa. Afinad, sonreíd y que cada nota ayude a llenar la hucha.',restrictions:{forbiddenCharacters:['guitarra'],reasons:{guitarra:'Pone una escusa para no actuar'}}}
+    {id:'evento-benefico',name:'Evento benéfico',icon:'❤️',description:'Una ronda solidaria para echar una mano con música y buen humor.',narrative:'Hoy tocamos por una buena causa. Afinad, sonreíd y que cada nota ayude a llenar la hucha.',restrictions:{forbiddenCharacters:['guitarra'],reasons:{guitarra:'Pone una escusa para no actuar'}}},
+    {id:'procesion',name:'Procesión',icon:'🕯️',description:'La Tuna canta ante el paso de la Virgen, entre flores y cirios.',narrative:'El paso de la Virgen se detiene y la Tuna prepara sus cuerdas. Entre flores y cirios, acompañamos la procesión con una canción. Hoy toca cantar juntos y cuidar cada compás.',preparation:'Antes de salir hacia {localidad}, reunid los instrumentos: la procesión nos espera.',ready:'Todo preparado. En {localidad}, el paso de la Virgen espera nuestra canción.',closing:'La canción termina ante el paso de la Virgen en {localidad}. Gracias por acompañar la procesión con la Tuna.'}
   ];
   // Stable scene IDs belong to the event catalogue, not to individual screens.
-  const eventScenes={'boda':'wedding','serenata':'serenade','cumpleanos':'birthday','jubilacion':'retirement','bodas-plata':'silver','bodas-oro':'gold','evento-benefico':'charity'};
+  const eventScenes={'boda':'wedding','serenata':'serenade','cumpleanos':'birthday','jubilacion':'retirement','bodas-plata':'silver','bodas-oro':'gold','evento-benefico':'charity','procesion':'procession'};
   events.forEach(event=>{event.scene=eventScenes[event.id];});
+  // Location variants are opt-in and must cite a verified photo/news reference.
+  // These slots intentionally use the shared scene until real assets are supplied.
+  const religiousScenes={
+    default:{id:'marian-procession',sceneId:'procession',references:['virgen-gracia-arjona-2026','virgen-cabeza-marmolejo-2026']},
+    byLocation:{andujar:null,porcuna:null,montoro:null}
+  };
+  function performanceVisual(location,event) {
+    const variant=event.id==='procesion'?(religiousScenes.byLocation[location.id]||religiousScenes.default):null;
+    return {sceneId:variant?.sceneId||event.scene,locationId:location.id,...(variant?{variantId:variant.id}:{} )};
+  }
   let lastPerformanceKey=null;
   function completedLevel(progress={}) {
     return Math.max(Math.max(0,Math.min(levels.length-1,Number.isInteger(progress.unlocked)?progress.unlocked:0)),...(Array.isArray(progress.stars)?progress.stars.slice(0,levels.length).map((stars,i)=>stars>0?i+1:0):[0]));
@@ -93,7 +104,8 @@
     const available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previous);
     const pair=(available.length?available:pairs)[Math.floor(Math.random()*(available.length?available.length:pairs.length))];
     const key=`${pair.location.id}:${pair.event.id}`;lastPerformanceKey=key;
-    return refreshPerformanceAvailability({id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,visual:{sceneId:pair.event.scene,locationId:pair.location.id},difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},selectedCharacters:[],prepText:`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`,readyText:`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`,closingText:`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`},progress);
+    const narrative=(template,fallback)=>template?template.replaceAll('{localidad}',pair.location.name):fallback;
+    return refreshPerformanceAvailability({id:`${level.id}-${key}`,key,levelId:level.id,song:level.song,locationId:pair.location.id,eventId:pair.event.id,location:pair.location,event:pair.event,visual:performanceVisual(pair.location,pair.event),difficulty:{round:level.round,notes:level.notes,laneCount:level.laneCount,threshold:level.threshold},selectedCharacters:[],prepText:narrative(pair.event.preparation,`Antes de salir hacia ${pair.location.name} tenemos que reunir todo el equipo.`),readyText:narrative(pair.event.ready,`Todo preparado. ${pair.location.name} nos espera: es hora de demostrar lo que sabe hacer la Tuna.`),closingText:narrative(pair.event.closing,`El público de ${pair.location.name} ha quedado encantado y, milagrosamente, nadie nos ha pedido que dejemos de tocar.`)},progress);
   }
   const settings=[
     ['Lopera · El ensayo','rehearsal','ensayo',105,0,['guitarra','bandurria','pandereta'],'Recoge los tres instrumentos y prepara Clavelitos.','Hay quien trae la voz. Tú trae también los instrumentos.','La primera ya suena. El ensayo empieza a parecer una actuación.'],
@@ -119,6 +131,6 @@
     return {...level,id:i+campaignSongs.length,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:chart.notes.length,laneCount:chart.laneCount,minGap:.2,scrollSpeed:level.scrollSpeed+20,threshold:Math.min(.9,level.threshold+.045)};
   });
   const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:7};
+  const data={characters,locations,events,religiousScenes,performanceVisual,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:7};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);
