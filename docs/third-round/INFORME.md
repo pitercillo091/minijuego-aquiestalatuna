@@ -67,4 +67,8 @@ Copia previa completa: `E:/PROYECTOS/_backups/third-round-20261011/production-be
 
 ## Publicación
 
-Versión candidata preparada. La comprobación online se realiza después del despliegue y se registra en el informe local final.
+Publicado y comprobado en https://minijuego.aquiestalatuna.es/. Versión musical `d199273`, despliegue GitHub Pages completado correctamente. Los treinta archivos publicados coinciden exactamente con la versión de producción, incluyendo el MP3 y la imagen bonus.
+
+Se han completado seis actuaciones en producción: EL LEGÍA normal, difícil y experta (esta última tanto en escritorio como con tacto emulado), Clavelitos experto y Guantanamera experto. Todas finalizaron con 60/120 segundos exactos, cero notas imposibles en la prueba, identidad conservada, fuentes liberadas y sin errores de página. Se verificaron además tarjetas bonus/experto, Dúo Dinámico y certamen a 1365/390/320 px; migración y recarga de una partida antigua; histórico y general en la interfaz pública de clasificaciones.
+
+Los noventa recursos preexistentes de personajes/audio del repositorio publicado permanecen intactos. Los resultados y capturas se conservan localmente en `E:/PROYECTOS/_backups/third-round-20261011/`, sin publicar herramientas de mantenimiento. La emulación no sustituye las pruebas físicas ni la escucha humana completa descritas en los límites anteriores.
