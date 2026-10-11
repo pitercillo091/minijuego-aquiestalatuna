@@ -31,9 +31,14 @@
     {id:'baena',name:'Baena',description:'Una nueva parada de la gira, con las cuerdas a punto.',scene:'plaza',restrictions:{forbiddenCharacters:['ponder']}},
     {id:'el-carpio',name:'El Carpio',description:'Otra celebración y un público que espera la primera canción.',scene:'street'},
     {id:'canete',name:'Cañete',description:'La Tuna llega con capas, estuches y ganas de ronda.',scene:'garden'},
-    {id:'migueltanze',name:'Migueltanze',description:'Una nueva localidad en el cuaderno de encargos.',scene:'plaza'},
     {id:'puertollano',name:'Puertollano',description:'La siguiente actuación ya tiene público esperando.',scene:'festival',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}},
-    {id:'ciudad-real',name:'Ciudad Real',description:'La gira continúa con otra noche de canciones.',scene:'university',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}}
+    {id:'ciudad-real',name:'Ciudad Real',description:'La gira continúa con otra noche de canciones.',scene:'university',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}},
+    {id:'cazorla',name:'Cazorla',description:'Una nueva parada de la gira, con el equipo listo para actuar.',scene:'plaza'},
+    {id:'quesada',name:'Quesada',description:'Otro encargo y una canción para compartir con el público.',scene:'plaza'},
+    {id:'ubeda',name:'Úbeda',description:'La Tuna llega preparada para una nueva actuación.',scene:'plaza'},
+    {id:'baeza',name:'Baeza',description:'Una nueva celebración en el cuaderno de la Tuna.',scene:'plaza'},
+    {id:'bailen',name:'Bailén',description:'La gira hace otra parada para llenar la noche de canciones.',scene:'plaza'},
+    {id:'villanueva-de-la-reina',name:'Villanueva de la Reina',description:'El siguiente encargo espera a la Tuna y sus instrumentos.',scene:'plaza'}
   ];
   const events = [
     {id:'boda',name:'Boda',icon:'💍',description:'Música para uno de los días más importantes de sus vidas.',narrative:'Nos han contratado para poner música a uno de los días más importantes de sus vidas. Afinad bien: hoy hasta los novios llevan el compás.'},
@@ -142,6 +147,6 @@
     return {...level,id:i+campaignSongs.length,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:chart.notes.length,laneCount:chart.laneCount,minGap:.2,scrollSpeed:level.scrollSpeed+20,threshold:Math.min(.9,level.threshold+.045)};
   });
   const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,religiousScenes,performanceVisual,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,selectionPolicy,isDynamicDuo,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:8};
+  const data={characters,locations,events,religiousScenes,performanceVisual,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,selectionPolicy,isDynamicDuo,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:9};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);
