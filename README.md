@@ -1,6 +1,6 @@
 # Una ronda más · campaña MP3
 
-Juego web de la Rondalla de Lopera. Cada nivel combina una preparación en la plaza y una actuación musical de 60 segundos. Conserva el motor, la selección de cinco, las dos dificultades y el guardado anterior; el reparto tiene doce personajes pixel art.
+Juego web de la Rondalla de Lopera. Cada nivel combina una preparación en la plaza y una actuación musical de 60 segundos. La formación es flexible: desde tres integrantes, cualquier cantidad de personajes disponibles, o la pareja especial Andrés + Legía; el reparto tiene doce personajes pixel art.
 
 ## Jugar
 
@@ -103,11 +103,11 @@ La actuación se crea una sola vez al iniciar una etapa y se conserva en `game.p
 
 ### Selección de grupo
 
-El catálogo incluye doce personajes. LEGÍA toca la guitarra, confirmado por el usuario; su referencia está en `assets/personajes/referencias/legia.png`. Andrés y Coki tocan la pandereta. Peña y Ponder tocan la bandurria. Pedro V. es bailarín y no tiene instrumento asignado. Cada encargo empieza sin selección: el jugador elige cinco en una pantalla propia, con el contador `TUNA: n/5`. El mismo grupo aparece en la tira «GRUPO EN RUTA», en la actuación y en el resultado. El jugador que recoge los instrumentos rota entre esos cinco.
+El catálogo incluye doce personajes. LEGÍA toca la guitarra, confirmado por el usuario; su referencia está en `assets/personajes/referencias/legia.png`. Andrés y Coki tocan la pandereta. Peña y Ponder tocan la bandurria. Pedro V. es bailarín y no tiene instrumento asignado. Cada encargo empieza sin selección. La pantalla de grupo muestra cuántos integrantes hay seleccionados frente al máximo permitido en ese encargo. El jugador debe elegir al menos tres, salvo la pareja exacta Andrés + Legía. La selección se mantiene en preparación, actuación y resultado; el jugador que recoge los instrumentos se elige entre ese grupo.
 
 Las reglas futuras viven en los campos de restricciones del evento. Ahora `evento-benefico` declara `guitarra` como personaje prohibido y muestra `Pone una escusa para no actuar` para Pacheco´s. El motor valida de nuevo el grupo al comenzar, aunque se manipule el estado desde fuera de la interfaz.
 
-La actuación generada también incluye `allowedCharacters`, `recommendedCharacters`, `requiredCharacters` y `unavailableCharacters`. Permanecen vacíos por ahora, pero dejan preparada la futura selección de cinco músicos y sus condiciones por encargo sin alterar el motor actual.
+La actuación generada incluye `allowedCharacters`, `recommendedCharacters`, `requiredCharacters` y `unavailableCharacters`. El motor aplica las reglas actuales de evento y localidad, valida integrantes obligatorios e incompatibilidades, y comprueba que el encargo permita una formación válida. `selectionPolicy` centraliza el mínimo de tres y la excepción de la pareja dinámica.
 
 Los 26 niveles activos usan MP3: trece grabaciones disponibles, cada una en una ronda normal y otra difícil. Cada canción tiene mapas de notas independientes, medidos sobre sus propios ataques y pulsos; los niveles difíciles añaden densidad sin acelerar la grabación. Las actuaciones duran 60 segundos y el menú y la recogida usan una rotación aleatoria de la misma biblioteca MP3. Los MIDI originales se conservan como respaldo, pero no son la música de la campaña activa.
 
@@ -152,7 +152,7 @@ Una transcripción más detallada de la referencia de Cartagenera, calibración 
 
 ## Doce componentes y recompensas (8 de octubre de 2026)
 
-El catálogo único de `src/data.js` incluye a Miguel A., Pacheco´s, C15, Piter, Pesetas, Andrés, Coki, LEGÍA, PEDRO V., PONDER, PEÑA y CAÑERO. El jugador elige exactamente cinco antes de preparar cada encargo. La localidad, el evento, la canción, el nivel y `selectedCharacters` permanecen en la misma actuación. Repetir conserva ese encargo; avanzar crea uno nuevo con la selección vacía.
+El catálogo único de `src/data.js` incluye a Miguel A., Pacheco´s, C15, Piter, Pesetas, Andrés, Coki, LEGÍA, PEDRO V., PONDER, PEÑA y CAÑERO. El jugador elige un grupo válido antes de preparar cada encargo: mínimo tres integrantes o el dúo exacto Andrés + Legía. No hay máximo fijo; el límite es el número de personajes desbloqueados y permitidos por el encargo. La localidad, el evento, la canción, el nivel y `selectedCharacters` permanecen en la misma actuación. Repetir conserva ese encargo; avanzar crea uno nuevo con la selección vacía.
 
 | Personaje | Función | Disponible desde | Victoria necesaria |
 | --- | --- | --- | --- |
@@ -163,7 +163,7 @@ El catálogo único de `src/data.js` incluye a Miguel A., Pacheco´s, C15, Piter
 | PEÑA | Bandurria | 8 | 7 |
 | LEGÍA | Guitarra | 10 | 9 |
 
-Se puede repetir un nivel anterior usando personajes ya conseguidos. Perder no concede recompensas. Todos los personajes aparecen en «ELIGE TU TUNA»; los bloqueados muestran el nivel necesario. Pacheco´s sigue excluido de los eventos benéficos con «Pone una escusa para no actuar». El motor vuelve a validar el catálogo, desbloqueos, duplicados y restricciones al comenzar, aunque la interfaz se haya manipulado. La generación admite únicamente encargos con al menos cinco componentes elegibles.
+Se puede repetir un nivel anterior usando personajes ya conseguidos. Perder no concede recompensas. Todos los personajes aparecen en «ELIGE TU TUNA»; los bloqueados muestran el nivel necesario. Pacheco´s sigue excluido de los eventos benéficos con «Pone una escusa para no actuar». El motor vuelve a validar el catálogo, desbloqueos, duplicados y restricciones al comenzar, aunque la interfaz se haya manipulado. La generación admite únicamente encargos con suficientes personajes elegibles para una formación válida.
 
 El guardado conserva su clave y pasa a versión 3. `characterUnlocks` registra personajes ganados y `characterRewardsSeen` registra las tarjetas confirmadas con «CONTINUAR». Al leer una partida anterior, las estrellas y el avance desbloquean automáticamente lo ya conseguido sin borrar marcas, ajustes ni progreso. Las tarjetas pendientes se muestran en orden y sobreviven a una recarga antes de confirmarlas. Las confirmadas no vuelven a aparecer.
 
