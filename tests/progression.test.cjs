@@ -23,11 +23,12 @@ test('Migration retains old results, settings and all six earned rewards',()=>{
 test('Level and charity rules are validated in the engine against tampered UI lists',()=>{
  const save=fresh(),g=new E.Game({progress:save});g.start();g.performance.selectedCharacters=['pedro-v','pandereta','bandurria','guitarra-gafas','laud'];g.performance.allowedCharacters=D.characters.map(c=>c.id);assert.equal(g.begin(),false);assert.equal(g.toggleCharacter('pena'),false);
  g.performance.eventId='evento-benefico';g.performance.event=D.events.find(e=>e.id===g.performance.eventId);g.performance.selectedCharacters=['guitarra','pandereta','bandurria','guitarra-gafas','laud'];assert.equal(g.begin(),false);assert.equal(g.performance.restrictionReasons.guitarra,'Pone una escusa para no actuar');
- for(let level=0;level<D.levels.length;level++){save.unlocked=level;for(let repeat=0;repeat<60;repeat++){const p=D.createPerformance(D.levels[level],'',save);assert.ok(p.allowedCharacters.length>=5);if(p.eventId==='evento-benefico')assert.equal(p.allowedCharacters.includes('guitarra'),false);}}
+ for(let level=0;level<D.levels.length;level++){save.unlocked=level;for(let repeat=0;repeat<60;repeat++){const p=D.createPerformance(D.levels[level],'',save);assert.ok(p.allowedCharacters.length>=3||D.selectionPolicy.dynamicDuo.every(id=>p.allowedCharacters.includes(id)));if(p.eventId==='evento-benefico')assert.equal(p.allowedCharacters.includes('guitarra'),false);}}
 });
-test('Dancer remains in a stable five-person act without a personal instrument',()=>{
+test('Dancer remains in a stable flexible group without a personal instrument',()=>{
  const save=E.readSave(storage({version:2,unlocked:12})),g=new E.Game({progress:save});g.start(2);g.performance.eventId='evento-benefico';g.performance.event=D.events.find(e=>e.id===g.performance.eventId);D.refreshPerformanceAvailability(g.performance,save);
- const ids=['pedro-v','pena','ponder','coki','legia'];ids.forEach(id=>assert.ok(g.toggleCharacter(id)));assert.equal(g.toggleCharacter('andres'),false);assert.ok(g.begin());const act=g.performance;assert.equal(D.characters.find(c=>c.id==='pedro-v').instrument,null);assert.ok(g.items.every(i=>i.type!=='pedro-v'&&i.type!=='bailarin'));
+ const ids=['pedro-v','pena','ponder','coki','legia','andres'];ids.forEach(id=>assert.ok(g.toggleCharacter(id)));assert.ok(g.begin());const act=g.performance;assert.equal(D.characters.find(c=>c.id==='pedro-v').instrument,null);assert.ok(g.items.every(i=>i.type!=='pedro-v'&&i.type!=='bailarin'));
   g.items.forEach(i=>i.collected=true);g.startRhythm();assert.equal(g.duration,60);assert.strictEqual(g.performance,act);assert.deepEqual(act.selectedCharacters,ids);assert.ok(g.notes.some(n=>n.at>57));g.pause();g.resume();g.retry();assert.strictEqual(g.performance,act);assert.deepEqual(act.selectedCharacters,ids);
 });
 console.log(`${passed} progression suites passed`);
+

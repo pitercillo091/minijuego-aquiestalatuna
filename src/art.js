@@ -1,6 +1,20 @@
 (function(root){
   'use strict';
   const D=root.TunaData;
+  function castFormation(count,surface='rhythm'){
+    const n=Math.max(0,Math.floor(Number(count)||0));if(!n)return [];
+    if(surface==='explore'){
+      if(n<=5){const step=n===2?46:n===3?46:n===4?46:46,start=142-(n-1)*step/2;return Array.from({length:n},(_,i)=>({x:start+i*step,y:84,scale:.36}));}
+      const front=Math.ceil(n/2),scale=.25,step=front>1?216/(front-1):0,start=142-(front-1)*step/2;
+      return Array.from({length:n},(_,i)=>{const row=i<front?0:1,index=row===0?i:i-front;return {x:start+index*step,y:row?124:78,scale};});
+    }
+    if(surface==='victory'&&n<=5){const step=145,start=480-(n-1)*step/2;return Array.from({length:n},(_,i)=>({x:start+i*step,y:454,scale:1}));}
+    const rows=surface==='victory'?Math.ceil(n/2):n<=5?n:Math.ceil(n/2),front=rows,back=n-front;
+    if(surface!=='victory'&&n<=5){const step=n===2?138:n===3?96:n===4?75:66,start=215-(n-1)*step/2;return Array.from({length:n},(_,i)=>({x:start+i*step,y:266,scale:.9}));}
+    const maxRow=Math.max(front,back),width=surface==='victory'?920:380,gap=surface==='victory'?12:8,scale=Math.min(surface==='victory'?1:.9,(width-gap*(maxRow-1))/(maxRow*80));
+    const rowSlots=(size,row)=>{const total=size*80*scale+Math.max(0,size-1)*gap,start=(surface==='victory'?480:215)-total/2+40*scale;return Array.from({length:size},(_,i)=>({x:start+i*(80*scale+gap),y:surface==='victory'?(row?470:170):(row?500:185),scale}));};
+    return [...rowSlots(front,0),...rowSlots(back,1)];
+  }
   class Art {
     constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.images={};this.backgrounds={};this.particles=[];this.time=0;
       D.characters.forEach(c=>{this.load(c.id,D.characterAsset(c));this.load(c.id+'-atlas',D.characterAsset(c,true));});this.load('escudo','assets/ui/escudo.webp');
@@ -98,7 +112,7 @@
       if(!game||['menu'].includes(game.phase)){const spacing=Math.min(83,720/Math.max(1,D.characters.length-1)),span=(D.characters.length-1)*spacing,center=D.characters.length>7?Math.min(680,910-span/2):680,start=center-span/2;D.characters.forEach((ch,i)=>this.character(ch.id,start+i*spacing,452+(i%2)*12,1.05,'playing'));this.text('LA RONDALLA DE LOPERA',697,496,12,'#e7c898');return;}
       if(game.mode==='explore'){
         const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);
-        if(cast.length===5){this.rect(18,14,248,78,'#201c2bbf',12);this.text('GRUPO EN RUTA',142,32,10,'#e8bd7e');cast.forEach((ch,i)=>this.character(ch.id,48+i*46,84,.36,'idle'));}
+        if(cast.length){const expanded=cast.length>5;this.rect(18,14,248,expanded?145:78,'#201c2bbf',12);this.text(`${cast.length} ${cast.length===1?'COMPONENTE':'COMPONENTES'} EN RUTA`,142,32,10,'#e8bd7e');cast.forEach((ch,i)=>{const slot=castFormation(cast.length,'explore')[i];this.character(ch.id,slot.x,slot.y,slot.scale,'idle');});}
         game.items.forEach(item=>{if(item.collected)return;const near=Math.hypot(item.x-game.player.x,item.y-game.player.y)<58;this.ellipse(item.x,item.y,27,13,near?'#f5c57955':'#e8bd7c18');this.icon(item.type,item.x,item.y-23+Math.sin(this.time*3+item.id)*3,1);this.ellipse(item.x,item.y-63,3,3,'#f5cf80');});
         game.hazards.forEach(h=>{this.ellipse(h.x,h.y,27,13,'#223849bb');this.ellipse(h.x-3,h.y-3,18,6,'#76a4b266');this.line([[h.x-12,h.y],[h.x+4,h.y-3]],'#acceda88',1);});
         const ready=game.items.every(i=>i.collected);this.ellipse(game.stage.x,game.stage.y+43,54,13,ready?'#f3c06d55':'#281e3222');this.text(ready?'♪ ¡A TOCAR!':'EL ESCENARIO',game.stage.x,190,12,ready?'#ffdb8f':'#e9c7a0');
@@ -106,7 +120,7 @@
         if(!(game.invulnerable>0&&Math.floor(this.time*12)%2===0))this.character(game.collectorCharacter||game.character,game.player.x,game.player.y,.62,game.player.moving?'walk':'idle',game.player.face);this.carIcon(game.player.x,game.player.y-94);
         if(game.level===0&&game.items.every(i=>!i.collected)){this.text('Recoge los instrumentos iluminados',480,529,14,'#ffdfaa');}
       }else{
-        c.fillStyle='#14182580';c.fillRect(0,0,960,540);const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);cast.forEach((ch,i)=>this.character(ch.id,82+i*66,266,.9,'playing',1,(game.clock-game.musicOffset)/game.beat));
+        c.fillStyle='#14182580';c.fillRect(0,0,960,540);const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean),slots=castFormation(cast.length,'rhythm');cast.forEach((ch,i)=>{const slot=slots[i];this.character(ch.id,slot.x,slot.y,slot.scale,'playing',1,(game.clock-game.musicOffset)/game.beat);});
         this.rect(57,257,316,110,'#201c2bbf',12);this.text(game.performance.location.name.toUpperCase(),215,283,12,'#dcaf77');this.text('¡Que siga la ronda!',215,316,22,'#f0dfc4');this.text(`${game.hits} notas a compás · combo ${game.combo}`,215,344,14,'#baadbc');
         const left=427,width=456,lane=width/game.laneCount,top=38,hitY=443,speed=game.config.scrollSpeed;
         this.rect(left-13,top-12,width+26,472,'#171926e8',15);
@@ -120,8 +134,9 @@
       this.particles=this.particles.filter(p=>{p.life-=dt;if(p.life<=0)return false;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=130*dt;this.ellipse(p.x,p.y,3*p.life,3*p.life,p.color);return true;});
       if(game.flash&&game.mode==='explore'){this.rect(280,34,400,42,'#241c2be8',21);this.text(game.flash.text,480,61,16,game.flash.kind==='miss'?'#f4a3a5':'#f8d28c');}
       if(game.mode==='rhythm'){for(let i=0;i<10;i++){const x=55+i*33,y=528+(i%2)*5,cheer=game.combo>0?Math.round(Math.sin(this.time*5+i)*3):0;this.rect(x-6,y-13,12,15,['#60486e','#8d587b','#517f8a'][i%3],3);this.ellipse(x,y-18,5,6,['#c18c71','#e1b596','#b98772'][i%3]);this.line([[x-5,y-8],[x-10,y-14+cheer]],'#b68c72',3);this.line([[x+5,y-8],[x+10,y-14-cheer]],'#b68c72',3);}}
-      if(game.phase==='victory'){const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);cast.forEach((ch,i)=>this.character(ch.id,180+i*145,454,1,'victory'));}
+      if(game.phase==='victory'){const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean),slots=castFormation(cast.length,'victory');cast.forEach((ch,i)=>{const slot=slots[i];this.character(ch.id,slot.x,slot.y,slot.scale,'victory');});}
     }
   }
   root.TunaArt=Art;
+  root.TunaArt.castFormation=castFormation;
 })(globalThis);

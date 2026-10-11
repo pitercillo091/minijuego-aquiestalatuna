@@ -53,8 +53,8 @@
       if(act.event?.id!==act.eventId||act.location?.id!==act.locationId||(this.config&&(act.song!==this.config.song||act.levelId!==this.config.id)))return {valid:false,selected:unique,reason:'Los datos del encargo no coinciden.'};
       D.refreshPerformanceAvailability(this.performance,this.progress);
       const allowed=new Set(this.performance.allowedCharacters),rules=D.selectionRules(this.performance);
-      const reason=unique.length!==5?'Elige exactamente cinco componentes.':unique.length!==selected.length?'El grupo contiene personajes repetidos.':unique.some(id=>!allowed.has(id))?'Hay un componente que no puede participar en esta actuación.':rules.requiredCharacters.some(id=>!unique.includes(id))?'Falta un componente obligatorio.':rules.incompatibleCharacters.some(pair=>pair.every(id=>unique.includes(id)))?'Hay componentes incompatibles en el grupo.':'';
-      return {valid:!reason,selected:unique,reason};
+      const reason=unique.length!==selected.length?'El grupo contiene personajes repetidos.':unique.some(id=>!allowed.has(id))?'Hay un componente que no puede participar en esta actuación.':rules.requiredCharacters.some(id=>!unique.includes(id))?'Falta un componente obligatorio.':rules.incompatibleCharacters.some(pair=>pair.every(id=>unique.includes(id)))?'Hay componentes incompatibles en el grupo.':unique.length<D.selectionPolicy.minimum&&!D.isDynamicDuo(unique)?'Elige al menos tres componentes o forma el Dúo Dinámico con Andrés y Legía.':'';
+      return {valid:!reason,selected:unique,reason,dynamicDuo:D.isDynamicDuo(unique)};
     }
     toggleCharacter(id) {
       if(this.phase!=='brief'||!this.performance)return false;
@@ -62,10 +62,10 @@
       if(!this.performance.allowedCharacters.includes(id))return false;
       const selected=this.performance.selectedCharacters||[];const index=selected.indexOf(id);
       if(index>=0)selected.splice(index,1);
-      else if(selected.length<5)selected.push(id);else return false;
+      else selected.push(id);
       this.performance.selectedCharacters=[...new Set(selected)];this.emit('selection',{selected:this.performance.selectedCharacters});return true;
     }
-    begin() { if(this.phase!=='brief')return false;const status=this.selectionStatus();if(!status.valid){this.emit('selection-invalid',{reason:status.reason});return false;}this.performance.selectedCharacters=status.selected;this.phase='playing';this.emit('begin');return true; }
+    begin() { if(this.phase!=='brief')return false;const status=this.selectionStatus();if(!status.valid){this.emit('selection-invalid',{reason:status.reason});return false;}this.performance.selectedCharacters=status.selected;this.performance.groupMode=status.dynamicDuo?'dynamic-duo':'ensemble';this.phase='playing';this.emit('begin',{groupMode:this.performance.groupMode});return true; }
     pause() { if(this.phase==='playing'){this.phase='paused';this.path=[];this.emit('pause');} }
     resume() { if(this.phase==='paused'){this.phase='playing';this.emit('resume');} }
     navigate(x,y,target=null) { if(this.phase!=='playing'||this.mode!=='explore')return;this.path=pathfind(this.player,{x:clamp(x,40,920),y:clamp(y,210,500)});this.target=target; }

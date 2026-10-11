@@ -3,6 +3,7 @@
   const songs=typeof module!=='undefined'&&module.exports?require('./songs.js'):root.TunaSongs;
   const recordings=typeof module!=='undefined'&&module.exports?require('./recordings.js'):root.TunaRecordings;
   const campaignSongs=recordings.list();
+  const selectionPolicy=Object.freeze({minimum:3,dynamicDuo:Object.freeze(['andres','legia'])});
   const songCatalog=[...songs,...campaignSongs.filter(recording=>!songs.some(song=>song.id===recording.songId)).map(recording=>({id:recording.songId,title:recording.title,bpm:recording.bpmApproximate}))];
   const characters = [
     {id:'pandereta',name:'Miguel A.',role:'La capa también lleva el ritmo.',instrument:'pandereta',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Primero por la izquierda: gafas, barba poblada castaña y gris, cabello ondulado, complexión ancha y capa con cintas.'},
@@ -82,25 +83,35 @@
     if(!isCharacterUnlocked(character,progress))return {available:false,reason:`🔒 Disponible en nivel ${character.unlockLevel}`};
     return {available:true,reason:''};
   }
+  function isDynamicDuo(ids=[]) {
+    return Array.isArray(ids)&&ids.length===selectionPolicy.dynamicDuo.length&&selectionPolicy.dynamicDuo.every(id=>ids.includes(id));
+  }
   function refreshPerformanceAvailability(performance,progress={}) {
     const rules=selectionRules(performance);performance.allowedCharacters=[];performance.unavailableCharacters=[];performance.restrictionReasons={};
     for(const character of characters){const status=characterAvailability(character,performance,progress);if(status.available)performance.allowedCharacters.push(character.id);else{performance.unavailableCharacters.push(character.id);performance.restrictionReasons[character.id]=status.reason;}}
     // Discard stale or injected selections without making any new selections.
-    performance.selectedCharacters=[...new Set(Array.isArray(performance.selectedCharacters)?performance.selectedCharacters:[])].filter(id=>performance.allowedCharacters.includes(id)).slice(0,5);
+    performance.selectedCharacters=[...new Set(Array.isArray(performance.selectedCharacters)?performance.selectedCharacters:[])].filter(id=>performance.allowedCharacters.includes(id));
     performance.requiredCharacters=rules.requiredCharacters;performance.recommendedCharacters=rules.recommendedCharacters;return performance;
   }
   function canFormGroup(performance,progress={}) {
     const allowed=characters.filter(c=>characterAvailability(c,performance,progress).available).map(c=>c.id),rules=selectionRules(performance);
-    if(allowed.length<5||rules.requiredCharacters.length>5||rules.requiredCharacters.some(id=>!allowed.includes(id)))return false;
-    const chosen=[...rules.requiredCharacters],pool=allowed.filter(id=>!chosen.includes(id));
+    if(rules.requiredCharacters.length>allowed.length||rules.requiredCharacters.some(id=>!allowed.includes(id)))return false;
+    const required=[...new Set(rules.requiredCharacters)],pool=allowed.filter(id=>!required.includes(id));
     const compatible=ids=>!rules.incompatibleCharacters.some(pair=>pair.every(id=>ids.includes(id)));
-    const search=start=>{if(!compatible(chosen))return false;if(chosen.length===5)return true;if(chosen.length+pool.length-start<5)return false;for(let i=start;i<pool.length;i++){chosen.push(pool[i]);if(search(i+1))return true;chosen.pop();}return false;};
-    return search(0);
+    const hasGroupOfSize=size=>{
+      if(size<required.length||size>allowed.length)return false;
+      const chosen=[...required];
+      const search=start=>{if(!compatible(chosen))return false;if(chosen.length===size)return true;if(chosen.length+pool.length-start<size)return false;for(let i=start;i<pool.length;i++){chosen.push(pool[i]);if(search(i+1))return true;chosen.pop();}return false;};
+      return search(0);
+    };
+    if(hasGroupOfSize(Math.max(selectionPolicy.minimum,required.length)))return true;
+    const duo=selectionPolicy.dynamicDuo;
+    return duo.every(id=>allowed.includes(id))&&required.every(id=>duo.includes(id))&&compatible(duo);
   }
   function createPerformance(level,previousKey='',progress={}) {
     const previous=previousKey||lastPerformanceKey;
     const pairs=[];for(const location of locations)for(const event of events){const candidate={locationId:location.id,eventId:event.id,song:level.song,levelId:level.id};if(canFormGroup(candidate,progress))pairs.push({location,event});}
-    if(!pairs.length)throw new Error('No hay un encargo con cinco componentes disponibles.');
+    if(!pairs.length)throw new Error('No hay un encargo con un grupo válido disponible.');
     const available=pairs.filter(pair=>`${pair.location.id}:${pair.event.id}`!==previous);
     const pair=(available.length?available:pairs)[Math.floor(Math.random()*(available.length?available.length:pairs.length))];
     const key=`${pair.location.id}:${pair.event.id}`;lastPerformanceKey=key;
@@ -117,7 +128,7 @@
     ['Baños de la Encina · La isa','garden','banos',90,3,['bandurria','laud','guitarra','guitarra-gafas'],'Reúne los instrumentos de púa y las guitarras.','El viaje a Canarias lo ponemos en la música.','La isa ha puesto a bailar hasta al que guardaba los estuches.'],
     ['Arjona · Noche de copla','plaza','arjona',90,3,['flor','flor','partitura','guitarra-gafas'],'Prepara las flores y la guitarra para la copla.','La copla pide sentimiento. El jurado pide que no corramos.','La copla se ha quedado en la plaza. Vosotros vais a por otra.'],
     ['Lopera · El certamen','castle','caras',85,3,['partitura','bandurria','guitarra','laud','pandereta'],'Encuentra la partitura y reúne al equipo.','El jurado toma notas. Procura que las tuyas lleguen a tiempo.','El jurado también pide otra, aunque no lo diga.'],
-    ['Lopera · La gran actuación','finale','grupo',85,4,['pandereta','guitarra','bandurria','guitarra-gafas','laud'],'Reúne a los cinco músicos para el gran final.','Última canción. Lo de irnos después lo hablamos después.','Veinte etapas. Cinco músicos. Y el público sigue pidiendo otra.']
+    ['Lopera · La gran actuación','finale','grupo',85,4,['pandereta','guitarra','bandurria','guitarra-gafas','laud'],'Reúne al grupo para el gran final.','Última canción. Lo de irnos después lo hablamos después.','Veinte etapas. La Tuna al completo. Y el público sigue pidiendo otra.']
   ];
   const settingBySong=new Map(songs.map((song,i)=>[song.id,settings[i]]));
   const firstRound=campaignSongs.map((recording,i)=>{
@@ -131,6 +142,6 @@
     return {...level,id:i+campaignSongs.length,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:chart.notes.length,laneCount:chart.laneCount,minGap:.2,scrollSpeed:level.scrollSpeed+20,threshold:Math.min(.9,level.threshold+.045)};
   });
   const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,religiousScenes,performanceVisual,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:7};
+  const data={characters,locations,events,religiousScenes,performanceVisual,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,selectionPolicy,isDynamicDuo,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:8};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);
