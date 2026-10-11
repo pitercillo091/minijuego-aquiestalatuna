@@ -65,3 +65,25 @@
 @media(min-width:900px) and (min-height:551px){.scene-promotion{max-width:min(1100px,calc((100dvh - 345px)*16 / 9))}}
 :fullscreen .scene-promotion{max-width:min(1450px,calc((100dvh - 270px)*16 / 9))}
 @media(max-height:550px) and (orientation:landscape){.scene-promotion{max-width:none;margin-top:0}}
+
+/* Five hanging enamel plaques on a timber rail in the cover's scenery.
+   Kept above the cast, with native links and generous touch/focus targets. */
+.home-promotion{position:absolute;right:9%;top:41%;width:322px;display:flex;justify-content:space-between;gap:8px;padding:18px 10px 0;z-index:1;font-family:monospace}
+.home-sign-beam{position:absolute;top:0;left:0;right:0;height:10px;background:#98725c;border-top:3px solid #c6a17c;box-shadow:0 3px #493848,3px 3px #302b4233;pointer-events:none}
+.home-sign-beam::before,.home-sign-beam::after{content:"";position:absolute;top:-3px;width:5px;height:78px;background:#745751;box-shadow:2px 0 #ab8564;z-index:-1}
+.home-sign-beam::before{left:6px}.home-sign-beam::after{right:6px}
+.home-sign{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;flex:1;min-width:0;min-height:60px;padding:6px 2px;background:#dac5a3;border:3px solid #715254;box-shadow:inset 0 2px #f2dfb5,2px 3px #302b4255;color:#433449;text-decoration:none;font-size:8px;font-weight:bold;line-height:1.2;outline-offset:4px}
+.home-sign::before{content:"";position:absolute;top:-14px;left:calc(50% - 9px);width:18px;height:11px;border-inline:2px solid #d7b586;pointer-events:none}
+.home-sign:nth-of-type(even){margin-top:4px;margin-bottom:-4px}
+.home-sign:hover{background:#f0dab0;border-color:#b48b66}.home-sign:focus-visible{outline:3px solid #f4cf8f;background:#f0dab0}
+.home-sign .promo-pixel-icon{width:32px;height:32px;filter:drop-shadow(1px 2px #49384830)}
+@media(max-width:950px) and (min-width:601px){.home-promotion{width:270px;right:22px;top:41%;gap:5px;padding-inline:7px}.home-sign{min-height:56px;font-size:7px;gap:4px}.home-sign .promo-pixel-icon{width:28px;height:28px}}
+@media(max-width:600px){.home-promotion{width:278px;right:calc(50% - 139px);top:62%;gap:5px;padding:14px 7px 0}.home-sign{min-height:52px;font-size:7px;gap:3px;padding:4px 1px}.home-sign .promo-pixel-icon{width:28px;height:28px}.home-sign-beam{height:8px}.home-sign-beam::before,.home-sign-beam::after{height:68px}.home-sign::before{top:-12px;height:9px}}
+/* Preserve the existing text sizing at the narrowest width; give scenery
+   plaques their own space between the copy and the unchanged cast artwork. */
+@media(max-width:360px){.home .hero{height:650px}.home .hero-art{height:313.5px}.home-promotion{top:auto;bottom:142px}}
+@media(min-width:601px) and (max-width:710px){
+  .home-promotion{display:grid;grid-template-columns:repeat(3,1fr);width:164px;right:16px;top:26%;gap:18px 5px}
+  .home-sign:nth-of-type(even){margin:0}.home-sign-beam::before,.home-sign-beam::after{height:148px}
+  .home-promotion::after{content:"";position:absolute;left:0;right:0;top:80px;height:10px;background:#98725c;border-top:3px solid #c6a17c;box-shadow:0 3px #493848;pointer-events:none;z-index:-1}
+}

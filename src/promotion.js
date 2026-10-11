@@ -21,7 +21,14 @@
   // Integer-grid artwork: stepped silhouettes, no curves or external logo files.
   function icon(name){
     const pixels=[];const rect=(x,y,w,h,color)=>pixels.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${color}"/>`);
-    if(name==='instagram'){
+    if(name==='whatsapp'){
+      rect(4,0,8,16,'#72ad82');rect(2,2,12,12,'#72ad82');rect(0,4,16,8,'#72ad82');rect(1,12,4,3,'#72ad82');rect(0,15,3,1,'#72ad82');
+      for(const [x,y,w,h] of [[4,4,2,4],[5,7,2,2],[6,9,3,2],[9,9,3,3],[10,8,2,1]])rect(x,y,w,h,'#fff3df');
+    }else if(name==='website'){
+      rect(4,0,8,16,'#638eac');rect(2,2,12,12,'#638eac');rect(0,4,16,8,'#638eac');
+      for(const [x,y,w,h] of [[4,2,3,2],[3,4,5,2],[5,6,3,3],[6,9,2,3],[10,4,3,2],[11,6,4,2],[10,9,3,3]])rect(x,y,w,h,'#afc990');
+      rect(1,7,14,1,'#e4e4bc');rect(6,1,1,14,'#e4e4bc');rect(10,2,1,12,'#e4e4bc');
+    }else if(name==='instagram'){
       for(let y=0;y<16;y++){const inset=y===0||y===15?3:y===1||y===14?1:0;rect(inset,y,16-inset*2,1,['#74619d','#945591','#b64c80','#d76677','#e9916d','#edb677'][Math.min(5,Math.floor(y/3))]);}
       for(const [x,y,w,h] of [[5,3,6,1],[3,5,1,6],[12,5,1,6],[5,12,6,1],[4,4,1,1],[11,4,1,1],[4,11,1,1],[11,11,1,1],[7,6,3,1],[6,7,1,3],[10,7,1,3],[7,10,3,1],[10,5,1,1]])rect(x,y,w,h,'#fff3df');
     }else if(name==='facebook'){
@@ -33,6 +40,12 @@
     return `<svg class="promo-pixel-icon" viewBox="0 0 16 16" width="32" height="32" aria-hidden="true" focusable="false" shape-rendering="crispEdges">${pixels.join('')}</svg>`;
   }
   let element=null,lastKey='',currentGame=null;
+  function mountHome(){
+    const home=document.getElementById('home-promotion');if(!home)return;
+    const signs=[['whatsapp','WhatsApp','Contrataciones: 622 358 110. Abrir WhatsApp'],['website','Web','Visitar la web oficial de Aquí Está la Tuna'],['instagram','Instagram','Instagram oficial de Aquí Está la Tuna'],['facebook','Facebook','Facebook oficial de Aquí Está la Tuna'],['videos','Vídeos','Ver vídeos en la web de Aquí Está la Tuna']];
+    home.innerHTML='<span class="home-sign-beam" aria-hidden="true"></span>'+signs.map(([id,label,description])=>`<a class="home-sign" href="${links[id]}" data-home-promo="${id}" target="_blank" rel="noopener noreferrer" aria-label="${description}" title="${description}">${icon(id)}<span>${label}</span></a>`).join('');
+    home.addEventListener('keydown',event=>{if(event.code!=='Escape')event.stopPropagation();});
+  }
   function mount(){
     element=document.getElementById('scene-promotion');if(!element)return false;
     const social=(id,label,description)=>`<a class="promo-social" data-promo="${id}" href="${links[id]}" target="_blank" rel="noopener noreferrer" aria-label="${description}" title="${description}">${icon(id)}<span>${label}</span></a>`;
@@ -55,5 +68,5 @@
     element.querySelector('.promo-social-sign').dataset.years=['25','50'].includes(theme.ornament)?theme.ornament:'';
   }
   const api={links,themes,icon,sync};
-  if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.TunaPromotion=api;
+  if(typeof module!=='undefined'&&module.exports)module.exports=api;else{root.TunaPromotion=api;mountHome();}
 })(globalThis);
