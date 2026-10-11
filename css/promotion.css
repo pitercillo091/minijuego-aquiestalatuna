@@ -1,0 +1,67 @@
+/* Physical scenery props, outside the musicians, paths, notes and controls.
+   Native links retain readable text and 44px touch targets at every resolution. */
+.scene-promotion{--ground:#78978c;--wood:#8e675e;--edge:#d5ac84;--paper:#f2e1bd;--ink:#3d344b;--trim:#b87488;position:relative;max-width:1100px;margin:6px auto 0;min-height:176px;padding:24px 32px 0;overflow:hidden;isolation:isolate;background-color:var(--ground);background-image:linear-gradient(#ffffff0b 2px,transparent 2px),linear-gradient(90deg,#27334725 2px,transparent 2px);background-size:64px 28px;border:2px solid #433c4f;font-family:monospace}
+.scene-promotion::before{content:"";position:absolute;inset:0 0 auto;height:12px;background:var(--edge);box-shadow:0 4px #49394b;z-index:-1}
+.scene-promotion::after{content:"";position:absolute;left:7%;right:7%;bottom:4px;height:8px;background:#302b4233;z-index:-1}
+.promo-props{display:flex;align-items:flex-end;justify-content:center;gap:38px;max-width:900px;margin:auto}
+.promo-main-prop{position:relative;flex:1;max-width:490px;min-width:0}
+.promo-main-sign{position:relative;padding:9px 16px 6px;color:var(--ink);background:var(--paper);border:6px solid var(--wood);box-shadow:inset 0 0 0 2px var(--edge),4px 4px #302b424d;text-align:center}
+.promo-sign-brand{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:bold;font-size:12px;letter-spacing:1px;min-height:30px}
+.promo-sign-brand img{object-fit:contain;image-rendering:pixelated;flex:none}
+.promo-heading{font-weight:bold;font-size:10px;letter-spacing:1px;margin:4px 0 2px;color:var(--ink)}
+.promo-booking,.promo-website{display:flex;align-items:center;justify-content:center;min-height:44px;gap:8px;font-weight:bold;color:var(--ink)}
+.promo-booking{font-size:15px;flex-wrap:wrap;column-gap:8px;row-gap:0;line-height:1.3}
+.promo-booking strong{font-size:21px;white-space:nowrap}
+.promo-website{font-size:16px;letter-spacing:-.3px;text-decoration:underline;text-underline-offset:3px;border-top:2px solid #49394b20}
+.scene-promotion a:hover{background:#ffffff26}.scene-promotion a:focus-visible{outline:3px solid var(--ink);outline-offset:0;background:#fff1cf}
+.promo-legs{height:22px;margin:0 22px;border-inline:8px solid var(--wood);position:relative}
+.promo-legs::after{content:"";position:absolute;left:-14px;right:-14px;bottom:0;border-bottom:4px solid var(--edge)}
+.promo-social-prop{width:258px;position:relative;flex:none}
+.promo-social-sign{padding:12px 8px 9px;border:5px solid var(--wood);background:var(--paper);box-shadow:inset 0 0 0 2px var(--edge),4px 4px #302b424d;color:var(--ink);text-align:center}
+.promo-social-sign>p{font-size:10px;font-weight:bold;letter-spacing:1px;margin:0 0 5px}
+.promo-social-links{display:flex;justify-content:space-evenly;gap:3px}
+.promo-social{display:flex;min-width:66px;min-height:64px;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px 1px;font-size:10px;font-weight:bold}
+.promo-pixel-icon{display:block;flex:none;width:32px;height:32px;image-rendering:pixelated}
+.promo-decoration{position:absolute;pointer-events:none;inset:0;z-index:-1}.promo-decoration i{position:absolute;bottom:22px;width:18px;height:28px;background:#ac806b;border-top:6px solid var(--edge)}.promo-decoration i:first-child{left:12px}.promo-decoration i:nth-child(2){right:12px}.promo-decoration i:nth-child(3){display:none}
+.promo-decoration i::before{content:"";position:absolute;left:4px;top:-20px;width:6px;height:18px;background:#637961;box-shadow:-6px -4px #637961,6px -8px #8da285}
+.promo-awning{display:none}
+/* A wedding fabric valance, bow-like pixel rosettes, and a hanging social plaque. */
+[data-scene=wedding]{--ground:#82707e;--wood:#b0848b;--edge:#efd1ac;--paper:#fff0d6;padding-top:29px}
+[data-support=draped] .promo-awning{display:block;position:absolute;top:-11px;left:-4px;right:-4px;height:18px;background:repeating-linear-gradient(90deg,#e4a5b0 0 28px,#f6d4d6 28px 56px);border-top:4px solid #f7dfbd;z-index:1;clip-path:polygon(0 0,100% 0,100% 70%,95% 70%,95% 100%,5% 100%,5% 70%,0 70%)}
+[data-support=draped] .promo-social-sign{border-width:3px 8px 6px;position:relative}
+[data-support=draped] .promo-social-sign::before{content:"";position:absolute;width:8px;height:8px;left:-11px;top:13px;background:#d98a9e;box-shadow:0 8px #edb4bb,8px 4px #d98a9e,0 57px #d98a9e,237px 0 #d98a9e,237px 8px #edb4bb}
+/* Moonlit wooden noticeboard and lantern; independent silhouette. */
+[data-scene=serenade]{--ground:#596c85;--wood:#664c52;--edge:#b89876;--paper:#d8c6aa}
+[data-support=noticeboard] .promo-main-sign{border-width:8px;box-shadow:inset 0 0 0 2px #ac896d,5px 5px #28233366}
+[data-support=noticeboard] .promo-main-prop::before{content:"";position:absolute;left:-18px;top:15px;width:10px;height:20px;background:#efce8a;border:3px solid #443c50;box-shadow:0 -5px #443c50,0 5px #443c50,-4px 0 #e5c58b14,4px 0 #e5c58b14}
+[data-support=noticeboard] .promo-legs{height:32px;border-width:10px}
+/* Party roll-up: bunting top and a weighted display foot instead of posts. */
+[data-scene=birthday]{--wood:#956080;--edge:#f2be8c;--paper:#ffe6be;padding-top:32px}
+[data-support=party] .promo-main-sign{border-width:3px 8px 10px}
+[data-support=party] .promo-awning{display:block;height:15px;position:absolute;top:-15px;left:0;right:0;background:repeating-linear-gradient(90deg,#db789c 0 26px,#f4d48a 26px 52px,#83b8ae 52px 78px);clip-path:polygon(0 0,100% 0,96% 100%,92% 0,84% 100%,76% 0,68% 100%,60% 0,52% 100%,44% 0,36% 100%,28% 0,20% 100%,12% 0,4% 100%)}
+[data-support=party] .promo-main-prop .promo-legs{margin:0 3px;border-inline:0;height:12px;background:#735675;border-bottom:5px solid #dbb080}
+/* Oak tribute plaque with cap and a low display stand. */
+[data-scene=retirement]{--ground:#78978c;--wood:#795e56;--edge:#c6a378;--paper:#e8d4ad}
+[data-support=plaque] .promo-main-sign{border-width:10px 7px 7px}
+[data-support=plaque] .promo-main-prop::before{content:"";position:absolute;left:10px;right:10px;top:-5px;height:8px;background:#b48a69;box-shadow:0 -3px #d3b389;z-index:1}
+[data-support=plaque] .promo-social-sign{border-bottom-width:10px}
+/* Commemorative frames with stepped metal corners and a medallion. */
+[data-scene=silver]{--ground:#82707e;--wood:#8997a9;--edge:#e0e6e3;--paper:#e8e9da;--trim:#a5bfd0}
+[data-scene=gold]{--ground:#82707e;--wood:#9b764a;--edge:#edcc83;--paper:#f5e7c3;--trim:#d3af60}
+[data-support=anniversary]{padding-top:29px}
+[data-support=anniversary] .promo-main-sign{border-width:6px 10px;clip-path:polygon(8px 0,calc(100% - 8px) 0,calc(100% - 8px) 4px,100% 4px,100% calc(100% - 4px),calc(100% - 8px) calc(100% - 4px),calc(100% - 8px) 100%,8px 100%,8px calc(100% - 4px),0 calc(100% - 4px),0 4px,8px 4px)}
+[data-support=anniversary] .promo-social-sign::before{content:attr(data-years);position:absolute;top:-12px;left:calc(50% - 17px);width:34px;height:18px;background:var(--trim);border:3px solid var(--edge)}
+/* Green striped information stall for the solidarity event. */
+[data-scene=charity]{--wood:#52796e;--edge:#92bda1;--paper:#edf0cb;padding-top:34px}
+[data-support=booth] .promo-awning{display:block;position:absolute;top:-17px;left:-10px;right:-10px;height:22px;background:repeating-linear-gradient(90deg,#659988 0 25px,#c2d7ac 25px 50px);border-top:4px solid #3e6b61;border-bottom:4px solid #49776d;z-index:1}
+[data-support=booth] .promo-main-sign{border-width:5px 10px 8px}
+[data-support=booth] .promo-main-prop .promo-legs{height:15px;background:#658c7a;border-width:0;margin:0 -6px}
+/* Quiet stone plinth and olive-green edging for the procession. */
+[data-scene=procession]{--ground:#596c85;--wood:#777080;--edge:#d6c094;--paper:#ddd4bd;--ink:#36354b}
+[data-support=stone] .promo-main-sign{border-width:5px 8px 9px;box-shadow:inset 0 0 0 2px #b5a990,3px 4px #2a2d4266}
+[data-support=stone] .promo-legs{height:14px;margin:0 -6px;border:0;background:#777080;border-bottom:4px solid #59566b}
+[data-support=stone] .promo-decoration i{background:#857589;border-color:#c5b492}
+@media(max-width:760px){.scene-promotion{padding:27px 14px 0;margin-top:14px}.promo-props{flex-direction:column;gap:6px;align-items:center}.promo-main-prop{width:100%;max-width:440px;flex:none}.promo-social-prop{width:min(300px,100%)}.promo-main-sign{padding-inline:8px}.promo-booking{font-size:14px;gap:6px}.promo-booking strong{font-size:19px}.promo-website{font-size:15px}.promo-social-sign{padding-top:9px}.promo-social-prop .promo-legs{height:14px}.promo-decoration i{display:none}.promo-social{min-width:70px}.promo-sign-brand{font-size:11px;letter-spacing:.7px}}
+@media(min-width:900px) and (min-height:551px){.scene-promotion{max-width:min(1100px,calc((100dvh - 345px)*16 / 9))}}
+:fullscreen .scene-promotion{max-width:min(1450px,calc((100dvh - 270px)*16 / 9))}
+@media(max-height:550px) and (orientation:landscape){.scene-promotion{max-width:none;margin-top:0}}

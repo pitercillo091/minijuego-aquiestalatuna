@@ -94,7 +94,7 @@
     }
     burst(x,y,color='#f5c579'){for(let i=0;i<15;i++)this.particles.push({x,y,vx:Math.cos(i*2.4)*50*(1+i%3),vy:Math.sin(i*2.4)*60-50,life:1,color});}
     render(game,dt){
-      this.time+=dt;this.resize();const c=this.ctx;this.background(game?.config?.theme||'castle',game&&game.phase!=='menu'?game.performance:null);
+      this.time+=dt;this.resize();root.TunaPromotion?.sync(game);const c=this.ctx;this.background(game?.config?.theme||'castle',game&&game.phase!=='menu'?game.performance:null);
       if(!game||['menu'].includes(game.phase)){const spacing=Math.min(83,720/Math.max(1,D.characters.length-1)),span=(D.characters.length-1)*spacing,center=D.characters.length>7?Math.min(680,910-span/2):680,start=center-span/2;D.characters.forEach((ch,i)=>this.character(ch.id,start+i*spacing,452+(i%2)*12,1.05,'playing'));this.text('LA RONDALLA DE LOPERA',697,496,12,'#e7c898');return;}
       if(game.mode==='explore'){
         const cast=(game.performance?.selectedCharacters||[]).map(id=>D.characters.find(ch=>ch.id===id)).filter(Boolean);
