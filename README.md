@@ -174,7 +174,7 @@ Para añadir personajes: agrega su registro con `id`, `name`, `instrument` (o `k
 Pruebas de esta ampliación: `node tests/progression.test.cjs`, `node tests/engine.test.cjs`, `node tests/audio.test.cjs` y `tests/ampliacion-browser.html`. El último usa el controlador real, un reloj controlado y guardado aislado para completar las 26 etapas, verificar las cinco tarjetas y capturar a los once juntos. `tests/run-ampliacion.cjs` automatiza esa revisión con Playwright; `tests/run-publicacion.cjs` comprueba además recargas, migración, selección móvil y una actuación completa con reloj normal. Solo el mantenimiento necesita esas herramientas; jugar continúa sin dependencias. Las capturas e informes locales están en `docs/ampliacion-once/`, sin publicar las copias de seguridad ni la biblioteca MP3.
 # Piloto local de Clavelitos MP3
 
-Clavelitos (niveles 1 y 14) usa el MP3 aprobado de 60 segundos y sus mapas normal/difícil versionados. Las otras doce canciones también usan MP3 con mapas por grabación; menú y recogida usan la biblioteca MP3 aleatoria. Los recursos de revisión no se copian al juego público.
+Clavelitos (niveles 1, 15 y 29) usa el MP3 aprobado de 60 segundos y sus mapas normal/difícil versionados. Las otras doce canciones también usan MP3 con mapas por grabación; menú y recogida usan la biblioteca MP3 aleatoria. Los recursos de revisión no se copian al juego público.
 
 Documentación, resultados y limitaciones: [docs/clavelitos-mp3/INFORME.md](docs/clavelitos-mp3/INFORME.md). La herramienta local para revisar la onda y el audio no forma parte del despliegue público. Prueba de ambas dificultades con progreso aislado: `tests/clavelitos-browser.html`.
 
@@ -190,12 +190,18 @@ Comprobaciones: `node tests/canero.test.cjs`, `python tests/canero-assets.test.p
 
 El juego ofrece una tabla por nivel y otra general sin crear cuentas. Los nombres se muestran en mayúsculas y quedan en el dispositivo; las puntuaciones públicas se conservan doce meses. Un UUID local distingue una instalación, no identifica ni verifica a una persona y no se sincroniza entre dispositivos. No se guardan correos ni direcciones IP. El navegador que envió una marca conserva un recibo privado para poder retirarla.
 
-Los registros están en `public.game_rankings` y las sesiones temporales en `public.game_rank_sessions`, con RLS activa y sin permisos de lectura o escritura para los roles del navegador. La Edge Function `tuna-rankings` valida origen, clave publicable, apodo, nivel, mapa, duración mínima, notas y puntuación. Cada sesión se usa una vez y caduca a los quince minutos; se limitan los inicios por instalación local. Solo se conserva la mejor marca por jugador local y nivel. La general suma la mejor precisión de cada nivel y divide entre 26 niveles; los niveles no jugados valen cero. Sin cuentas ni ejecución confiable en servidor, no se pueden eliminar todas las trampas.
+Los registros están en `public.game_rankings` y las sesiones temporales en `public.game_rank_sessions`, con RLS activa y sin permisos de lectura o escritura para los roles del navegador. La Edge Function `tuna-rankings` valida origen, clave publicable, apodo, nivel, mapa, duración mínima, notas y puntuación. Cada sesión se usa una vez y caduca a los quince minutos; se limitan los inicios por instalación local. Solo se conserva la mejor marca por jugador local y nivel. La general suma la mejor precisión de cada nivel y divide entre 42 niveles; los niveles no jugados valen cero. Sin cuentas ni ejecución confiable en servidor, no se pueden eliminar todas las trampas.
 
 El ranking usa el proyecto Supabase gratuito existente; no se abrió otro servicio. El coste depende de mantenerse dentro de las cuotas del plan. El SQL está en `supabase/migrations/20261008_game_rankings.sql` y la API en `supabase/functions/tuna-rankings/index.ts`.
 
 ## Disponibilidad de MP3
 
-Hay 13 pistas MP3 publicadas para 26 niveles. Faltan Adelita, El Rey y Cartagenera; no se sustituyen por otras versiones. `MP3/catalogo.json` documenta origen, intérprete, duración, formato y estado. El archivo MP4 utilizado como origen de Todos los Besos se conserva localmente y no se publica.
+La campaña contiene 14 pistas MP3 para 42 niveles: normal (1–14, 60 s), difícil (15–28, 60 s) y experto (29–42, 120 s). EL LEGÍA cierra cada vuelta. Faltan Adelita, El Rey y Cartagenera; no se sustituyen por otras versiones. `MP3/catalogo.json` documenta origen, intérprete, duración, formato y estado. El archivo MP4 utilizado como origen de Todos los Besos se conserva localmente y no se publica.
 
-El resto de los archivos de revisión, informes y fuentes preparatorias de `MP3/` no forma parte del despliegue; solo se publican las trece grabaciones que usa la campaña.
+El resto de los archivos de revisión, informes y fuentes preparatorias de `MP3/` no forma parte del despliegue; solo se publican las catorce grabaciones autorizadas que usa la campaña.
+
+## Tercera vuelta y EL LEGÍA
+
+La configuración central calcula el total como canciones × vueltas. Los mapas normal y difícil anteriores se conservan; experto utiliza 120 segundos reales y ataques/pulsos medidos sobre el audio, sin repetir el primer minuto. Los récords se asocian por canción, dificultad y versión de mapa. El historial público conserva versiones anteriores por separado.
+
+Informe completo: `docs/third-round/INFORME.md`. Pruebas: `third-round.test.cjs`, `rankings-catalog.test.cjs`, `run-third-round.cjs` y `rankings-three-rounds-smoke.cjs`. Las herramientas de análisis y revisión permanecen locales.

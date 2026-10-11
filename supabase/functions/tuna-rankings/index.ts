@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2'
+import manifest from './manifest.json' with { type: 'json' }
 
 const APP_ORIGINS = new Set([
   'https://minijuego.aquiestalatuna.es',
@@ -84,28 +85,35 @@ Deno.serve(async (req: Request) => {
     await db.rpc('game_rankings_cleanup')
 
     if (body.action === 'start') {
-      const level = Number(body.level)
-      if (!Number.isInteger(level) || level < 1 || level > LEVELS.length * 2 || !validUuid(body.playerId)) return json({ error: 'Etapa no válida.' }, 400, origin)
-      const spec = LEVELS[(level - 1) % LEVELS.length]
-      const hard = level > LEVELS.length
-      const expectedNotes = hard ? spec.hard : spec.normal
+      if(body.campaign&&body.campaign!==manifest.campaignId&&body.campaign!=='mp3-13-two-rounds-v1')return json({error:'Versión musical no válida.'},400,origin);
+      const modern=body.campaign===manifest.campaignId;
+      const level=Number(body.level);
+      if(!validUuid(body.playerId))return json({error:'Etapa no válida.'},400,origin);
+      const modernSpec=modern?manifest.levels.find(s=>s.level===level&&s.levelKey===body.levelKey&&s.chartId===body.chartId):null;
+      const legacySpec=!modern?manifest.legacy.find(s=>s.level===level):null;
+      const spec=modernSpec||legacySpec;
+      if(!spec)return json({error:'El mapa musical no corresponde a esta versión. Recarga el juego.'},400,origin);
+      const expectedNotes=spec.notes;
       const token = randomToken()
       const tokenHash = await sha256(token)
       const since = new Date(Date.now() - 15 * 60 * 1000).toISOString()
       const { count, error: countError } = await db.from('game_rank_sessions').select('token_hash', { count: 'exact', head: true }).eq('player_id', body.playerId).gte('started_at', since)
       if (countError) throw countError
       if ((count || 0) >= 8) return json({ error: 'Has iniciado demasiadas partidas seguidas. Espera unos minutos.' }, 429, origin)
-      const chartVersion = `${spec.song}-mp3-v1`
+      const chartVersion = spec.chartId
       const { error } = await db.from('game_rank_sessions').insert({
         token_hash: tokenHash,
         player_id: body.playerId,
         level,
-        campaign_version: 'mp3-13-two-rounds-v1',
-        song_id: spec.song,
-        difficulty: hard ? 'dificil' : 'normal',
+        campaign_version: modern?manifest.campaignId:'mp3-13-two-rounds-v1',
+        song_id: spec.songId,
+        difficulty: spec.difficulty,
+        level_key:spec.levelKey,
+        chart_key:spec.chartId,
+        playable_seconds:spec.duration,
         chart_version: chartVersion,
         expected_notes: expectedNotes,
-        accuracy_threshold: hard ? spec.hardThreshold : spec.normalThreshold,
+        accuracy_threshold: spec.threshold,
         expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
       })
       if (error) throw error
@@ -140,6 +148,12 @@ Deno.serve(async (req: Request) => {
     if (body.action === 'list') {
       const mode = body.mode === 'general' ? 'general' : body.mode === 'level' ? 'level' : ''
       const level = Number(body.level || 1), limit = Math.max(1, Math.min(50, Math.trunc(Number(body.limit) || 10))), offset = Math.max(0, Math.min(5000, Math.trunc(Number(body.offset) || 0)))
+      if(body.campaign===manifest.campaignId){
+        const spec=manifest.levels.find(s=>s.levelKey===body.levelKey);
+        if(!mode||(mode==='level'&&!spec))return json({error:'Clasificación no válida.'},400,origin);
+        const {data,error}=await db.rpc('game_rankings_stable_page',{p_mode:mode,p_level_key:spec?.levelKey||'',p_limit:limit,p_offset:offset,p_history:body.history===true});
+        if(error)throw error;return json(data,200,origin);
+      }
       if (!mode || (mode === 'level' && (!Number.isInteger(level) || level < 1 || level > LEVELS.length * 2))) return json({ error: 'Clasificación no válida.' }, 400, origin)
       const { data, error } = await db.rpc('game_rankings_page', { p_mode: mode, p_level: level, p_limit: limit, p_offset: offset })
       if (error) throw error

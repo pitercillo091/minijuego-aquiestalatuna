@@ -1,7 +1,7 @@
 (function(root){
   'use strict';
   const recordings=typeof module!=='undefined'&&module.exports?require('./recordings.js'):root.TunaRecordings;
-  const tracks=recordings.list().map(recording=>({
+  const tracks=recordings.list().filter(recording=>recording.ambient!==false).map(recording=>({
     id:recording.songId,
     title:recording.title,
     performer:recording.performer,

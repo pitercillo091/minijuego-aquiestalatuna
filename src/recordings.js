@@ -13,12 +13,16 @@
     'viva-espana':typeof module!=='undefined'&&module.exports?require('./charts/viva-espana.js'):root.TunaChart_viva_espana,
     'isa-de-ronda':typeof module!=='undefined'&&module.exports?require('./charts/isa-de-ronda.js'):root.TunaChart_isa_de_ronda,
     'san-cayetano':typeof module!=='undefined'&&module.exports?require('./charts/san-cayetano.js'):root.TunaChart_san_cayetano,
-    'todos-los-besos':typeof module!=='undefined'&&module.exports?require('./charts/todos-los-besos.js'):root.TunaChart_todos_los_besos
+    'todos-los-besos':typeof module!=='undefined'&&module.exports?require('./charts/todos-los-besos.js'):root.TunaChart_todos_los_besos,
+    'el-legia':typeof module!=='undefined'&&module.exports?require('./charts/el-legia.js'):root.TunaChart_el_legia
   };
   const registry=Object.fromEntries(Object.entries(source).filter(([,chart])=>chart&&chart.format==='mp3').map(([id,chart])=>[id,{enabled:true,...chart}]));
   function get(songId){const entry=registry[songId];return entry?.enabled?entry:null;}
-  function chart(recording,level){return recording.charts[level.round===2?'hard':'normal'];}
+  const rounds=[{id:1,difficulty:'normal',label:'NORMAL',duration:60},{id:2,difficulty:'hard',label:'DIFÍCIL',duration:60},{id:3,difficulty:'expert',label:'EXPERTO',duration:120}];
+  function round(level){return rounds.find(r=>r.id===level.round)||rounds[0];}
+  function chart(recording,level){return recording.charts[round(level).difficulty];}
+  function forLevel(songId,level){const recording=get(songId);return recording?{...recording,playableSeconds:round(level).duration,chartId:chart(recording,level).chartId}:null;}
   function list(){return Object.values(registry).filter(recording=>recording.enabled);}
-  const api={registry,get,chart,list};
+  const api={registry,get,chart,list,round,rounds,forLevel};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.TunaRecordings=api;
 })(globalThis);

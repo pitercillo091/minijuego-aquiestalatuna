@@ -57,8 +57,11 @@
     async playAmbient(){if(!this.ambientWanted||!this.settings.music||!this.ambientConfig)return;await this.unlockContextOnly();if(!this.ctx||this.ctx.state!=='running')return;if(!this.ambientElement){const element=new Audio();element.preload='none';element.crossOrigin='anonymous';this.ambientElement=element;this.ambientSource=this.ctx.createMediaElementSource(element);this.ambientSource.connect(this.musicGain);}const element=this.ambientElement,sameTrack=element.dataset.track===this.ambientConfig.id;if(!element.paused&&sameTrack)return;if(!sameTrack){element.pause();element.dataset.track=this.ambientConfig.id;element.src=this.ambientConfig.file;element.currentTime=0;}element.onended=()=>{if(!this.ambientWanted)return;this.ambientConfig=this.randomAmbient();this.title=this.ambientConfig?.title||'Música de Tuna · MP3';this.playAmbient().catch(()=>{})};element.onerror=()=>{if(!this.ambientWanted)return;this.ambientConfig=this.randomAmbient();this.title=this.ambientConfig?.title||'Música de Tuna · MP3';setTimeout(()=>this.playAmbient().catch(()=>{}),250)};try{await element.play()}catch{}}
     async unlockContextOnly(){try{if(!this.ctx){const Context=root.AudioContext||root.webkitAudioContext;if(!Context){this.available=false;return}this.ctx=new Context;this.makeChain()}if(this.ctx.state==='suspended'||this.ctx.state==='interrupted')await this.ctx.resume();if(this.ctx.state==='running')this.available=true;}catch{this.available=false}}
     async prepareRecording(config){
-      if(this.recordingBuffers.has(config.audioFile))return this.recordingBuffers.get(config.audioFile);
-      if(this.recordingLoads.has(config.audioFile))return this.recordingLoads.get(config.audioFile);
+      // The same recording serves different excerpt lengths. A filename alone
+      // would return a one-minute buffer to a two-minute expert performance.
+      const key=[config.audioFile,config.audioSha256,config.sourceOffset,config.playableSeconds].join('|');
+      if(this.recordingBuffers.has(key))return this.recordingBuffers.get(key);
+      if(this.recordingLoads.has(key))return this.recordingLoads.get(key);
       const load=(async()=>{
         await this.unlock();if(!this.ctx)throw new Error('Este navegador no permite reproducir el MP3.');
         const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),20000);
@@ -74,11 +77,11 @@
           if(start+length>decoded.length)throw new Error('La grabación no contiene el fragmento completo.');
           const excerpt=this.ctx.createBuffer(decoded.numberOfChannels,length,decoded.sampleRate);
           for(let c=0;c<decoded.numberOfChannels;c++)excerpt.getChannelData(c).set(decoded.getChannelData(c).subarray(start,start+length));
-          this.recordingBuffers.clear();this.recordingBuffers.set(config.audioFile,excerpt);return excerpt;
+          this.recordingBuffers.clear();this.recordingBuffers.set(key,excerpt);return excerpt;
         }finally{clearTimeout(timer);}
       })();
-      this.recordingLoads.set(config.audioFile,load);
-      try{return await load;}finally{this.recordingLoads.delete(config.audioFile);}
+      this.recordingLoads.set(key,load);
+      try{return await load;}finally{this.recordingLoads.delete(key);}
     }
     async selectRecording(config,position=-config.leadInSeconds){
       this.stop();const request=this.recordingRequest;

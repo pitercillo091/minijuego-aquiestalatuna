@@ -1,0 +1,687 @@
+{
+  "campaignId": "mp3-three-rounds-v1",
+  "levels": [
+    {
+      "level": 1,
+      "levelKey": "clavelitos:normal",
+      "songId": "clavelitos",
+      "difficulty": "normal",
+      "chartId": "clavelitos-normal-9f3cbcc9dcd6",
+      "duration": 60,
+      "notes": 46,
+      "threshold": 0.5
+    },
+    {
+      "level": 2,
+      "levelKey": "cielito-lindo:normal",
+      "songId": "cielito-lindo",
+      "difficulty": "normal",
+      "chartId": "cielito-lindo-normal-b7bc08cd2103",
+      "duration": 60,
+      "notes": 54,
+      "threshold": 0.5
+    },
+    {
+      "level": 3,
+      "levelKey": "estudiantina-madrilena:normal",
+      "songId": "estudiantina-madrilena",
+      "difficulty": "normal",
+      "chartId": "estudiantina-madrilena-normal-8482b708bf8e",
+      "duration": 60,
+      "notes": 45,
+      "threshold": 0.5
+    },
+    {
+      "level": 4,
+      "levelKey": "cintas-capa:normal",
+      "songId": "cintas-capa",
+      "difficulty": "normal",
+      "chartId": "cintas-capa-normal-9c2303fb7952",
+      "duration": 60,
+      "notes": 49,
+      "threshold": 0.525
+    },
+    {
+      "level": 5,
+      "levelKey": "isa-canaria:normal",
+      "songId": "isa-canaria",
+      "difficulty": "normal",
+      "chartId": "isa-canaria-normal-ba23a0eb6d3e",
+      "duration": 60,
+      "notes": 51,
+      "threshold": 0.525
+    },
+    {
+      "level": 6,
+      "levelKey": "morena-copla:normal",
+      "songId": "morena-copla",
+      "difficulty": "normal",
+      "chartId": "morena-copla-normal-4f6a0feb2a1d",
+      "duration": 60,
+      "notes": 50,
+      "threshold": 0.525
+    },
+    {
+      "level": 7,
+      "levelKey": "maria-portuguesa:normal",
+      "songId": "maria-portuguesa",
+      "difficulty": "normal",
+      "chartId": "maria-portuguesa-normal-fc23cace6c75",
+      "duration": 60,
+      "notes": 48,
+      "threshold": 0.55
+    },
+    {
+      "level": 8,
+      "levelKey": "soy-cordobes:normal",
+      "songId": "soy-cordobes",
+      "difficulty": "normal",
+      "chartId": "soy-cordobes-normal-8255a53cf0a2",
+      "duration": 60,
+      "notes": 46,
+      "threshold": 0.55
+    },
+    {
+      "level": 9,
+      "levelKey": "guantanamera:normal",
+      "songId": "guantanamera",
+      "difficulty": "normal",
+      "chartId": "guantanamera-normal-c5071163de80",
+      "duration": 60,
+      "notes": 47,
+      "threshold": 0.55
+    },
+    {
+      "level": 10,
+      "levelKey": "viva-espana:normal",
+      "songId": "viva-espana",
+      "difficulty": "normal",
+      "chartId": "viva-espana-normal-d05e5943ef08",
+      "duration": 60,
+      "notes": 47,
+      "threshold": 0.575
+    },
+    {
+      "level": 11,
+      "levelKey": "isa-de-ronda:normal",
+      "songId": "isa-de-ronda",
+      "difficulty": "normal",
+      "chartId": "isa-de-ronda-normal-e99f1f2887ec",
+      "duration": 60,
+      "notes": 51,
+      "threshold": 0.575
+    },
+    {
+      "level": 12,
+      "levelKey": "san-cayetano:normal",
+      "songId": "san-cayetano",
+      "difficulty": "normal",
+      "chartId": "san-cayetano-normal-b47858d0fb17",
+      "duration": 60,
+      "notes": 50,
+      "threshold": 0.575
+    },
+    {
+      "level": 13,
+      "levelKey": "todos-los-besos:normal",
+      "songId": "todos-los-besos",
+      "difficulty": "normal",
+      "chartId": "todos-los-besos-normal-4bacd5090f22",
+      "duration": 60,
+      "notes": 48,
+      "threshold": 0.6
+    },
+    {
+      "level": 14,
+      "levelKey": "el-legia:normal",
+      "songId": "el-legia",
+      "difficulty": "normal",
+      "chartId": "el-legia-normal-95f42a4f7119",
+      "duration": 60,
+      "notes": 50,
+      "threshold": 0.6
+    },
+    {
+      "level": 15,
+      "levelKey": "clavelitos:hard",
+      "songId": "clavelitos",
+      "difficulty": "dificil",
+      "chartId": "clavelitos-hard-d32108855e98",
+      "duration": 60,
+      "notes": 156,
+      "threshold": 0.545
+    },
+    {
+      "level": 16,
+      "levelKey": "cielito-lindo:hard",
+      "songId": "cielito-lindo",
+      "difficulty": "dificil",
+      "chartId": "cielito-lindo-hard-a0f5a2cfcd1b",
+      "duration": 60,
+      "notes": 121,
+      "threshold": 0.545
+    },
+    {
+      "level": 17,
+      "levelKey": "estudiantina-madrilena:hard",
+      "songId": "estudiantina-madrilena",
+      "difficulty": "dificil",
+      "chartId": "estudiantina-madrilena-hard-f166e5c52f22",
+      "duration": 60,
+      "notes": 111,
+      "threshold": 0.545
+    },
+    {
+      "level": 18,
+      "levelKey": "cintas-capa:hard",
+      "songId": "cintas-capa",
+      "difficulty": "dificil",
+      "chartId": "cintas-capa-hard-cc072b3f2c9e",
+      "duration": 60,
+      "notes": 130,
+      "threshold": 0.5700000000000001
+    },
+    {
+      "level": 19,
+      "levelKey": "isa-canaria:hard",
+      "songId": "isa-canaria",
+      "difficulty": "dificil",
+      "chartId": "isa-canaria-hard-d5fc933a2253",
+      "duration": 60,
+      "notes": 110,
+      "threshold": 0.5700000000000001
+    },
+    {
+      "level": 20,
+      "levelKey": "morena-copla:hard",
+      "songId": "morena-copla",
+      "difficulty": "dificil",
+      "chartId": "morena-copla-hard-8ca4c07a07e8",
+      "duration": 60,
+      "notes": 107,
+      "threshold": 0.5700000000000001
+    },
+    {
+      "level": 21,
+      "levelKey": "maria-portuguesa:hard",
+      "songId": "maria-portuguesa",
+      "difficulty": "dificil",
+      "chartId": "maria-portuguesa-hard-f59cd2b9d52a",
+      "duration": 60,
+      "notes": 112,
+      "threshold": 0.5950000000000001
+    },
+    {
+      "level": 22,
+      "levelKey": "soy-cordobes:hard",
+      "songId": "soy-cordobes",
+      "difficulty": "dificil",
+      "chartId": "soy-cordobes-hard-f06de93196dc",
+      "duration": 60,
+      "notes": 108,
+      "threshold": 0.5950000000000001
+    },
+    {
+      "level": 23,
+      "levelKey": "guantanamera:hard",
+      "songId": "guantanamera",
+      "difficulty": "dificil",
+      "chartId": "guantanamera-hard-172bcf665fb3",
+      "duration": 60,
+      "notes": 126,
+      "threshold": 0.5950000000000001
+    },
+    {
+      "level": 24,
+      "levelKey": "viva-espana:hard",
+      "songId": "viva-espana",
+      "difficulty": "dificil",
+      "chartId": "viva-espana-hard-70ef41bbbd80",
+      "duration": 60,
+      "notes": 127,
+      "threshold": 0.62
+    },
+    {
+      "level": 25,
+      "levelKey": "isa-de-ronda:hard",
+      "songId": "isa-de-ronda",
+      "difficulty": "dificil",
+      "chartId": "isa-de-ronda-hard-0e8f2639a79d",
+      "duration": 60,
+      "notes": 103,
+      "threshold": 0.62
+    },
+    {
+      "level": 26,
+      "levelKey": "san-cayetano:hard",
+      "songId": "san-cayetano",
+      "difficulty": "dificil",
+      "chartId": "san-cayetano-hard-f02ea4e0de5a",
+      "duration": 60,
+      "notes": 133,
+      "threshold": 0.62
+    },
+    {
+      "level": 27,
+      "levelKey": "todos-los-besos:hard",
+      "songId": "todos-los-besos",
+      "difficulty": "dificil",
+      "chartId": "todos-los-besos-hard-e64d9197cfad",
+      "duration": 60,
+      "notes": 129,
+      "threshold": 0.645
+    },
+    {
+      "level": 28,
+      "levelKey": "el-legia:hard",
+      "songId": "el-legia",
+      "difficulty": "dificil",
+      "chartId": "el-legia-hard-a54b133e1db9",
+      "duration": 60,
+      "notes": 138,
+      "threshold": 0.645
+    },
+    {
+      "level": 29,
+      "levelKey": "clavelitos:expert",
+      "songId": "clavelitos",
+      "difficulty": "experto",
+      "chartId": "clavelitos-expert-91e921d7311a",
+      "duration": 120,
+      "notes": 391,
+      "threshold": 0.59
+    },
+    {
+      "level": 30,
+      "levelKey": "cielito-lindo:expert",
+      "songId": "cielito-lindo",
+      "difficulty": "experto",
+      "chartId": "cielito-lindo-expert-c7652e902e84",
+      "duration": 120,
+      "notes": 401,
+      "threshold": 0.59
+    },
+    {
+      "level": 31,
+      "levelKey": "estudiantina-madrilena:expert",
+      "songId": "estudiantina-madrilena",
+      "difficulty": "experto",
+      "chartId": "estudiantina-madrilena-expert-523ad6670562",
+      "duration": 120,
+      "notes": 386,
+      "threshold": 0.59
+    },
+    {
+      "level": 32,
+      "levelKey": "cintas-capa:expert",
+      "songId": "cintas-capa",
+      "difficulty": "experto",
+      "chartId": "cintas-capa-expert-fb8b33de281a",
+      "duration": 120,
+      "notes": 499,
+      "threshold": 0.615
+    },
+    {
+      "level": 33,
+      "levelKey": "isa-canaria:expert",
+      "songId": "isa-canaria",
+      "difficulty": "experto",
+      "chartId": "isa-canaria-expert-8b4830761626",
+      "duration": 120,
+      "notes": 364,
+      "threshold": 0.615
+    },
+    {
+      "level": 34,
+      "levelKey": "morena-copla:expert",
+      "songId": "morena-copla",
+      "difficulty": "experto",
+      "chartId": "morena-copla-expert-e7402dfc4171",
+      "duration": 120,
+      "notes": 340,
+      "threshold": 0.615
+    },
+    {
+      "level": 35,
+      "levelKey": "maria-portuguesa:expert",
+      "songId": "maria-portuguesa",
+      "difficulty": "experto",
+      "chartId": "maria-portuguesa-expert-3795da02fed4",
+      "duration": 120,
+      "notes": 397,
+      "threshold": 0.64
+    },
+    {
+      "level": 36,
+      "levelKey": "soy-cordobes:expert",
+      "songId": "soy-cordobes",
+      "difficulty": "experto",
+      "chartId": "soy-cordobes-expert-047b1d349d53",
+      "duration": 120,
+      "notes": 410,
+      "threshold": 0.64
+    },
+    {
+      "level": 37,
+      "levelKey": "guantanamera:expert",
+      "songId": "guantanamera",
+      "difficulty": "experto",
+      "chartId": "guantanamera-expert-1466960e7208",
+      "duration": 120,
+      "notes": 477,
+      "threshold": 0.64
+    },
+    {
+      "level": 38,
+      "levelKey": "viva-espana:expert",
+      "songId": "viva-espana",
+      "difficulty": "experto",
+      "chartId": "viva-espana-expert-97fdd2351549",
+      "duration": 120,
+      "notes": 330,
+      "threshold": 0.6649999999999999
+    },
+    {
+      "level": 39,
+      "levelKey": "isa-de-ronda:expert",
+      "songId": "isa-de-ronda",
+      "difficulty": "experto",
+      "chartId": "isa-de-ronda-expert-33d3dfd4cee0",
+      "duration": 120,
+      "notes": 233,
+      "threshold": 0.6649999999999999
+    },
+    {
+      "level": 40,
+      "levelKey": "san-cayetano:expert",
+      "songId": "san-cayetano",
+      "difficulty": "experto",
+      "chartId": "san-cayetano-expert-fe572ce674c6",
+      "duration": 120,
+      "notes": 384,
+      "threshold": 0.6649999999999999
+    },
+    {
+      "level": 41,
+      "levelKey": "todos-los-besos:expert",
+      "songId": "todos-los-besos",
+      "difficulty": "experto",
+      "chartId": "todos-los-besos-expert-e3f5fd24b6ad",
+      "duration": 120,
+      "notes": 321,
+      "threshold": 0.69
+    },
+    {
+      "level": 42,
+      "levelKey": "el-legia:expert",
+      "songId": "el-legia",
+      "difficulty": "experto",
+      "chartId": "el-legia-expert-e61d2488fe60",
+      "duration": 120,
+      "notes": 425,
+      "threshold": 0.69
+    }
+  ],
+  "legacy": [
+    {
+      "level": 1,
+      "levelKey": "clavelitos:normal",
+      "songId": "clavelitos",
+      "difficulty": "normal",
+      "chartId": "clavelitos-normal-9f3cbcc9dcd6",
+      "duration": 60,
+      "notes": 46,
+      "threshold": 0.5
+    },
+    {
+      "level": 2,
+      "levelKey": "cielito-lindo:normal",
+      "songId": "cielito-lindo",
+      "difficulty": "normal",
+      "chartId": "cielito-lindo-normal-b7bc08cd2103",
+      "duration": 60,
+      "notes": 54,
+      "threshold": 0.5
+    },
+    {
+      "level": 3,
+      "levelKey": "estudiantina-madrilena:normal",
+      "songId": "estudiantina-madrilena",
+      "difficulty": "normal",
+      "chartId": "estudiantina-madrilena-normal-8482b708bf8e",
+      "duration": 60,
+      "notes": 45,
+      "threshold": 0.5
+    },
+    {
+      "level": 4,
+      "levelKey": "cintas-capa:normal",
+      "songId": "cintas-capa",
+      "difficulty": "normal",
+      "chartId": "cintas-capa-normal-9c2303fb7952",
+      "duration": 60,
+      "notes": 49,
+      "threshold": 0.525
+    },
+    {
+      "level": 5,
+      "levelKey": "isa-canaria:normal",
+      "songId": "isa-canaria",
+      "difficulty": "normal",
+      "chartId": "isa-canaria-normal-ba23a0eb6d3e",
+      "duration": 60,
+      "notes": 51,
+      "threshold": 0.525
+    },
+    {
+      "level": 6,
+      "levelKey": "morena-copla:normal",
+      "songId": "morena-copla",
+      "difficulty": "normal",
+      "chartId": "morena-copla-normal-legacy-v1",
+      "duration": 60,
+      "notes": 50,
+      "threshold": 0.525
+    },
+    {
+      "level": 7,
+      "levelKey": "maria-portuguesa:normal",
+      "songId": "maria-portuguesa",
+      "difficulty": "normal",
+      "chartId": "maria-portuguesa-normal-legacy-v1",
+      "duration": 60,
+      "notes": 47,
+      "threshold": 0.55
+    },
+    {
+      "level": 8,
+      "levelKey": "soy-cordobes:normal",
+      "songId": "soy-cordobes",
+      "difficulty": "normal",
+      "chartId": "soy-cordobes-normal-8255a53cf0a2",
+      "duration": 60,
+      "notes": 46,
+      "threshold": 0.55
+    },
+    {
+      "level": 9,
+      "levelKey": "guantanamera:normal",
+      "songId": "guantanamera",
+      "difficulty": "normal",
+      "chartId": "guantanamera-normal-legacy-v1",
+      "duration": 60,
+      "notes": 48,
+      "threshold": 0.55
+    },
+    {
+      "level": 10,
+      "levelKey": "viva-espana:normal",
+      "songId": "viva-espana",
+      "difficulty": "normal",
+      "chartId": "viva-espana-normal-d05e5943ef08",
+      "duration": 60,
+      "notes": 47,
+      "threshold": 0.575
+    },
+    {
+      "level": 11,
+      "levelKey": "isa-de-ronda:normal",
+      "songId": "isa-de-ronda",
+      "difficulty": "normal",
+      "chartId": "isa-de-ronda-normal-e99f1f2887ec",
+      "duration": 60,
+      "notes": 51,
+      "threshold": 0.575
+    },
+    {
+      "level": 12,
+      "levelKey": "san-cayetano:normal",
+      "songId": "san-cayetano",
+      "difficulty": "normal",
+      "chartId": "san-cayetano-normal-b47858d0fb17",
+      "duration": 60,
+      "notes": 50,
+      "threshold": 0.575
+    },
+    {
+      "level": 13,
+      "levelKey": "todos-los-besos:normal",
+      "songId": "todos-los-besos",
+      "difficulty": "normal",
+      "chartId": "todos-los-besos-normal-4bacd5090f22",
+      "duration": 60,
+      "notes": 48,
+      "threshold": 0.6
+    },
+    {
+      "level": 14,
+      "levelKey": "clavelitos:hard",
+      "songId": "clavelitos",
+      "difficulty": "dificil",
+      "chartId": "clavelitos-hard-d32108855e98",
+      "duration": 60,
+      "notes": 156,
+      "threshold": 0.545
+    },
+    {
+      "level": 15,
+      "levelKey": "cielito-lindo:hard",
+      "songId": "cielito-lindo",
+      "difficulty": "dificil",
+      "chartId": "cielito-lindo-hard-a0f5a2cfcd1b",
+      "duration": 60,
+      "notes": 121,
+      "threshold": 0.545
+    },
+    {
+      "level": 16,
+      "levelKey": "estudiantina-madrilena:hard",
+      "songId": "estudiantina-madrilena",
+      "difficulty": "dificil",
+      "chartId": "estudiantina-madrilena-hard-f166e5c52f22",
+      "duration": 60,
+      "notes": 111,
+      "threshold": 0.545
+    },
+    {
+      "level": 17,
+      "levelKey": "cintas-capa:hard",
+      "songId": "cintas-capa",
+      "difficulty": "dificil",
+      "chartId": "cintas-capa-hard-cc072b3f2c9e",
+      "duration": 60,
+      "notes": 130,
+      "threshold": 0.57
+    },
+    {
+      "level": 18,
+      "levelKey": "isa-canaria:hard",
+      "songId": "isa-canaria",
+      "difficulty": "dificil",
+      "chartId": "isa-canaria-hard-d5fc933a2253",
+      "duration": 60,
+      "notes": 110,
+      "threshold": 0.57
+    },
+    {
+      "level": 19,
+      "levelKey": "morena-copla:hard",
+      "songId": "morena-copla",
+      "difficulty": "dificil",
+      "chartId": "morena-copla-hard-legacy-v1",
+      "duration": 60,
+      "notes": 118,
+      "threshold": 0.57
+    },
+    {
+      "level": 20,
+      "levelKey": "maria-portuguesa:hard",
+      "songId": "maria-portuguesa",
+      "difficulty": "dificil",
+      "chartId": "maria-portuguesa-hard-legacy-v1",
+      "duration": 60,
+      "notes": 116,
+      "threshold": 0.595
+    },
+    {
+      "level": 21,
+      "levelKey": "soy-cordobes:hard",
+      "songId": "soy-cordobes",
+      "difficulty": "dificil",
+      "chartId": "soy-cordobes-hard-f06de93196dc",
+      "duration": 60,
+      "notes": 108,
+      "threshold": 0.595
+    },
+    {
+      "level": 22,
+      "levelKey": "guantanamera:hard",
+      "songId": "guantanamera",
+      "difficulty": "dificil",
+      "chartId": "guantanamera-hard-legacy-v1",
+      "duration": 60,
+      "notes": 129,
+      "threshold": 0.595
+    },
+    {
+      "level": 23,
+      "levelKey": "viva-espana:hard",
+      "songId": "viva-espana",
+      "difficulty": "dificil",
+      "chartId": "viva-espana-hard-70ef41bbbd80",
+      "duration": 60,
+      "notes": 127,
+      "threshold": 0.62
+    },
+    {
+      "level": 24,
+      "levelKey": "isa-de-ronda:hard",
+      "songId": "isa-de-ronda",
+      "difficulty": "dificil",
+      "chartId": "isa-de-ronda-hard-0e8f2639a79d",
+      "duration": 60,
+      "notes": 103,
+      "threshold": 0.62
+    },
+    {
+      "level": 25,
+      "levelKey": "san-cayetano:hard",
+      "songId": "san-cayetano",
+      "difficulty": "dificil",
+      "chartId": "san-cayetano-hard-f02ea4e0de5a",
+      "duration": 60,
+      "notes": 133,
+      "threshold": 0.62
+    },
+    {
+      "level": 26,
+      "levelKey": "todos-los-besos:hard",
+      "songId": "todos-los-besos",
+      "difficulty": "dificil",
+      "chartId": "todos-los-besos-hard-e64d9197cfad",
+      "duration": 60,
+      "notes": 129,
+      "threshold": 0.645
+    }
+  ]
+}

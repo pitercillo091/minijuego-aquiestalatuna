@@ -146,7 +146,12 @@
     const recording=recordings.get(level.song),chart=recording.charts.hard;
     return {...level,id:i+campaignSongs.length,round:2,title:`${level.title} · Segunda ronda`,short:`${level.short} · Ronda 2`,notes:chart.notes.length,laneCount:chart.laneCount,minGap:.2,scrollSpeed:level.scrollSpeed+20,threshold:Math.min(.9,level.threshold+.045)};
   });
-  const levels=[...firstRound,...secondRound];
-  const data={characters,locations,events,religiousScenes,performanceVisual,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,selectionPolicy,isDynamicDuo,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-13-two-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:9};
+  const thirdRound=firstRound.map((level,i)=>{
+    const chart=recordings.get(level.song).charts.expert;
+    return {...level,id:i+campaignSongs.length*2,round:3,title:`${level.title} · Tercera ronda`,short:`${level.short} · Ronda 3`,notes:chart.notes.length,laneCount:chart.laneCount,minGap:.155,scrollSpeed:level.scrollSpeed+65,threshold:Math.min(.9,level.threshold+.09)};
+  });
+  const levels=[...firstRound,...secondRound,...thirdRound];
+  levels.forEach(level=>{const r=recordings.round(level);level.difficulty=r.difficulty;level.difficultyLabel=r.label;level.playableSeconds=r.duration;level.key=`${level.song}:${r.difficulty}`;level.chartId=recordings.chart(recordings.get(level.song),level).chartId;});
+  const data={characters,locations,events,religiousScenes,performanceVisual,createPerformance,canFormGroup,levels,completedLevel,isCharacterUnlocked,characterAsset,selectionRules,characterAvailability,refreshPerformanceAvailability,selectionPolicy,isDynamicDuo,legacySongIds:songs.map(song=>song.id),campaignId:'mp3-three-rounds-v1',lanes:['←','↓','↑','→','J','K'],keys:['A','S','W','D','J','K'],codes:['KeyA','KeyS','KeyW','KeyD','KeyJ','KeyK'],laneColors:['#ffc471','#ff89a5','#72dfd0','#b8abff','#86ceff','#f2d66d'],version:10};
   if(typeof module!=='undefined'&&module.exports)module.exports=data;else root.TunaData=data;
 })(globalThis);
