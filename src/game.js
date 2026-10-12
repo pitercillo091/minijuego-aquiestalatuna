@@ -20,7 +20,7 @@
   let collectorTurn=0;try{collectorTurn=Number(storage.getItem('rondalla-collector-turn-v1'))||0;}catch{}
   const instrumentNames={pandereta:'Pandereta',guitarra:'Guitarra',bandurria:'Bandurria',laud:'Laúd'};
   const characterFunction=c=>c.kind==='companion'?'🍺 Acompañante':c.kind==='dancer'?'🕺 Bailarín':instrumentNames[c.instrument]||c.instrument;
-  const itemNames={pandereta:'la pandereta',guitarra:'la guitarra',bandurria:'la bandurria',laud:'el laúd','guitarra-gafas':'la guitarra',flor:'una flor',partitura:'una partitura',grupo:'el grupo',caras:'el equipo'};
+  const itemNames={pandereta:'la pandereta',guitarra:'la guitarra',bandurria:'la bandurria',laud:'el laúd','guitarra-gafas':'el laúd',flor:'una flor',partitura:'una partitura',grupo:'el grupo',caras:'el equipo'};
   function nextCollector(ids=D.characters.map(c=>c.id)){const pool=ids.length?ids:D.characters.map(c=>c.id);const id=pool[collectorTurn%pool.length];collectorTurn=(collectorTurn+1)%pool.length;try{storage.setItem('rondalla-collector-turn-v1',String(collectorTurn));}catch{}return id;}
   const game=new E.Game({character:save.character,easy:save.easy,progress:save});let last=performance.now(),uiPhase='',uiMode='',lastAnnouncement='',settingsPaused=false,held=new Set(),touch=new Set(),activePointers=new Map(),lastHud=0,activeReward=null,rewardDone=null;
   const keyDirections={ArrowLeft:'left',KeyA:'left',ArrowDown:'down',KeyS:'down',ArrowUp:'up',KeyW:'up',ArrowRight:'right',KeyD:'right'};
