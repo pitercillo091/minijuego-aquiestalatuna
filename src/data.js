@@ -9,7 +9,7 @@
     {id:'pandereta',name:'Miguel A.',role:'La capa también lleva el ritmo.',instrument:'pandereta',assetVersion:'20261011-hand1',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Primero por la izquierda: gafas, barba poblada castaña y gris, cabello ondulado, complexión ancha y capa con cintas.'},
     {id:'guitarra',name:'Pacheco´s',role:'Que nadie olvide el estuche.',instrument:'guitarra',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Segundo: cabeza despejada, cabello en las sienes, cara sin barba, beca roja y guitarra grande de madera.'},
     {id:'bandurria',name:'C15',role:'Una púa y toda la plaza.',instrument:'bandurria',assetVersion:'20261011-c15-face1',reference:'c15-20261011.png',referencePath:'assets/personajes/referencias/c15-20261011.png',detail:'Rostro ovalado ancho, ojos almendrados con párpados relajados, cejas oscuras, barba negra densa y bigote unido. Pelo oscuro con volumen lateral y mechón curvado sobre la frente; sonrisa discreta. Conserva su traje de tuno, capa negra y bandurria dorada.'},
-    {id:'guitarra-gafas',name:'Piter',role:'El compás se ve venir.',instrument:'laud',unlockLevel:42,unlockMessage:'¡El personaje estrella ya está listo con su laúd!',assetVersion:'20261011-piter-laud2',instrumentReference:'Raimundo Laúd 25',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Conserva su rostro, pelo corto gris oscuro, expresión y traje de tuno negro con cuello y puños blancos y beca roja. Laúd Raimundo 25: caja de pera, tres aberturas, mástil largo, doce cuerdas y clavijero alargado con afinadores dorados. Disponible tras superar el nivel 41.'},
+    {id:'guitarra-gafas',name:'PITER',role:'El compás se ve venir.',instrument:'guitarra',identityGroup:'piter',assetVersion:'20261012-piter-guitarra1',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Personaje original de Piter: conserva su rostro, traje de tuno, guitarra, sprites y animaciones aprobadas. Disponible desde el nivel 1.'},
     {id:'laud',name:'Pesetas',role:'La última nunca es la última.',instrument:'laud',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Quinto: cabello castaño corto, sonrisa, barba muy corta, beca roja y pequeño instrumento de cuerda. La identificación del instrumento es una interpretación visual.'},
     {id:'andres',name:'Andrés',role:'La pandereta marca el camino.',instrument:'pandereta',unlockLevel:5,unlockMessage:'¡Una nueva pandereta se une a la Tuna!',reference:'andres.png',referencePath:'assets/personajes/referencias/andres.png',detail:'Sexto: cabello corto oscuro, barba poblada, rostro ancho y traje negro; toca la pandereta.'},
     {id:'coki',name:'Coki',role:'Pandereta con gafas de sol.',instrument:'pandereta',reference:'coki.png',referencePath:'assets/personajes/referencias/coki.png',detail:'Séptimo: pelo corto, gafas de sol, sonrisa, beca roja y pandereta.'},
@@ -20,22 +20,23 @@
     {id:'canero',name:'CAÑERO',role:'Acompaña la ronda con la Mahou en la mano.',kind:'companion',instrument:null,unlockLevel:2,unlockMessage:'¡Una nueva incorporación llega a la Tuna... y viene con la Mahou en la mano!',animationColumns:8,assetVersion:'20261008-canero1',reference:'canero.jpg',referencePath:'assets/personajes/referencias/canero.jpg',detail:'Pelo castaño corto peinado hacia un lado, rostro ancho sin barba, sonrisa, beca roja y traje negro. Acompañante de pie con una cerveza Mahou; no toca instrumentos.'},
     {id:'paco-canero',name:'PACO CAÑERO',role:'Otra pandereta se suma a la ronda.',instrument:'pandereta',unlockLevel:24,unlockMessage:'¡Paco Cañero llega con la pandereta lista para la ronda!',animationColumns:8,assetVersion:'20261011-paco1',reference:'paco-canero.png',referencePath:'assets/personajes/referencias/paco-canero.png',detail:'Pelo oscuro corto peinado hacia arriba, cejas marcadas, rostro anguloso y barba muy corta. Traje de tuno negro, beca roja, capa y pandereta, instrumento confirmado por el usuario.'},
     {id:'josan',name:'JOSAN',role:'La pandereta también se apunta a la ronda.',instrument:'pandereta',unlockLevel:30,unlockMessage:'¡Josan se une a la Tuna con su pandereta!',animationColumns:8,assetVersion:'20261011-josan1',reference:'josan.png',referencePath:'assets/personajes/referencias/josan.png',detail:'Pelo oscuro corto peinado hacia arriba con laterales cortos, cejas gruesas, nariz marcada y barba corta. Traje de tuno negro, beca roja, capa y pandereta, instrumento confirmado por el usuario.'},
-    {id:'el-casi',name:'EL CASI',role:'La guitarra se apunta a otra ronda.',instrument:'guitarra',unlockLevel:40,unlockMessage:'¡El Casi llega con la guitarra preparada para otra ronda!',animationColumns:8,assetVersion:'20261011-casi1',outfitReference:'guitarra-gafas',instrumentReference:'legia',reference:'el-casi.png',referencePath:'assets/personajes/referencias/el-casi.png',detail:'Pelo corto oscuro peinado hacia arriba y de lado, cejas marcadas, rostro ovalado, barba muy corta y sonrisa discreta. Traje de tuno en la línea de Piter: cuello y puños blancos, beca roja con escudo y calzón negro. Guitarra clásica de madera en la línea de Legía.'}
+    {id:'el-casi',name:'EL CASI',role:'La guitarra se apunta a otra ronda.',instrument:'guitarra',unlockLevel:40,unlockMessage:'¡El Casi llega con la guitarra preparada para otra ronda!',animationColumns:8,assetVersion:'20261011-casi1',outfitReference:'guitarra-gafas',instrumentReference:'legia',reference:'el-casi.png',referencePath:'assets/personajes/referencias/el-casi.png',detail:'Pelo corto oscuro peinado hacia arriba y de lado, cejas marcadas, rostro ovalado, barba muy corta y sonrisa discreta. Traje de tuno en la línea de Piter: cuello y puños blancos, beca roja con escudo y calzón negro. Guitarra clásica de madera en la línea de Legía.'},
+    {id:'piter-laud',name:'PITER CON LAÚD',role:'El personaje estrella del tramo final.',instrument:'laud',identityGroup:'piter',unlockLevel:42,unlockMessage:'¡El personaje estrella ya está listo con su laúd!',assetVersion:'20261012-piter-laud-variant1',instrumentReference:'Raimundo Laúd 25',reference:'reparto.webp',referencePath:'assets/referencias/reparto.webp',detail:'Versión especial de Piter con el laúd definitivo: caja de pera, aberturas delanteras, cuerdas y clavijero detallados. Disponible tras superar el nivel 41.'}
   ];
   // Catalogue for the touring layer. New places and events can be added here
   // without changing the level engine or the screen templates.
   const locations = [
     {id:'andujar',name:'Andújar',description:'Una plaza con ganas de escuchar una ronda completa.',scene:'plaza'},
     {id:'porcuna',name:'Porcuna',description:'Calles blancas, balcones atentos y una noche por delante.',scene:'street',restrictions:{forbiddenCharacters:['canero','paco-canero']}},
-    {id:'puente-genil',name:'Puente Genil',description:'El público ya está reunido cuando llega la Tuna.',scene:'festival',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}},
+    {id:'puente-genil',name:'Puente Genil',description:'El público ya está reunido cuando llega la Tuna.',scene:'festival',restrictions:{forbiddenCharacters:['guitarra-gafas','piter-laud','guitarra','ponder']}},
     {id:'jaen',name:'Jaén',description:'La ciudad de los olivares también tiene oído para las cuerdas.',scene:'university'},
     {id:'villa-del-rio',name:'Villa del Río',description:'Una celebración familiar donde nadie quiere quedarse sentado.',scene:'garden'},
     {id:'montoro',name:'Montoro',description:'La noche baja hacia el río y pide una serenata.',scene:'castle'},
     {id:'baena',name:'Baena',description:'Una nueva parada de la gira, con las cuerdas a punto.',scene:'plaza',restrictions:{forbiddenCharacters:['ponder']}},
     {id:'el-carpio',name:'El Carpio',description:'Otra celebración y un público que espera la primera canción.',scene:'street'},
     {id:'canete',name:'Cañete',description:'La Tuna llega con capas, estuches y ganas de ronda.',scene:'garden'},
-    {id:'puertollano',name:'Puertollano',description:'La siguiente actuación ya tiene público esperando.',scene:'festival',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}},
-    {id:'ciudad-real',name:'Ciudad Real',description:'La gira continúa con otra noche de canciones.',scene:'university',restrictions:{forbiddenCharacters:['guitarra-gafas','guitarra','ponder']}},
+    {id:'puertollano',name:'Puertollano',description:'La siguiente actuación ya tiene público esperando.',scene:'festival',restrictions:{forbiddenCharacters:['guitarra-gafas','piter-laud','guitarra','ponder']}},
+    {id:'ciudad-real',name:'Ciudad Real',description:'La gira continúa con otra noche de canciones.',scene:'university',restrictions:{forbiddenCharacters:['guitarra-gafas','piter-laud','guitarra','ponder']}},
     {id:'cazorla',name:'Cazorla',description:'Una nueva parada de la gira, con el equipo listo para actuar.',scene:'plaza'},
     {id:'quesada',name:'Quesada',description:'Otro encargo y una canción para compartir con el público.',scene:'plaza'},
     {id:'ubeda',name:'Úbeda',description:'La Tuna llega preparada para una nueva actuación.',scene:'plaza'},
@@ -89,6 +90,8 @@
     const rules=selectionRules(performance);
     if(rules.forbiddenCharacters.includes(character.id))return {available:false,reason:rules.reasons[character.id]||'No disponible para esta actuación'};
     if(!isCharacterUnlocked(character,progress))return {available:false,reason:`🔒 Disponible en nivel ${character.unlockLevel}`};
+    const selected=Array.isArray(performance?.selectedCharacters)?performance.selectedCharacters:[];
+    if(character.identityGroup&&selected.some(id=>id!==character.id&&characters.find(other=>other.id===id)?.identityGroup===character.identityGroup))return {available:false,reason:'Ya has elegido esta versión de Piter'};
     return {available:true,reason:''};
   }
   function isDynamicDuo(ids=[]) {
@@ -96,9 +99,11 @@
   }
   function refreshPerformanceAvailability(performance,progress={}) {
     const rules=selectionRules(performance);performance.allowedCharacters=[];performance.unavailableCharacters=[];performance.restrictionReasons={};
+    // Keep the first valid member of each identity group and discard stale or injected selections.
+    const incoming=[...new Set(Array.isArray(performance.selectedCharacters)?performance.selectedCharacters:[])],retained=[];
+    for(const id of incoming){const character=characters.find(item=>item.id===id);if(character&&characterAvailability(character,{...performance,selectedCharacters:retained},progress).available)retained.push(id);}
+    performance.selectedCharacters=retained;
     for(const character of characters){const status=characterAvailability(character,performance,progress);if(status.available)performance.allowedCharacters.push(character.id);else{performance.unavailableCharacters.push(character.id);performance.restrictionReasons[character.id]=status.reason;}}
-    // Discard stale or injected selections without making any new selections.
-    performance.selectedCharacters=[...new Set(Array.isArray(performance.selectedCharacters)?performance.selectedCharacters:[])].filter(id=>performance.allowedCharacters.includes(id));
     performance.requiredCharacters=rules.requiredCharacters;performance.recommendedCharacters=rules.recommendedCharacters;return performance;
   }
   function canFormGroup(performance,progress={}) {
